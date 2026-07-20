@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 370" role="img" aria-labelledby="m-diagonals-title" shape-rendering="crispEdges">
+  <title id="m-diagonals-title">Engineered stepped diagonals of M</title>
+  <g id="m-diagonals" fill="#122b3d">
+    <path id="heavy-diagonal" fill="#122b3d" transform="translate(1 0)" d="M3 38H19V48H27V64H35V80H43V96H48V113H56V130H64V147H72V164H80V181H88V198H96V215H104V232H112V249H120V266H128V283H136V300H144V317H152V334H144V350H136V362H132H128V350H120V334H112V317H104V309H98V292H90V275H82V258H74V241H66V224H58V207H50V190H42V173H34V156H26V139H18V122H10V105H5V99H3Z"/>
+    <path id="fine-diagonal" d="M234 76v8h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8" fill="none" stroke="#122b3d" stroke-width="8" stroke-linecap="square" stroke-linejoin="miter"/>
+  </g>
+</svg>

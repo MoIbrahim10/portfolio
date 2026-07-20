@@ -1,0 +1,151 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 930 570"
+  role="img"
+  aria-labelledby="logo-title logo-description"
+  shape-rendering="crispEdges"
+>
+  <title id="logo-title">MO Egyptian monogram</title>
+  <desc id="logo-description">
+    A precisely stepped Egyptian M beside a symmetric open O and nine golden rays.
+  </desc>
+
+  <defs>
+    <linearGradient id="navy" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="520" y2="540">
+      <stop offset="0" stop-color="#0a2234" />
+      <stop offset="0.55" stop-color="#112f44" />
+      <stop offset="1" stop-color="#0a2437" />
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#901518" />
+      <stop offset="0.5" stop-color="#b51d22" />
+      <stop offset="1" stop-color="#971619" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#c58b2b" />
+      <stop offset="1" stop-color="#e1a43a" />
+    </linearGradient>
+    <path id="ray-terminal" fill-rule="evenodd" d="M2 0h8v2h2v8h-2v2H2v-2H0V2h2zm2 4v4h4V4z" />
+  </defs>
+
+  <g id="left-column">
+    <rect x="31" y="39" width="122" height="14" fill="url(#navy)" />
+    <rect x="42" y="53" width="106" height="16" fill="url(#gold)" />
+    <rect x="51" y="69" width="94" height="52" fill="url(#navy)" />
+    <path fill="url(#gold)" d="M58 87h16v18H58zm28 0h16v18H86zm28 0h16v18h-16z" />
+    <rect x="60" y="121" width="85" height="14" fill="url(#gold)" />
+    <rect x="60" y="135" width="85" height="14" fill="url(#navy)" />
+    <rect x="65" y="149" width="80" height="13" fill="url(#gold)" />
+    <rect x="65" y="162" width="80" height="320" fill="url(#navy)" />
+
+    <path fill="url(#gold)" d="M82 174h48v4h6v288h-6v4H82v-4h-6V178h6z" />
+    <path fill="url(#navy)" d="M85 181h42v4h3v274h-3v4H85v-4h-3V185h3z" />
+    <g fill="url(#gold)">
+      <path d="M92 195h10v4h4v6h-4v6h6v5h6v5h10v6h-12v6h8v5h-20v-5h6v-16h-8v-6h-6v-5h-4v-6h4zm6 5v6h4v-6z" />
+      <path d="M85 254h6v-4h6v4h4v4h4v-4h4v-4h6v4h6v8h-6v-4h-6v4h-4v4h-4v-4h-4v-4h-6v4h-6z" />
+      <path d="M88 288h4v-4h4v-4h4v4h4v4h4v-4h4v-4h4v4h4v4h4" fill="none" stroke="url(#gold)" stroke-width="4" />
+      <path d="M88 314h4v-4h4v-4h4v4h4v4h4v-4h4v-4h4v4h4v4h4" fill="none" stroke="url(#gold)" stroke-width="4" />
+      <path fill-rule="evenodd" d="M104 333h4v4h4v4h4v4h4v10h-4v4h-4v4h-4v4h-4v-4h-4v-4h-4v-4h-4v-10h4v-4h4v-4h4zm0 10h4v4h4v8h-4v4h-4v-4h-4v-8h4z" />
+      <path d="M88 384h4v-4h4v-4h4v4h4v4h4v-4h4v-4h4v4h4v4h4" fill="none" stroke="url(#gold)" stroke-width="4" />
+      <path d="M88 410h4v-4h4v-4h4v4h4v4h4v-4h4v-4h4v4h4v4h4" fill="none" stroke="url(#gold)" stroke-width="4" />
+      <path fill-rule="evenodd" d="M104 429h4v4h4v4h4v4h4v10h-4v4h-4v4h-4v4h-4v-4h-4v-4h-4v-4h-4v-10h4v-4h4v-4h4zm0 10h4v4h4v8h-4v4h-4v-4h-4v-8h4z" />
+    </g>
+
+    <rect x="60" y="482" width="92" height="14" fill="url(#gold)" />
+    <rect x="53" y="496" width="106" height="14" fill="url(#navy)" />
+    <rect x="44" y="510" width="124" height="14" fill="url(#gold)" />
+    <rect x="35" y="524" width="142" height="15" fill="url(#navy)" />
+  </g>
+
+  <g id="right-capital">
+    <rect x="394" y="39" width="118" height="14" fill="url(#navy)" />
+    <rect x="404" y="53" width="100" height="16" fill="url(#gold)" />
+    <rect x="413" y="69" width="80" height="52" fill="url(#navy)" />
+    <path fill="url(#gold)" d="M430 87h16v18h-16zm32 0h16v18h-16z" />
+    <rect x="413" y="121" width="80" height="14" fill="url(#gold)" />
+    <rect x="413" y="135" width="80" height="14" fill="url(#navy)" />
+    <rect x="413" y="149" width="80" height="13" fill="url(#gold)" />
+    <rect x="413" y="162" width="16" height="70" fill="url(#navy)" />
+  </g>
+
+  <g id="m-diagonals" fill="url(#navy)">
+    <g aria-label="Descending diagonal: 28 by 28 modules advancing 8 by 16">
+      <rect x="140" y="69" width="28" height="28" />
+      <rect x="148" y="85" width="28" height="28" />
+      <rect x="156" y="101" width="28" height="28" />
+      <rect x="164" y="117" width="28" height="28" />
+      <rect x="172" y="133" width="28" height="28" />
+      <rect x="180" y="149" width="28" height="28" />
+      <rect x="188" y="165" width="28" height="28" />
+      <rect x="196" y="181" width="28" height="28" />
+      <rect x="204" y="197" width="28" height="28" />
+      <rect x="212" y="213" width="28" height="28" />
+      <rect x="220" y="229" width="28" height="28" />
+      <rect x="228" y="245" width="28" height="28" />
+      <rect x="236" y="261" width="28" height="28" />
+      <rect x="244" y="277" width="28" height="28" />
+      <rect x="252" y="293" width="28" height="28" />
+      <rect x="260" y="309" width="28" height="28" />
+      <rect x="268" y="325" width="28" height="28" />
+      <rect x="276" y="341" width="28" height="28" />
+      <rect x="284" y="357" width="28" height="28" />
+      <rect x="292" y="373" width="28" height="24" />
+      <rect x="300" y="389" width="20" height="18" />
+      <rect x="306" y="405" width="12" height="12" />
+      <rect x="310" y="417" width="6" height="8" />
+    </g>
+    <g aria-label="Ascending diagonal: 10 by 16 modules advancing 8 by 9">
+      <rect x="278" y="293" width="10" height="16" />
+      <rect x="286" y="284" width="10" height="16" />
+      <rect x="294" y="275" width="10" height="16" />
+      <rect x="302" y="266" width="10" height="16" />
+      <rect x="310" y="257" width="10" height="16" />
+      <rect x="318" y="248" width="10" height="16" />
+      <rect x="326" y="239" width="10" height="16" />
+      <rect x="334" y="230" width="10" height="16" />
+      <rect x="342" y="221" width="10" height="16" />
+      <rect x="350" y="212" width="10" height="16" />
+      <rect x="358" y="203" width="10" height="16" />
+      <rect x="366" y="194" width="10" height="16" />
+      <rect x="374" y="185" width="10" height="16" />
+      <rect x="382" y="176" width="10" height="16" />
+      <rect x="390" y="167" width="10" height="16" />
+      <rect x="398" y="158" width="10" height="16" />
+      <rect x="406" y="149" width="10" height="16" />
+    </g>
+  </g>
+
+  <path
+    id="o"
+    d="M744 304v-26h-8v-32h-8v-24h-8v-16h-8v-16h-8v-8h-8v-8h-16v-8h-16v-8h-24v-8H520v8h-24v8h-16v8h-16v8h-8v8h-8v16h-8v16h-8v24h-8v32h-8v104h8v32h8v24h8v24h8v16h8v8h8v8h16v8h16v8h24v8h120v-8h24v-8h16v-8h16v-8h8v-8h8v-16h8v-24h8v-24h8v-32h8v-26"
+    fill="none"
+    stroke="url(#red)"
+    stroke-width="24"
+    stroke-linecap="butt"
+    stroke-linejoin="miter"
+  />
+
+  <g id="rays" fill="url(#gold)" aria-hidden="true">
+    <rect x="720" y="311" width="56" height="6" />
+    <rect x="720" y="329" width="56" height="6" />
+    <rect x="720" y="347" width="56" height="6" />
+    <rect x="741" y="151" width="5" height="44" />
+    <path d="M760 230h6v-12h6v-12h6v-12h6v-12" fill="none" stroke="url(#gold)" stroke-width="4" />
+    <path d="M770 276h9v-9h9v-9h9v-9h9v-9h9v-9h9v-9h9v-9" fill="none" stroke="url(#gold)" stroke-width="4" />
+    <path d="M780 301h12v-5h12v-5h12v-5h12v-5h12v-5h12v-5" fill="none" stroke="url(#gold)" stroke-width="4" />
+    <rect x="784" y="329" width="104" height="6" />
+    <path d="M780 363h12v5h12v5h12v5h12v5h12v5h12v5" fill="none" stroke="url(#gold)" stroke-width="4" />
+    <path d="M770 388h9v9h9v9h9v9h9v9h9v9h9v9h9v9" fill="none" stroke="url(#gold)" stroke-width="4" />
+    <path d="M760 434h6v12h6v12h6v12h6v12" fill="none" stroke="url(#gold)" stroke-width="4" />
+    <rect x="741" y="455" width="5" height="44" />
+    <use href="#ray-terminal" x="738" y="126" />
+    <use href="#ray-terminal" x="781" y="158" />
+    <use href="#ray-terminal" x="837" y="190" />
+    <use href="#ray-terminal" x="862" y="251" />
+    <use href="#ray-terminal" x="888" y="326" />
+    <use href="#ray-terminal" x="862" y="384" />
+    <use href="#ray-terminal" x="837" y="445" />
+    <use href="#ray-terminal" x="781" y="488" />
+    <use href="#ray-terminal" x="738" y="510" />
+  </g>
+</svg>

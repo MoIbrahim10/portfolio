@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 458 392" role="img" aria-labelledby="review-title review-description" shape-rendering="crispEdges">
+  <title id="review-title">Reference-traced O with reference-spaced rays</title>
+  <desc id="review-description">An isolated review of the measured stepped O, three-line opening, and nine golden rays.</desc>
+  <defs>
+    <mask id="review-gap" maskUnits="userSpaceOnUse" x="0" y="0" width="332" height="392">
+      <path fill="#fff" d="M0 0h332v392H0z"/>
+      <path fill="#000" d="M283 165h49v63h-49z"/>
+    </mask>
+    <path id="review-terminal" fill-rule="evenodd" d="M2 0h8v2h2v8h-2v2H2v-2H0V2h2zm2 4v4h4V4z"/>
+  </defs>
+
+  <path
+    fill="#9c1e1b"
+    fill-rule="evenodd"
+    mask="url(#review-gap)"
+    d="M125 0H198V10H227V20H245V30H256V40H265V50H274V61H283V73H292V85H299V96H306V115H315V144H323V248H315V277H306V296H299V307H292V319H283V331H274V342H265V352H256V362H245V372H227V382H198V392H125V382H98V372H79V362H68V352H58V342H49V331H40V319H32V307H27V296H19V277H10V248H0V144H10V115H19V96H27V85H32V73H40V61H49V50H58V40H68V30H79V20H98V10H125ZM134 10H189V20H207V30H223V40H233V50H242V61H249V73H257V85H266V106H274V134H283V258H274V286H266V307H257V319H249V331H242V342H233V352H223V362H207V372H189V382H134V372H115V362H100V352H90V342H81V331H74V319H67V307H58V286H48V258H39V134H48V106H58V85H67V73H74V61H81V50H90V40H100V30H115V20H134Z"
+  />
+
+  <g fill="#d79d40">
+    <path d="M283 174h49v9h-49z"/>
+    <path d="M283 190h49v8h-49z"/>
+    <path d="M283 207h49v9h-49z"/>
+  </g>
+
+  <g fill="#d79d40" transform="translate(296)" aria-hidden="true">
+    <path d="M3 24h5v41H3z"/>
+    <path d="M22 98h6V87h6V76h6V64h6V53" fill="none" stroke="#d79d40" stroke-width="4"/>
+    <path d="M32 141h9v-9h9v-9h9v-9h9v-9h9v-9h9v-9h9v-9" fill="none" stroke="#d79d40" stroke-width="4"/>
+    <path d="M42 165h12v-5h12v-5h12v-5h12v-5h12v-5h12v-5" fill="none" stroke="#d79d40" stroke-width="4"/>
+    <path d="M46 191h104v6H46z"/>
+    <path d="M42 223h12v5h12v5h12v5h12v5h12v5h12v5" fill="none" stroke="#d79d40" stroke-width="4"/>
+    <path d="M32 247h9v9h9v9h9v9h9v9h9v9h9v9h9v9" fill="none" stroke="#d79d40" stroke-width="4"/>
+    <path d="M22 290h6v11h6v11h6v12h6v11" fill="none" stroke="#d79d40" stroke-width="4"/>
+    <path d="M3 310h5v41H3z"/>
+    <use href="#review-terminal" x="0" y="0"/>
+    <use href="#review-terminal" x="43" y="30"/>
+    <use href="#review-terminal" x="99" y="60"/>
+    <use href="#review-terminal" x="124" y="118"/>
+    <use href="#review-terminal" x="150" y="188"/>
+    <use href="#review-terminal" x="124" y="243"/>
+    <use href="#review-terminal" x="99" y="300"/>
+    <use href="#review-terminal" x="43" y="341"/>
+    <use href="#review-terminal" x="0" y="361"/>
+  </g>
+</svg>
