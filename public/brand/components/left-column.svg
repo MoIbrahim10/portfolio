@@ -61,9 +61,24 @@
       <path id="lower-solar-form" d="M26 229h3v3h-3zM23 232h9v3h-9zM20 235h3v3h-3zm12 0h3v3h-3zM17 238h3v3h-3zm18 0h3v3h-3zM17 241h3v3h-3zm8 0h6v6h-6zm10 0h3v3h-3zM17 244h3v3h-3zm18 0h3v3h-3zM17 247h3v3h-3zm18 0h3v3h-3zM20 250h3v3h-3zm12 0h3v3h-3zM23 253h9v3h-9z"/>
     </g>
 
-    <path class="gold" d="M25 423h86v11H25z"/>
-    <path class="navy" d="M18 434h100v12H18z"/>
-    <path class="gold" d="M10 446h114v12H10z"/>
-    <path class="navy" d="M1 458h132v14H1z"/>
+    <g id="left-base">
+      <path class="gold-face" d="M25 423h86v11H25z"/>
+      <path class="gold-shadow" d="M25 423h9v11h-9z"/>
+      <path class="gold-edge" d="M102 423h9v11h-9z"/>
+      <path class="gold-light" d="M34 423h68v1H34z"/>
+
+      <path class="navy" d="M18 434h100v12H18z"/>
+      <path class="navy-light" d="M18 434h8v12h-8z"/>
+      <path class="navy-shadow" d="M110 434h8v12h-8z"/>
+
+      <path class="gold-face" d="M10 446h114v12H10z"/>
+      <path class="gold-shadow" d="M10 446h10v12H10z"/>
+      <path class="gold-edge" d="M115 446h9v12h-9z"/>
+      <path class="gold-light" d="M20 446h95v1H20z"/>
+
+      <path class="navy" d="M1 458h132v14H1z"/>
+      <path class="navy-light" d="M1 458h10v14H1z"/>
+      <path class="navy-shadow" d="M125 458h8v14h-8z"/>
+    </g>
   </g>
 </svg>

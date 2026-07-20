@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109 205" role="img" aria-labelledby="right-capital-title" shape-rendering="crispEdges">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 134 196" role="img" aria-labelledby="right-capital-title" shape-rendering="crispEdges">
   <title id="right-capital-title">Right Egyptian capital of M</title>
   <style>
     .navy { fill: #122b3d; }
@@ -11,40 +11,40 @@
     .gold-shadow { fill: #c4862d; }
   </style>
   <g id="right-capital">
-    <path class="navy" d="M0 0h109v14H0z"/>
-    <path class="navy-light" d="M0 0h9v14H0z"/>
-    <path class="navy-shadow" d="M101 0h8v14h-8z"/>
+    <path class="navy" d="M11 0h114v14H11z"/>
+    <path class="navy-light" d="M11 0h10v14H11z"/>
+    <path class="navy-shadow" d="M117 0h8v14h-8z"/>
 
-    <path class="gold-face" d="M8 14h92v14H8z"/>
-    <path class="gold-shadow" d="M8 14h10v14H8z"/>
-    <path class="gold-edge" d="M91 14h9v14h-9z"/>
-    <path class="gold-light" d="M18 14h73v1H18z"/>
+    <path class="gold-face" d="M20 14h96v14H20z"/>
+    <path class="gold-shadow" d="M20 14h10v14H20z"/>
+    <path class="gold-edge" d="M107 14h9v14h-9z"/>
+    <path class="gold-light" d="M30 14h77v1H30z"/>
 
-    <path class="navy" d="M18 28h74v10H18zM18 38h74v40H18z"/>
-    <path class="navy-light" d="M18 28h4v10h-4zM18 38h4v40h-4z"/>
-    <path class="navy-shadow" d="M18 76h74v2H18z"/>
+    <path class="navy" d="M29 28h79v10H29zM29 38h79v40H29z"/>
+    <path class="navy-light" d="M29 28h4v10h-4zM29 38h4v40h-4z"/>
+    <path class="navy-shadow" d="M29 76h79v2H29z"/>
 
     <g id="right-capital-windows">
-      <path class="gold-face" d="M34 47h13v17H34zm29 0h13v17H63z"/>
-      <path class="gold-light" d="M34 47h2v16h-2zm29 0h2v16h-2z"/>
-      <path class="gold-edge" d="M46 47h1v17h-1zm29 0h1v17h-1z"/>
-      <path class="gold-shadow" d="M34 63h13v1H34zm29 0h13v1H63z"/>
+      <path class="gold-face" d="M34 47h13v17H34zm28 0h13v17H62zm28 0h13v17H90z"/>
+      <path class="gold-light" d="M34 47h2v16h-2zm28 0h2v16h-2zm28 0h2v16h-2z"/>
+      <path class="gold-edge" d="M46 47h1v17h-1zm28 0h1v17h-1zm28 0h1v17h-1z"/>
+      <path class="gold-shadow" d="M34 63h13v1H34zm28 0h13v1H62zm28 0h13v1H90z"/>
     </g>
 
-    <path class="gold-face" d="M18 78h74v11H18z"/>
-    <path class="gold-shadow" d="M18 78h10v11H18z"/>
-    <path class="gold-edge" d="M83 78h9v11h-9z"/>
-    <path class="gold-light" d="M28 78h55v1H28z"/>
+    <path class="gold-face" d="M29 78h79v11H29z"/>
+    <path class="gold-shadow" d="M29 78h10v11H29z"/>
+    <path class="gold-edge" d="M99 78h9v11h-9z"/>
+    <path class="gold-light" d="M39 78h60v1H39z"/>
 
-    <path class="navy" d="M18 89h74v10H18z"/>
-    <path class="navy-light" d="M18 89h6v10h-6z"/>
-    <path class="navy-shadow" d="M84 89h8v10h-8z"/>
+    <path class="navy" d="M29 89h79v10H29z"/>
+    <path class="navy-light" d="M29 89h6v10h-6z"/>
+    <path class="navy-shadow" d="M100 89h8v10h-8z"/>
 
-    <path class="gold-face" d="M18 99h68v11H18z"/>
-    <path class="gold-shadow" d="M18 99h9v11H18z"/>
-    <path class="gold-edge" d="M77 99h9v11h-9z"/>
-    <path class="gold-light" d="M27 99h50v1H27z"/>
+    <path class="gold-face" d="M30 99h77v11H30z"/>
+    <path class="gold-shadow" d="M30 99h9v11H30z"/>
+    <path class="gold-edge" d="M98 99h9v11h-9z"/>
+    <path class="gold-light" d="M39 99h59v1H39z"/>
 
-    <path class="navy" d="M18 110h14v70H18zM18 180h8v16H18z"/>
+    <path class="navy" d="M32 110h73v86H32z"/>
   </g>
 </svg>
