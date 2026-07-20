@@ -10,6 +10,9 @@
     .gold-edge { fill: #cd9235; }
     .gold-shadow { fill: #c4862d; }
   </style>
+  <clipPath id="right-stem-clip" clipPathUnits="userSpaceOnUse">
+    <path d="M32 110h73v86H32z"/>
+  </clipPath>
   <g id="right-capital">
     <path class="navy" d="M11 0h114v14H11z"/>
     <path class="navy-light" d="M11 0h10v14H11z"/>
@@ -46,5 +49,10 @@
     <path class="gold-light" d="M39 99h59v1H39z"/>
 
     <path class="navy" d="M32 110h73v86H32z"/>
+    <g clip-path="url(#right-stem-clip)">
+      <g class="gold" transform="translate(41 130)">
+        <path id="right-inscription-frame" fill-rule="evenodd" d="M6 0H48V6H54V269H48V275H6V269H0V6H6ZM9 3H45V9H51V266H45V272H9V266H3V9H9Z"/>
+      </g>
+    </g>
   </g>
 </svg>

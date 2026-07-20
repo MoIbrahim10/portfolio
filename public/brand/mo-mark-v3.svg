@@ -8,6 +8,9 @@
     <path d="M0 0h790v480H0z" fill="#fff"/>
     <path d="m125 0h73v10h29v10h18v10h11v10h9v10h9v11h9v12h9v12h7v11h7v19h9v29h8v104h-8v29h-9v19h-7v11h-7v12h-9v12h-9v11h-9v10h-9v10h-11v10h-18v10h-29v10h-73v-10H98v-10H79v-10H68v-10H58v-10h-9v-11h-9v-12h-8v-12h-5v-11h-8v-19h-9v-29H0V144h10v-29h9V96h8V85h5V73h8V61h9V50h9V40h10V30h11V20h19V10h27z" fill="#000" stroke="#000" stroke-linejoin="miter" stroke-width="4" transform="translate(324 80)"/>
   </mask>
+  <clipPath id="right-stem-clip" clipPathUnits="userSpaceOnUse">
+    <path d="M32 110h73v86H32z"/>
+  </clipPath>
   <path d="M11 0h114v14H11z" fill="#122b3d"/>
   <path d="M11 0h10v14H11z" fill="#17364a"/>
   <path d="M117 0h8v14h-8z" fill="#0f2636"/>
@@ -63,7 +66,7 @@
   </g>
   <g fill="#122b3d" transform="translate(104)">
     <path d="M3 38H19V48H27V64H35V80H43V96H48V113H56V130H64V147H72V164H80V181H88V198H96V215H104V232H112V249H120V266H128V283H136V300H144V317H152V334H144V350H136V362H132H128V350H120V334H112V317H104V309H98V292H90V275H82V258H74V241H66V224H58V207H50V190H42V173H34V156H26V139H18V122H10V105H5V99H3Z" fill="#122b3d" transform="translate(1 0)"/>
-    <path d="m234 76v8h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8" fill="none" stroke="#122b3d" stroke-linecap="square" stroke-width="8"/>
+    <path d="m234 78v4h-8v13h-8v17h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8v14h-8" fill="none" stroke="#122b3d" stroke-linecap="square" stroke-linejoin="miter" stroke-width="8"/>
   </g>
   <g mask="url(#right-m-clearance)">
     <g transform="translate(305)">
@@ -93,6 +96,11 @@
       <path d="M98 99h9v11h-9z" fill="#cd9235"/>
       <path d="M39 99h59v1H39z" fill="#e5b154"/>
       <path d="M32 110h73v86H32z" fill="#122b3d"/>
+      <g clip-path="url(#right-stem-clip)">
+        <g fill="#d79d40" transform="translate(41 130)">
+          <path d="M6 0H48V6H54V269H48V275H6V269H0V6H6ZM9 3H45V9H51V266H45V272H9V266H3V9H9Z" fill-rule="evenodd"/>
+        </g>
+      </g>
     </g>
   </g>
   <svg height="392" overflow="visible" viewBox="0 0 332 392" width="332" x="324" y="80">
