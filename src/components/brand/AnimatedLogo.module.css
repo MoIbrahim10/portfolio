@@ -1,0 +1,53 @@
+.mark {
+  position: relative;
+  width: min(92vw, 72rem);
+  opacity: 0;
+  user-select: none;
+}
+
+.mark::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: transparent;
+  content: "";
+}
+
+.mark svg,
+.fallback {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.placeholder {
+  width: min(92vw, 72rem);
+  aspect-ratio: 79 / 48;
+}
+
+.mark :global([id$="-logo-m-left"]),
+.mark :global([id$="-logo-m-right"]),
+.mark :global([id$="-logo-o"]),
+.mark :global([id$="-logo-rays"]) {
+  transform-box: fill-box;
+}
+
+.mark :global([id$="-logo-o"]) {
+  transform-origin: center;
+}
+
+.mark :global([id$="-logo-rays"]) {
+  transform-origin: left center;
+}
+
+.mark :global([id$="-logo-ray-lines"] path),
+.mark :global([id$="-logo-o-bridge"] > path) {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media (hover: hover) {
+  .mark {
+    cursor: pointer;
+  }
+}
