@@ -1,0 +1,110 @@
+.shell {
+  min-height: 100svh;
+}
+
+.switcher {
+  position: fixed;
+  z-index: 9999;
+  right: 50%;
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+  display: flex;
+  width: min(calc(100vw - 1.5rem), 43rem);
+  min-height: 3.5rem;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem;
+  border: 1px solid rgb(255 255 255 / 16%);
+  color: #fff;
+  background: rgb(10 14 21 / 92%);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 28%);
+  backdrop-filter: blur(16px);
+  transform: translateX(50%);
+  clip-path: polygon(0 0, calc(100% - 0.65rem) 0, 100% 0.65rem, 100% 100%, 0.65rem 100%, 0 calc(100% - 0.65rem));
+}
+
+:global(body:has([role="dialog"][aria-modal="true"])) .switcher {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+  padding-inline: 0.65rem;
+}
+
+.eyebrow,
+.name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eyebrow {
+  color: rgb(255 255 255 / 56%);
+  font: 600 0.62rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.name {
+  margin-top: 0.15rem;
+  font: 600 0.82rem/1.2 ui-sans-serif, system-ui, sans-serif;
+}
+
+.control,
+.select {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: 1px solid rgb(255 255 255 / 16%);
+  color: inherit;
+  background: rgb(255 255 255 / 7%);
+  font: 600 0.72rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.control {
+  cursor: pointer;
+}
+
+.control:hover {
+  background: rgb(255 255 255 / 14%);
+}
+
+.control:active {
+  transform: translateY(1px);
+}
+
+.control:focus-visible,
+.select:focus-visible {
+  outline: 2px solid #efb840;
+  outline-offset: 2px;
+}
+
+.select {
+  max-width: 12rem;
+  padding-inline: 0.7rem 1.6rem;
+  cursor: pointer;
+}
+
+@media (max-width: 38rem) {
+  .switcher {
+    width: calc(100vw - 1rem);
+  }
+
+  .eyebrow {
+    display: none;
+  }
+
+  .select {
+    width: 4.1rem;
+    padding-inline: 0.55rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .control {
+    transition: none;
+  }
+}

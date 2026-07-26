@@ -1,0 +1,790 @@
+.page {
+  --canvas: #f3f1ea;
+  --paper: #fffdf8;
+  --navy: #17233d;
+  --carbon: #17191d;
+  --graphite: #64686f;
+  --rule: #d8d5cc;
+  --gold: #d79d40;
+  --red: #9c1e1b;
+  min-height: 100vh;
+  overflow-x: clip;
+  isolation: isolate;
+  color: var(--carbon);
+  background: var(--canvas);
+  font-family: Charter, "Bitstream Charter", "Sitka Text", "Iowan Old Style",
+    Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page *,
+.page *::before,
+.page *::after {
+  box-sizing: border-box;
+}
+
+.page button,
+.page a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.shell {
+  width: min(100%, 92.5rem);
+  margin-inline: auto;
+  padding-inline: clamp(2rem, 4vw, 3.5rem);
+}
+
+.masthead {
+  border-bottom: 1px solid color-mix(in srgb, var(--rule) 76%, transparent);
+}
+
+.masthead .shell {
+  display: flex;
+  min-height: 4.75rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.logoLink {
+  display: flex;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.headerLogo {
+  width: 7.5rem;
+}
+
+.headerLinks,
+.contactLine nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+  font-size: 0.75rem;
+}
+
+.headerLinks > a:not([class]),
+.contactLine nav > a:not([class]) {
+  display: inline-flex;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  text-underline-offset: 0.25rem;
+}
+
+.headerLinks > a:not([class]):hover,
+.contactLine nav > a:not([class]):hover,
+.repositoryLink:hover,
+.footer a:hover {
+  color: var(--red);
+}
+
+.mobileSchedule {
+  display: none;
+}
+
+.introduction {
+  padding-block: clamp(2.5rem, 6vh, 4.5rem) clamp(2.75rem, 7vh, 5rem);
+}
+
+.eyebrow,
+.sectionLabel,
+.instruction,
+.trayLabel,
+.projectMeta span,
+.mobileThumbnail > span {
+  margin: 0;
+  color: var(--graphite);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.introduction h1 {
+  max-width: 13ch;
+  margin: 0.8rem 0 1.25rem;
+  font-family: "Avenir Next Condensed", "Arial Narrow",
+    "Franklin Gothic Condensed", "Nimbus Sans Narrow", sans-serif;
+  font-size: clamp(2.5rem, 6vw, 5.75rem);
+  font-weight: 600;
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.bio {
+  max-width: 48ch;
+  margin: 0 0 1.5rem;
+  color: var(--graphite);
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.work {
+  padding-bottom: clamp(5rem, 9vw, 8rem);
+}
+
+.workHeading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: end;
+  gap: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--rule) 76%, transparent);
+}
+
+.workHeading h2,
+.contactLine h2 {
+  margin: 0.25rem 0 0;
+  font-family: "Avenir Next Condensed", "Arial Narrow",
+    "Franklin Gothic Condensed", "Nimbus Sans Narrow", sans-serif;
+  font-size: clamp(1.7rem, 2.6vw, 2.6rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.instruction {
+  align-self: center;
+  text-transform: none;
+}
+
+.overviewButton {
+  min-width: 5.75rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  color: var(--navy);
+  background: transparent;
+  font: 600 0.75rem/1.2 ui-monospace, "SFMono-Regular", Menlo, Monaco,
+    Consolas, "Liberation Mono", monospace;
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+  cursor: pointer;
+}
+
+.overviewButton:hover {
+  color: var(--red);
+}
+
+.desktopWorkspace {
+  position: relative;
+  display: grid;
+  height: clamp(44rem, 56vw, 50rem);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: repeat(10, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.projectPane {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 0.35rem;
+}
+
+.slot0 {
+  grid-column: 1 / 8;
+  grid-row: 1 / 6;
+}
+
+.slot1 {
+  grid-column: 8 / 11;
+  grid-row: 1 / 6;
+}
+
+.slot2 {
+  grid-column: 11 / 13;
+  grid-row: 1 / 6;
+}
+
+.slot3 {
+  grid-column: 1 / 4;
+  grid-row: 6 / 11;
+}
+
+.slot4 {
+  grid-column: 4 / 8;
+  grid-row: 6 / 11;
+}
+
+.slot5 {
+  grid-column: 8 / 13;
+  grid-row: 6 / 11;
+}
+
+.desktopWorkspace .isActive {
+  z-index: 2;
+  grid-column: 1 / 9;
+  grid-row: 1 / 11;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  padding: 0.5rem 0.5rem 0;
+  background: var(--paper);
+  box-shadow: 0 24px 64px rgb(23 35 61 / 12%);
+}
+
+.desktopWorkspace .isQueued {
+  z-index: 1;
+  grid-column: 9 / 13;
+  grid-row: var(--queue-row) / span 2;
+}
+
+.mediaButton {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0 0.375rem 0.375rem 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 2px;
+  color: var(--navy);
+  background: var(--project-accent);
+  cursor: pointer;
+  transform-origin: center;
+}
+
+.mediaButton::before {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0.375rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--canvas);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  content: "";
+  pointer-events: none;
+}
+
+.isActive .mediaButton::before {
+  background: var(--paper);
+}
+
+.media {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  background: #e4e1d8;
+  outline: 1px solid rgb(23 35 61 / 8%);
+  outline-offset: -1px;
+}
+
+.mediaImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--paper);
+  transition: transform 180ms ease;
+}
+
+.mediaButton:hover .mediaImage {
+  transform: scale(1.008);
+}
+
+.mediaButton:active .mediaImage {
+  transform: scale(0.998);
+}
+
+.mediaButton:focus-visible,
+.galleryButton:focus-visible,
+.mobileThumbnail:focus-visible,
+.overviewButton:focus-visible,
+.logoLink:focus-visible,
+.headerLinks > a:not([class]):focus-visible,
+.contactLine nav > a:not([class]):focus-visible,
+.repositoryLink:focus-visible,
+.footer a:focus-visible {
+  outline: 3px solid var(--navy);
+  outline-offset: 3px;
+}
+
+.media[data-image-state="loading"] {
+  background: #e4e1d8;
+}
+
+.loadingLabel,
+.imageError {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  margin: 0;
+  place-items: center;
+  padding: 1rem;
+  color: var(--graphite);
+  font: 0.7rem/1.4 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+  text-align: center;
+}
+
+.imageError {
+  color: var(--red);
+  background: var(--paper);
+}
+
+.projectMeta {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.65rem;
+  padding-inline: 0.1rem;
+}
+
+.projectMeta h3 {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-family: "Avenir Next Condensed", "Arial Narrow",
+    "Franklin Gothic Condensed", "Nimbus Sans Narrow", sans-serif;
+  font-size: clamp(0.95rem, 1.25vw, 1.2rem);
+  font-weight: 600;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.isActive .projectMeta {
+  padding-inline: 0.5rem;
+}
+
+.isActive .projectMeta h3 {
+  font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+}
+
+.detailTray {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(11rem, 1fr) auto;
+  align-items: start;
+  gap: 1rem;
+  padding: 1rem 0.5rem 1.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--rule) 76%, transparent);
+  transform-origin: top;
+}
+
+.description {
+  max-width: 44ch;
+  margin: 0;
+  color: var(--graphite);
+  font-size: 0.98rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.gallery,
+.collaborators {
+  display: grid;
+  min-width: 0;
+  gap: 0.4rem;
+}
+
+.collaborators p:last-child {
+  margin: 0;
+  color: var(--graphite);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.galleryRail {
+  display: flex;
+  min-width: 0;
+  gap: 0.4rem;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+
+.galleryButton {
+  position: relative;
+  width: 4.5rem;
+  height: 3.25rem;
+  flex: 0 0 auto;
+  padding: 0.2rem;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+}
+
+.galleryButton[aria-pressed="true"] {
+  border-color: var(--navy);
+}
+
+.galleryButton[aria-pressed="true"]::after {
+  position: absolute;
+  right: 0.15rem;
+  bottom: 0.15rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--gold);
+  content: "";
+}
+
+.galleryButton .media {
+  min-height: 0;
+}
+
+.galleryButton .mediaImage {
+  object-fit: cover;
+}
+
+.galleryButton .loadingLabel,
+.galleryButton .imageError {
+  font-size: 0;
+}
+
+.projectLinks {
+  display: flex;
+  min-width: max-content;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.repositoryLink {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--navy);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+  font-size: 0.72rem;
+  text-underline-offset: 0.25rem;
+}
+
+.mobileWorkspace {
+  display: none;
+}
+
+.emptyState {
+  min-height: 24rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  color: var(--graphite);
+}
+
+.emptyState p {
+  margin: 0;
+  padding-block: 2rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.liveRegion {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.contact {
+  border-top: 1px solid color-mix(in srgb, var(--rule) 76%, transparent);
+}
+
+.contactLine {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2rem;
+  padding-block: clamp(3rem, 7vw, 5rem);
+}
+
+.contactLine h2 {
+  max-width: 25ch;
+}
+
+.footer {
+  border-top: 1px solid color-mix(in srgb, var(--rule) 76%, transparent);
+  color: var(--graphite);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+  font-size: 0.72rem;
+}
+
+.footer .shell {
+  display: grid;
+  min-height: 6.5rem;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 2rem;
+}
+
+.footer p {
+  margin: 0;
+}
+
+.footerIdentity {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.footerLogo {
+  width: 3.5rem;
+  flex-shrink: 0;
+}
+
+.footer a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  text-underline-offset: 0.25rem;
+}
+
+@media (max-width: 70rem) {
+  .detailTray {
+    grid-template-columns: minmax(0, 1fr) minmax(11rem, 0.8fr);
+  }
+
+  .projectLinks {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 47.49rem) {
+  .shell {
+    padding-inline: clamp(1.125rem, 5.5vw, 1.375rem);
+  }
+
+  .masthead .shell {
+    min-height: 4.25rem;
+  }
+
+  .headerLogo {
+    width: 6.5rem;
+  }
+
+  .headerLinks {
+    display: none;
+  }
+
+  .mobileSchedule {
+    display: inline-flex;
+  }
+
+  .introduction {
+    padding-block: 2.5rem 3.5rem;
+  }
+
+  .introduction h1 {
+    max-width: 10ch;
+    margin-block: 0.7rem 1.15rem;
+    font-size: clamp(2.5rem, 14vw, 4rem);
+  }
+
+  .bio {
+    margin-bottom: 1.25rem;
+    font-size: 1.05rem;
+  }
+
+  .work {
+    padding-bottom: 4.5rem;
+  }
+
+  .workHeading {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.75rem;
+  }
+
+  .instruction {
+    display: none;
+  }
+
+  .overviewButton {
+    justify-self: end;
+  }
+
+  .desktopWorkspace {
+    display: none;
+  }
+
+  .mobileWorkspace {
+    display: grid;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+  }
+
+  .mobileWorkspace .projectPane {
+    display: grid;
+    grid-template-rows: auto auto auto;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .mobileWorkspace .isActive {
+    padding: 0.375rem 0.375rem 0;
+    background: var(--paper);
+    box-shadow: 0 16px 32px rgb(23 35 61 / 10%);
+  }
+
+  .mobileWorkspace .mediaButton {
+    aspect-ratio: 16 / 10;
+  }
+
+  .mobileWorkspace .projectMeta {
+    padding-inline: 0.375rem;
+  }
+
+  .mobileWorkspace .projectMeta h3,
+  .mobileWorkspace .isActive .projectMeta h3 {
+    font-size: 1.25rem;
+  }
+
+  .detailTray {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: 0.9rem 0.375rem 1rem;
+  }
+
+  .description {
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .projectLinks {
+    grid-column: auto;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  .mobileProjectRail {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.25rem 0.2rem 0.75rem;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: 0.2rem;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+  }
+
+  .mobileThumbnail {
+    position: relative;
+    width: 6.75rem;
+    height: 5.5rem;
+    flex: 0 0 auto;
+    padding: 0 0.25rem 1.2rem 0;
+    border: 0;
+    border-radius: 2px;
+    color: var(--navy);
+    background: var(--project-accent);
+    cursor: pointer;
+    scroll-snap-align: start;
+    transition: transform 140ms ease;
+  }
+
+  .mobileThumbnail[aria-current="true"] {
+    outline: 2px solid var(--navy);
+    outline-offset: 2px;
+  }
+
+  .mobileThumbnail .media {
+    min-height: 0;
+  }
+
+  .mobileThumbnail .mediaImage {
+    object-fit: cover;
+  }
+
+  .mobileThumbnail > span {
+    position: absolute;
+    right: 0.35rem;
+    bottom: 0.2rem;
+    color: var(--navy);
+  }
+
+  .mobileThumbnail .loadingLabel,
+  .mobileThumbnail .imageError {
+    font-size: 0;
+  }
+
+  .contactLine {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    padding-block: 3.5rem;
+  }
+
+  .contactLine h2 {
+    max-width: 18ch;
+    font-size: 2rem;
+  }
+
+  .contactLine nav {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .footer .shell {
+    min-height: auto;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.8rem;
+    padding-block: 2rem;
+  }
+
+  .footerIdentity {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 22rem) {
+  .headerLogo {
+    width: 5.75rem;
+  }
+
+  .mobileSchedule {
+    min-width: 6.25rem;
+    padding-inline: 0.6rem;
+  }
+}
+
+@media (hover: hover) {
+  .mobileThumbnail:hover {
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page *,
+  .page *::before,
+  .page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .mediaButton:hover .mediaImage,
+  .mediaButton:active .mediaImage,
+  .mobileThumbnail:hover {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .mediaButton,
+  .galleryButton,
+  .mobileThumbnail,
+  .overviewButton {
+    border: 2px solid ButtonText;
+  }
+}

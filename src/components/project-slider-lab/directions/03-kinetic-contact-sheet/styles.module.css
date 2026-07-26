@@ -1,0 +1,575 @@
+.root {
+  --slider-accent: #d8ad4f;
+  --slider-background: #102331;
+  --slider-foreground: #f5f0e7;
+  --slider-surface: #193447;
+  position: relative;
+  isolation: isolate;
+  min-height: 42rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--slider-foreground) 22%, transparent);
+  color: var(--slider-foreground);
+  background: var(--slider-background);
+  box-shadow: 0 1.5rem 5rem rgb(7 20 29 / 18%);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+
+.colorField {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    radial-gradient(circle at 84% 16%, color-mix(in srgb, var(--slider-accent) 54%, transparent) 0 0.35rem, transparent 0.42rem),
+    linear-gradient(90deg, color-mix(in srgb, var(--slider-foreground) 8%, transparent) 1px, transparent 1px) 0 0 / 3.5rem 3.5rem,
+    linear-gradient(color-mix(in srgb, var(--slider-foreground) 8%, transparent) 1px, transparent 1px) 0 0 / 3.5rem 3.5rem,
+    radial-gradient(ellipse at 78% 18%, color-mix(in srgb, var(--slider-accent) 32%, transparent), transparent 48%),
+    linear-gradient(125deg, var(--slider-background) 0 62%, var(--slider-surface) 62% 78%, var(--slider-background) 78%);
+  will-change: clip-path, opacity;
+}
+
+.colorField::after {
+  position: absolute;
+  right: clamp(1rem, 5vw, 5rem);
+  bottom: 7rem;
+  width: clamp(4rem, 9vw, 8rem);
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--slider-accent) 72%, transparent);
+  background:
+    linear-gradient(90deg, transparent 50%, color-mix(in srgb, var(--slider-accent) 36%, transparent) 50%) 0 0 / 1rem 1rem,
+    linear-gradient(transparent 50%, color-mix(in srgb, var(--slider-accent) 36%, transparent) 50%) 0 0 / 1rem 1rem;
+  clip-path: polygon(0 0, 100% 0, 100% 72%, 72% 72%, 72% 100%, 0 100%);
+  content: '';
+}
+
+.header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 2rem;
+  align-items: end;
+  justify-content: space-between;
+  padding: clamp(1.25rem, 3vw, 2.5rem) clamp(1rem, 4vw, 3.5rem) 1rem;
+}
+
+.kicker,
+.projectIndex {
+  margin: 0 0 0.55rem;
+  font: 700 0.68rem/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.header .kicker,
+.projectIndex {
+  color: color-mix(in srgb, var(--slider-foreground) 72%, var(--slider-accent));
+}
+
+.header h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.7rem, 3.8vw, 3.6rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+}
+
+.counter {
+  display: flex;
+  align-items: baseline;
+  margin: 0;
+  font: 650 0.72rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.counter span:first-child {
+  color: var(--slider-accent);
+  font-size: clamp(1.7rem, 3vw, 2.8rem);
+}
+
+.contactSheet {
+  position: relative;
+  z-index: 2;
+  max-width: 100%;
+  padding: 0.45rem clamp(1rem, 4vw, 3.5rem) 1.35rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.contactSheet::-webkit-scrollbar {
+  display: none;
+}
+
+.contactList {
+  display: grid;
+  width: max-content;
+  grid-auto-columns: 3.25rem;
+  grid-auto-flow: column;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.projectTab {
+  --tab-accent: var(--slider-accent);
+  position: relative;
+  display: grid;
+  width: 3.25rem;
+  height: 3.25rem;
+  place-items: stretch;
+  padding: 0.24rem;
+  border: 0;
+  color: #fff;
+  background: color-mix(in srgb, var(--slider-background) 70%, transparent);
+  cursor: pointer;
+  clip-path: polygon(0.38rem 0, 100% 0, 100% calc(100% - 0.38rem), calc(100% - 0.38rem) 100%, 0 100%, 0 0.38rem);
+  transition: filter 160ms cubic-bezier(0.22, 1, 0.36, 1), transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.projectTab:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.projectTab:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+.projectTab:focus-visible {
+  outline: 3px solid var(--slider-foreground);
+  outline-offset: 3px;
+}
+
+.tabImageFrame {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--tab-accent);
+}
+
+.tabImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  filter: saturate(0.62) contrast(1.04);
+}
+
+.activeTab .tabImage {
+  filter: saturate(1) contrast(1.04);
+}
+
+.tabNumber {
+  position: absolute;
+  right: 0.2rem;
+  bottom: 0.16rem;
+  padding: 0.12rem 0.18rem;
+  color: #fff;
+  background: rgb(7 20 29 / 78%);
+  font: 700 0.5rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.activeCursor {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  border: 3px solid var(--tab-accent);
+  pointer-events: none;
+  clip-path: inherit;
+}
+
+.viewport {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-color: var(--slider-accent) color-mix(in srgb, var(--slider-foreground) 15%, transparent);
+  scrollbar-width: thin;
+  touch-action: pan-x pan-y;
+}
+
+.viewport:focus-visible {
+  outline: 3px solid var(--slider-accent);
+  outline-offset: -3px;
+}
+
+.track {
+  display: flex;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.slide {
+  width: 100%;
+  min-width: 100%;
+  flex: 0 0 100%;
+  padding: 0 clamp(1rem, 4vw, 3.5rem);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.project {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(16rem, 0.72fr);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--slider-foreground) 22%, transparent);
+  color: var(--slider-foreground);
+  background: var(--slider-surface);
+  box-shadow: 0 1rem 3.5rem rgb(4 12 18 / 22%);
+  clip-path: polygon(1rem 0, 100% 0, 100% calc(100% - 1rem), calc(100% - 1rem) 100%, 0 100%, 0 1rem);
+}
+
+.mediaFrame {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+  padding: clamp(0.5rem, 1vw, 0.8rem);
+  background: color-mix(in srgb, var(--slider-background) 88%, #07141d);
+}
+
+.mediaFrame::before {
+  position: absolute;
+  z-index: 2;
+  top: clamp(1rem, 2vw, 1.5rem);
+  left: clamp(1rem, 2vw, 1.5rem);
+  width: 2.2rem;
+  height: 2.2rem;
+  border-top: 3px solid var(--slider-accent);
+  border-left: 3px solid var(--slider-accent);
+  pointer-events: none;
+  content: '';
+}
+
+.projectImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3018 / 1498;
+  background: var(--slider-background);
+  object-fit: cover;
+}
+
+.mediaFrame figcaption {
+  position: absolute;
+  right: 1.35rem;
+  bottom: 1.25rem;
+  padding: 0.4rem 0.55rem;
+  color: #fff;
+  background: rgb(7 20 29 / 80%);
+  font: 700 0.58rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.projectInfo {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(2.5rem, 7vw, 7rem);
+  padding: clamp(1.4rem, 3.5vw, 3.75rem);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--slider-foreground) 7%, transparent) 1px, transparent 1px) 0 0 / 2.5rem 100%,
+    var(--slider-surface);
+}
+
+.projectInfo h3 {
+  max-width: 10ch;
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.6rem, 5.4vw, 6rem);
+  font-weight: 400;
+  line-height: 0.86;
+  letter-spacing: -0.06em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 34rem;
+  margin: 1.3rem 0 0;
+  color: color-mix(in srgb, var(--slider-foreground) 82%, var(--slider-surface));
+  font-size: clamp(0.88rem, 1.1vw, 1rem);
+  line-height: 1.65;
+}
+
+.projectFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: end;
+  justify-content: space-between;
+}
+
+.collaborators p {
+  margin: 0 0 0.35rem;
+  color: color-mix(in srgb, var(--slider-foreground) 66%, var(--slider-surface));
+  font: 700 0.62rem/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.collaborators ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.78rem;
+}
+
+.collaborators li + li::before {
+  margin-right: 0.8rem;
+  color: var(--slider-accent);
+  content: '◆';
+  font-size: 0.52rem;
+}
+
+.hint {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  padding: 1rem clamp(1rem, 4vw, 3.5rem) 1.2rem;
+  color: color-mix(in srgb, var(--slider-foreground) 76%, var(--slider-background));
+  font: 650 0.64rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hint span {
+  color: var(--slider-accent);
+  font-size: 1rem;
+}
+
+.loadingRoot {
+  padding: clamp(1.25rem, 3vw, 2.5rem) clamp(1rem, 4vw, 3.5rem);
+  color: #f5f0e7;
+  background: #102331;
+}
+
+.loadingHeader {
+  display: flex;
+  gap: 2rem;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.loadingTabs {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.loadingTab {
+  width: 3.25rem;
+  height: 3.25rem;
+}
+
+.loadingTitle {
+  width: min(19rem, 42vw);
+  height: 3.5rem;
+}
+
+.loadingProject {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(16rem, 0.72fr);
+  overflow: hidden;
+  background: #193447;
+  clip-path: polygon(1rem 0, 100% 0, 100% calc(100% - 1rem), calc(100% - 1rem) 100%, 0 100%, 0 1rem);
+}
+
+.loadingMedia {
+  width: 100%;
+  aspect-ratio: 3018 / 1498;
+}
+
+.loadingCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  justify-content: center;
+  padding: clamp(1.4rem, 3.5vw, 3.75rem);
+}
+
+.loadingKicker {
+  width: 5rem;
+  height: 0.7rem;
+}
+
+.loadingName {
+  width: 80%;
+  height: 4rem;
+}
+
+.loadingDescription {
+  width: 100%;
+  height: 4.8rem;
+}
+
+.skeleton {
+  display: block;
+  background: linear-gradient(100deg, rgb(245 240 231 / 8%) 25%, rgb(245 240 231 / 17%) 42%, rgb(245 240 231 / 8%) 58%) 100% 0 / 240% 100%;
+  animation: skeletonShift 1.4s linear infinite;
+}
+
+.emptyRoot {
+  display: grid;
+  min-height: 34rem;
+  place-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.emptyRoot h2 {
+  max-width: 12ch;
+  margin: 0 auto;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.6rem, 6vw, 5.5rem);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+.emptyRoot > p:last-child {
+  margin: 1.25rem 0 0;
+}
+
+.emptyGrid {
+  width: 6.5rem;
+  aspect-ratio: 1;
+  margin: 0 auto 1.75rem;
+  border: 1px solid #d8ad4f;
+  background:
+    linear-gradient(90deg, transparent 50%, rgb(216 173 79 / 28%) 50%) 0 0 / 1.6rem 1.6rem,
+    linear-gradient(transparent 50%, rgb(216 173 79 / 28%) 50%) 0 0 / 1.6rem 1.6rem;
+  clip-path: polygon(0 0, 100% 0, 100% 72%, 72% 72%, 72% 100%, 0 100%);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes skeletonShift {
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (max-width: 780px) {
+  .root {
+    min-height: 38rem;
+  }
+
+  .header {
+    align-items: start;
+  }
+
+  .header h2 {
+    font-size: clamp(1.65rem, 8vw, 2.5rem);
+  }
+
+  .counter {
+    flex: 0 0 auto;
+  }
+
+  .project,
+  .loadingProject {
+    grid-template-columns: 1fr;
+  }
+
+  .projectInfo {
+    min-height: 20rem;
+    gap: 2.75rem;
+  }
+
+  .projectInfo h3 {
+    font-size: clamp(2.5rem, 13vw, 4.5rem);
+  }
+
+  .loadingHeader {
+    display: block;
+  }
+
+  .loadingTabs {
+    margin-top: 1.25rem;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 470px) {
+  .header {
+    gap: 1rem;
+  }
+
+  .counter span:first-child {
+    font-size: 1.45rem;
+  }
+
+  .contactList {
+    grid-auto-columns: 3rem;
+  }
+
+  .projectTab,
+  .loadingTab {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .slide {
+    padding-inline: 0.75rem;
+  }
+
+  .projectInfo {
+    padding: 1.4rem;
+  }
+
+  .projectFooter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .projectTab,
+  .viewport {
+    scroll-behavior: auto;
+    transition: none;
+  }
+
+  .skeleton {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .root,
+  .project,
+  .projectTab {
+    border: 2px solid CanvasText;
+    clip-path: none;
+  }
+
+  .activeCursor {
+    border-color: Highlight;
+  }
+}

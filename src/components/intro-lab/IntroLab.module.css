@@ -1,0 +1,3948 @@
+.lab {
+  --canvas: #eeeae1;
+  --paper: #fffdf7;
+  --ink: #14243a;
+  --muted: #6f706d;
+  --line: #d2ccc0;
+  --gold: #d49c38;
+  --red: #a33832;
+  min-height: 100svh;
+  overflow-x: clip;
+  color: var(--ink);
+  background: var(--canvas);
+  font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+}
+
+.lab *,
+.lab *::before,
+.lab *::after {
+  box-sizing: border-box;
+}
+
+.skipLink {
+  position: fixed;
+  z-index: 100;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.8rem 1rem;
+  color: var(--paper);
+  background: var(--ink);
+  transform: translateY(-160%);
+}
+
+.skipLink:focus {
+  transform: translateY(0);
+}
+
+.labHeader,
+.pairing,
+.explorations,
+.footer {
+  width: min(calc(100% - clamp(2rem, 6vw, 7rem)), 96rem);
+  margin-inline: auto;
+}
+
+.labHeader {
+  display: grid;
+  min-height: 37rem;
+  grid-template-columns: minmax(0, 1.25fr) minmax(20rem, 0.75fr);
+  align-items: center;
+  gap: clamp(3rem, 8vw, 8rem);
+  padding-block: clamp(4rem, 8vw, 8rem);
+}
+
+.backLink {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  margin-bottom: 3.5rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-underline-offset: 0.25rem;
+}
+
+.labEyebrow {
+  margin: 0;
+  color: var(--muted);
+  font: 700 0.67rem/1.3 ui-monospace, "SFMono-Regular", Menlo, monospace;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.labHeader h1 {
+  max-width: 13ch;
+  margin: 0.8rem 0 1.4rem;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: clamp(3.5rem, 7vw, 7rem);
+  font-weight: 500;
+  letter-spacing: -0.065em;
+  line-height: 0.88;
+}
+
+.labHeader > div > p:last-child {
+  max-width: 54ch;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.labHeader dl {
+  display: grid;
+  margin: 0;
+  border-top: 1px solid var(--ink);
+}
+
+.labHeader dl div {
+  display: grid;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--line);
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+}
+
+.labHeader dt {
+  color: var(--muted);
+  font: 700 0.68rem/1 ui-monospace, "SFMono-Regular", Menlo, monospace;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.labHeader dd {
+  margin: 0;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: 2.4rem;
+}
+
+.pairing {
+  padding-block: clamp(3rem, 6vw, 6rem);
+  border-top: 1px solid var(--ink);
+}
+
+.pairingHeading {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.pairingHeading h2,
+.explorationHeading h2 {
+  margin: 0.55rem 0 0;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(2rem, 4vw, 4rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+}
+
+.pairingHeading > p {
+  max-width: 38ch;
+  margin: 0;
+  align-self: end;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.pairingControls {
+  display: grid;
+  margin-bottom: 1rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  grid-template-columns: 1fr;
+}
+
+.pairingControls nav {
+  display: grid;
+  grid-template-columns: auto repeat(10, minmax(0, 1fr));
+}
+
+.pairingControls nav:last-child {
+  grid-template-columns: auto repeat(20, minmax(0, 1fr));
+}
+
+.pairingControls nav + nav {
+  border-top: 1px solid var(--line);
+}
+
+.pairingControls nav > span {
+  display: grid;
+  min-height: 44px;
+  padding-inline: 0.85rem;
+  align-items: center;
+  color: var(--muted);
+  font: 700 0.62rem/1 ui-monospace, "SFMono-Regular", Menlo, monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.pairingControls button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--line);
+  color: var(--ink);
+  background: transparent;
+  cursor: pointer;
+  font: 700 0.7rem/1 ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
+.pairingControls button:hover,
+.pairingControls button[aria-pressed="true"] {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.liveFrame {
+  overflow: hidden;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 0 2rem 5rem rgb(20 36 58 / 9%);
+}
+
+.explorations {
+  padding-block: clamp(4rem, 8vw, 8rem);
+  border-top: 1px solid var(--ink);
+}
+
+.explorationHeading {
+  margin-bottom: clamp(2.5rem, 5vw, 5rem);
+}
+
+.explorations > ol {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: clamp(2rem, 5vw, 5rem);
+  list-style: none;
+}
+
+.explorationCard {
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.explorationCard > header {
+  display: grid;
+  min-height: 6.25rem;
+  grid-template-columns: 5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.explorationCard > header > span {
+  color: var(--muted);
+  font: 700 0.65rem/1 ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
+.explorationCard h3 {
+  margin: 0 0 0.25rem;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+.explorationCard > header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.explorationCard > header button {
+  min-height: 44px;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  background: transparent;
+  cursor: pointer;
+  font: 700 0.65rem/1 ui-monospace, "SFMono-Regular", Menlo, monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.explorationCard > header button:hover,
+.explorationCard > header button[aria-pressed="true"] {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.explorationCanvas {
+  position: relative;
+  overflow: hidden;
+  background: #f8f6f0;
+}
+
+.header .explorationCanvas {
+  min-height: 10rem;
+}
+
+.hero .explorationCanvas {
+  min-height: 36rem;
+}
+
+.logoLink {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+}
+
+.logo {
+  width: 4.6rem;
+}
+
+/* Shared header controls — Candidate 02 / Cut Corner + Candidate 04 / Gilded Relief */
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.headerControl {
+  flex: 0 0 auto;
+  gap: 0.55rem;
+  white-space: nowrap;
+}
+
+.iconControl {
+  width: 48px;
+  min-width: 48px;
+  padding-inline: 0;
+}
+
+.scheduleControl {
+  min-width: 10.8rem;
+}
+
+.headerIcon {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  stroke: currentColor;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  stroke-width: 1.7;
+}
+
+.gildedControl {
+  --relief-edge: #102b3d;
+  --relief-face: #fffaf0;
+  --relief-depth: #d79d40;
+  --relief-depth-size: 3px;
+  --relief-shape: polygon(8px 0, calc(100% - 8px) 0, calc(100% - 8px) 4px, calc(100% - 4px) 4px, calc(100% - 4px) 8px, 100% 8px, 100% calc(100% - 8px), calc(100% - 4px) calc(100% - 8px), calc(100% - 4px) calc(100% - 4px), calc(100% - 8px) calc(100% - 4px), calc(100% - 8px) 100%, 8px 100%, 8px calc(100% - 4px), 4px calc(100% - 4px), 4px calc(100% - 8px), 0 calc(100% - 8px), 0 8px, 4px 8px, 4px 4px, 8px 4px);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  min-height: 58px;
+  padding: 0 1.05rem var(--relief-depth-size);
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  color: #102b3d;
+  background: linear-gradient(
+    to bottom,
+    var(--relief-edge) 0 calc(100% - var(--relief-depth-size)),
+    var(--relief-depth) calc(100% - var(--relief-depth-size))
+  );
+  clip-path: var(--relief-shape);
+  filter: drop-shadow(0 4px 3px rgb(8 28 43 / 20%));
+  font: 700 0.78rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  text-decoration: none;
+  transform: translateY(0);
+  transition: filter 140ms ease, transform 100ms ease;
+}
+
+.gildedControl::before {
+  position: absolute;
+  z-index: -1;
+  inset: 2px 2px calc(var(--relief-depth-size) + 2px);
+  background: var(--relief-face);
+  clip-path: var(--relief-shape);
+  content: "";
+}
+
+.gildedContent {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.gildedControl.scheduleControl {
+  --relief-edge: #f2c96d;
+  --relief-face: #98221e;
+  --relief-depth: #081c2b;
+  color: #fffaf0;
+}
+
+.gildedControl:hover {
+  filter: drop-shadow(0 7px 4px rgb(8 28 43 / 24%));
+  transform: translateY(-2px);
+}
+
+.gildedControl:active {
+  filter: drop-shadow(0 1px 1px rgb(8 28 43 / 18%));
+  transform: translateY(3px);
+}
+
+.gildedControl:focus-visible {
+  --relief-edge: #fffaf0;
+  outline: 0;
+  filter: drop-shadow(0 0 3px rgb(215 157 64 / 88%)) drop-shadow(0 4px 3px rgb(8 28 43 / 20%));
+}
+
+/* Header 01 — gallery line */
+.header01 {
+  display: grid;
+  min-height: 10rem;
+  padding: 2rem clamp(1.25rem, 4vw, 4rem);
+  border-bottom: 1px solid #d9d4ca;
+  background: #f8f6f0;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 2rem;
+}
+
+.header01 > p {
+  margin: 0;
+  color: var(--muted);
+  font: 700 0.62rem/1.4 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.galleryActions {
+  justify-self: end;
+}
+
+/* Header 02 — split ledger */
+.header02 {
+  display: grid;
+  min-height: 10rem;
+  background: #fffdf7;
+  grid-template-columns: minmax(17rem, 0.7fr) minmax(30rem, 1.3fr);
+}
+
+.ledgerBrand {
+  display: flex;
+  padding: 1.5rem 2rem;
+  align-items: center;
+  gap: 1.2rem;
+  border-right: 1px solid #cfc9bc;
+}
+
+.ledgerBrand p {
+  margin: 0;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: 1.15rem;
+}
+
+.ledgerBrand p span {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font: 600 0.64rem/1.4 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.ledgerActions {
+  display: grid;
+  padding: 1rem;
+  grid-template-columns: repeat(3, 58px) minmax(11rem, 1fr);
+  align-items: center;
+  justify-content: end;
+  gap: 0.75rem;
+}
+
+.ledgerActions .scheduleControl {
+  width: 100%;
+}
+
+/* Header 03 — floating capsule */
+.header03 {
+  display: grid;
+  min-height: 12rem;
+  background:
+    radial-gradient(circle at 50% 100%, #d9b56e 0 1px, transparent 2px),
+    #e9edf0;
+  background-size: 14px 14px;
+  place-items: center;
+}
+
+.capsule {
+  display: grid;
+  width: min(calc(100% - 2rem), 64rem);
+  min-height: 5rem;
+  padding: 0.65rem;
+  border: 1px solid rgb(20 36 58 / 15%);
+  border-radius: 1.25rem;
+  background: rgb(255 255 255 / 90%);
+  box-shadow: 0 1.2rem 3rem rgb(20 36 58 / 12%);
+  backdrop-filter: blur(12px);
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.capsule .logo {
+  width: 3.3rem;
+}
+
+.capsule > span {
+  color: var(--muted);
+  font: 650 0.62rem/1.3 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.capsuleActions {
+  justify-self: end;
+}
+
+/* Header 04 — corner index */
+.header04 {
+  position: relative;
+  display: grid;
+  min-height: 15rem;
+  padding: 1.5rem;
+  background:
+    linear-gradient(90deg, transparent 49.9%, rgb(20 43 59 / 9%) 50%, transparent 50.1%),
+    #f3efe5;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr auto;
+}
+
+.cornerRole {
+  margin: 0;
+  justify-self: end;
+  text-align: right;
+  font: 700 0.68rem/1.5 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cornerActions {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(3, 58px) 1fr;
+  align-self: end;
+  gap: 0.7rem;
+}
+
+.cornerActions .scheduleControl {
+  justify-self: end;
+}
+
+/* Header 05 — editorial masthead */
+.header05 {
+  min-height: 13rem;
+  padding: 1.25rem 2rem 0;
+  color: #1c1c1b;
+  background: #f5f0e3;
+}
+
+.mastheadTitle {
+  display: grid;
+  min-height: 5rem;
+  padding-bottom: 1rem;
+  grid-template-columns: auto 1fr auto;
+  align-items: end;
+  gap: 1.5rem;
+}
+
+.mastheadTitle strong {
+  justify-self: center;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(1.8rem, 4vw, 3.5rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+
+.mastheadTitle > span,
+.mastheadRule > span {
+  font: 700 0.61rem/1 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mastheadRule {
+  display: grid;
+  min-height: 6rem;
+  border-top: 2px solid #1c1c1b;
+  border-bottom: 1px solid #1c1c1b;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mastheadRule > span:last-child {
+  justify-self: end;
+}
+
+.mastheadActions {
+  justify-self: center;
+}
+
+/* Header 06 — status ticker */
+.header06 {
+  min-height: 12rem;
+  color: #f7f3e8;
+  background: #14243a;
+}
+
+.statusLine {
+  display: flex;
+  min-height: 2.5rem;
+  padding-inline: 1.5rem;
+  border-bottom: 1px solid rgb(255 255 255 / 18%);
+  align-items: center;
+  justify-content: space-between;
+  color: #d5d7d4;
+  font: 650 0.61rem/1 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.statusLine i {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-right: 0.5rem;
+  border-radius: 50%;
+  background: #7bd389;
+  box-shadow: 0 0 0 4px rgb(123 211 137 / 12%);
+}
+
+.tickerMain {
+  display: grid;
+  min-height: 9.5rem;
+  padding: 1.25rem 1.5rem;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 2rem;
+}
+
+.tickerMain .logo {
+  filter: brightness(1.1);
+}
+
+.tickerMain > p {
+  margin: 0;
+  color: rgb(255 250 240 / 60%);
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+
+.tickerActions {
+  justify-self: end;
+}
+
+/* Header 07 — solar orbit */
+.header07 {
+  display: grid;
+  min-height: 18rem;
+  padding: 1.5rem 2rem;
+  background: #fffaf0;
+  grid-template-columns: 1fr minmax(25rem, 1.5fr) 1fr;
+  align-items: center;
+}
+
+.header07 > p {
+  margin: 0;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: 1.2rem;
+}
+
+.header07 > p span,
+.orbitNote {
+  color: var(--muted);
+  font: 650 0.62rem/1.4 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.orbitNote {
+  justify-self: end;
+  text-align: right;
+}
+
+.orbit {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 14rem;
+  place-items: center;
+}
+
+.orbitRing {
+  position: absolute;
+  width: 12rem;
+  height: 12rem;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+}
+
+.orbitRing::after {
+  position: absolute;
+  width: 0.65rem;
+  height: 0.65rem;
+  top: -0.35rem;
+  left: 50%;
+  border-radius: 50%;
+  background: var(--red);
+  content: "";
+}
+
+.orbit .logo {
+  width: 4rem;
+}
+
+.orbitActions {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.orbitActions .headerControl {
+  position: absolute;
+}
+
+.orbitActions .headerControl:nth-child(1) { top: 0; left: 12%; }
+.orbitActions .headerControl:nth-child(2) { top: 0.8rem; right: 10%; }
+.orbitActions .headerControl:nth-child(3) { bottom: 0; left: 17%; }
+.orbitActions .scheduleControl { right: 5%; bottom: 0.25rem; }
+
+/* Header 08 — folded ribbon */
+.header08 {
+  position: relative;
+  display: grid;
+  min-height: 13rem;
+  overflow: hidden;
+  padding: 2rem;
+  color: var(--paper);
+  background: var(--ink);
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 2rem;
+}
+
+.header08::after {
+  position: absolute;
+  right: -5%;
+  bottom: -4.5rem;
+  width: 70%;
+  height: 9rem;
+  background: var(--gold);
+  clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+  content: "";
+  transform: rotate(-4deg);
+}
+
+.ribbonBrand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ribbonBrand span {
+  font: 700 0.64rem/1 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ribbonActions {
+  position: relative;
+  z-index: 1;
+  justify-self: end;
+}
+
+/* Header 09 — command strip */
+.header09 {
+  display: grid;
+  min-height: 10rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #2f4438;
+  color: #b8e0c3;
+  background:
+    linear-gradient(90deg, rgb(85 187 121 / 6%) 1px, transparent 1px) 0 0 / 2rem 100%,
+    #0f1713;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 2rem;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
+.commandBrand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.commandBrand .logo {
+  width: 3.5rem;
+  filter: saturate(0.7) brightness(1.2);
+}
+
+.commandBrand code,
+.commandStatus {
+  font-size: 0.7rem;
+}
+
+.commandStatus {
+  color: #55bb79;
+}
+
+.commandStatus::before {
+  margin-right: 0.5rem;
+  content: "●";
+}
+
+.commandActions {
+  justify-self: end;
+}
+
+/* Header 10 — avatar signature */
+.header10 {
+  display: grid;
+  min-height: 12rem;
+  padding: 1.5rem 2rem;
+  background: #f8f6f0;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.signature {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(1.5rem, 3vw, 2.8rem);
+}
+
+.signatureMo {
+  position: relative;
+  padding: 0;
+  border: 0;
+  color: var(--red);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25rem;
+}
+
+.signature small {
+  margin-left: 0.5rem;
+  color: var(--muted);
+  font: 650 0.58rem/1.3 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.signatureAvatar {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 0.6rem);
+  left: 50%;
+  display: block;
+  width: 8rem;
+  overflow: hidden;
+  border: 5px solid white;
+  box-shadow: 0 1.2rem 2rem rgb(20 36 58 / 18%);
+}
+
+.signatureAvatar img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.signatureActions {
+  justify-self: end;
+}
+
+/* Header revamp — identity and contact only */
+.creativeHeader {
+  --header-navy: #142b3b;
+  --header-paper: #f5ebd8;
+  --header-gold: #d79d40;
+  --header-red: #9c1e1b;
+  position: relative;
+  min-height: 10rem;
+  overflow: hidden;
+  color: var(--header-navy);
+  background: var(--header-paper);
+  isolation: isolate;
+}
+
+.creativeHeader .headerControl.iconControl {
+  --edge: #122b3d;
+  --face: #fffaf0;
+  --ink: #122b3d;
+}
+
+.creativeHeader .headerControl.scheduleControl {
+  --edge: #d79d40;
+  --face: #9c1e1b;
+  --ink: #fffaf0;
+}
+
+.navyLogo :global([fill="#122b3d"]) {
+  fill: #122b3d;
+}
+
+.navyLogo :global([fill="#17364a"]) {
+  fill: #17364a;
+}
+
+.navyLogo :global([fill="#0f2636"]) {
+  fill: #0f2636;
+}
+
+.headerSweep {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: rgb(20 43 59 / 22%);
+  transform-origin: left center;
+}
+
+/* 01 — long rail */
+.headerC01 {
+  display: grid;
+  min-height: 10.5rem;
+  padding: 1.5rem;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.headerC01::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--header-gold) 0 20%, transparent 20%);
+  content: "";
+}
+
+.c01Line {
+  align-self: center;
+}
+
+.c01Actions {
+  justify-self: end;
+}
+
+/* 02 — split bay */
+.headerC02 {
+  display: grid;
+  min-height: 11rem;
+  grid-template-columns: 9rem 1fr auto;
+}
+
+.c02LogoBay,
+.c02RuleBay,
+.c02Actions {
+  padding: 1.5rem;
+}
+
+.c02LogoBay {
+  display: grid;
+  border-right: 1px solid rgb(20 43 59 / 16%);
+  place-items: center;
+}
+
+.c02RuleBay {
+  display: flex;
+  align-items: center;
+}
+
+.c02Actions {
+  display: flex;
+  border-left: 1px solid rgb(20 43 59 / 16%);
+  align-items: center;
+  justify-content: end;
+}
+
+/* 03 — framed dock */
+.headerC03 {
+  display: grid;
+  min-height: 13rem;
+  padding: 1rem 1.5rem;
+  grid-template-rows: 1fr auto 1fr;
+}
+
+.c03TopLine {
+  align-self: end;
+}
+
+.c03Dock {
+  display: grid;
+  padding: 1.4rem;
+  border-right: 1px solid rgb(20 43 59 / 18%);
+  border-left: 1px solid rgb(20 43 59 / 18%);
+  background: rgb(255 250 240 / 50%);
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 2rem;
+}
+
+.c03Actions {
+  justify-self: end;
+}
+
+.c03BottomLine {
+  align-self: start;
+}
+
+/* 04 — cross axis */
+.headerC04 {
+  display: grid;
+  min-height: 13rem;
+  padding: 1.5rem;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr auto;
+}
+
+.c04Horizontal,
+.c04Vertical {
+  position: absolute;
+  z-index: -1;
+}
+
+.c04Horizontal {
+  top: 50%;
+  right: 1.5rem;
+  left: 1.5rem;
+  width: auto;
+}
+
+.c04Vertical {
+  top: 1.5rem;
+  bottom: 1.5rem;
+  left: 50%;
+  width: 1px;
+  height: auto;
+  transform-origin: center top;
+}
+
+.c04Actions {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: end;
+  justify-self: end;
+}
+
+/* 05 — double rule */
+.headerC05 {
+  display: grid;
+  min-height: 12rem;
+  padding: 1.25rem 1.5rem;
+  grid-template-rows: auto 1fr auto;
+}
+
+.c05TopLine,
+.c05BottomLine {
+  height: 3px;
+  background:
+    linear-gradient(
+      to bottom,
+      rgb(20 43 59 / 28%) 0 1px,
+      transparent 1px 2px,
+      rgb(20 43 59 / 18%) 2px 3px
+    );
+}
+
+.c05Main {
+  display: grid;
+  padding-block: 1.25rem;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+}
+
+.c05Actions {
+  grid-column: 3;
+  justify-self: end;
+}
+
+/* 06 — preferred ruled structure */
+.headerC06 {
+  min-height: 11.5rem;
+}
+
+.c06Rule {
+  display: flex;
+  min-height: 2.8rem;
+  padding-inline: 1.5rem;
+  align-items: end;
+}
+
+.c06Line {
+  transform-origin: right center;
+}
+
+.c06Main {
+  display: grid;
+  min-height: 8.7rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 2px solid rgb(20 43 59 / 7%);
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 2rem;
+}
+
+.c06Actions {
+  grid-column: 3;
+  justify-self: end;
+}
+
+/* 07 — solar line */
+.headerC07 {
+  display: grid;
+  min-height: 12rem;
+  padding: 1.5rem;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.c07Line {
+  position: absolute;
+  top: 50%;
+  right: 1.5rem;
+  left: 1.5rem;
+  width: auto;
+  background: linear-gradient(90deg, transparent, rgb(20 43 59 / 24%) 12% 88%, transparent);
+}
+
+.c07Solar {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 7rem;
+  height: 7rem;
+  background: var(--header-paper);
+  border: 1px solid var(--header-gold);
+  border-radius: 50%;
+  grid-column: 2;
+  place-items: center;
+}
+
+.c07Solar .logo {
+  width: 3.5rem;
+}
+
+.c07Actions {
+  position: relative;
+  z-index: 1;
+  grid-column: 3;
+  justify-self: end;
+}
+
+/* 08 — stepped shelf */
+.headerC08 {
+  min-height: 12rem;
+}
+
+.c08Top {
+  display: grid;
+  min-height: 4.8rem;
+  padding: 1rem 1.5rem;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.c08Line {
+  transform-origin: right center;
+}
+
+.c08Shelf {
+  display: flex;
+  min-height: 7.2rem;
+  padding: 1.25rem 1.5rem;
+  background: #e4d3b5;
+  clip-path: polygon(0 0, 47% 0, 47% 5px, 53% 5px, 53% 0, 100% 0, 100% 100%, 0 100%);
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.c08Actions {
+  margin-left: auto;
+}
+
+/* 09 — grid rail */
+.headerC09 {
+  display: grid;
+  min-height: 10.5rem;
+  padding: 1.25rem 1.5rem;
+  background:
+    linear-gradient(90deg, rgb(20 43 59 / 4%) 1px, transparent 1px) 0 0 / 2rem 100%,
+    var(--header-paper);
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.c09Actions {
+  grid-column: 3;
+  justify-self: end;
+}
+
+/* 10 — inset frame */
+.headerC10 {
+  min-height: 13rem;
+  padding: 1.25rem;
+}
+
+.c10Frame {
+  display: grid;
+  min-height: 10.5rem;
+  padding: 1.5rem;
+  border: 1px solid rgb(20 43 59 / 20%);
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.5rem;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+
+.c10Actions {
+  grid-column: 3;
+  justify-self: end;
+}
+
+@media (max-width: 52rem) {
+  .headerC01,
+  .headerC02,
+  .headerC03,
+  .headerC05,
+  .headerC06,
+  .headerC07,
+  .headerC08,
+  .headerC09,
+  .c10Frame {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .headerC01,
+  .headerC03,
+  .headerC05,
+  .headerC07,
+  .headerC09 {
+    padding: 1.25rem;
+  }
+
+  .c01Actions,
+  .c03Actions,
+  .c04Actions,
+  .c05Actions,
+  .c06Actions,
+  .c07Actions,
+  .c09Actions,
+  .c10Actions {
+    grid-column: 1;
+    justify-self: stretch;
+  }
+
+  .headerC02 {
+    padding: 1.25rem;
+  }
+
+  .c02LogoBay,
+  .c02RuleBay,
+  .c02Actions {
+    padding: 0;
+    border: 0;
+  }
+
+  .c02LogoBay {
+    place-items: start;
+  }
+
+  .c02Actions {
+    justify-content: stretch;
+  }
+
+  .c03Dock,
+  .c05Main,
+  .c06Main,
+  .headerC09,
+  .c10Frame {
+    grid-template-columns: 1fr;
+  }
+
+  .c03Dock,
+  .c10Frame {
+    gap: 1.25rem;
+  }
+
+  .headerC04 {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .c05Actions {
+    margin-top: 1rem;
+  }
+
+  .c06Main {
+    min-height: auto;
+  }
+
+  .headerC07 {
+    min-height: 17rem;
+  }
+
+  .c07Solar {
+    grid-column: 1;
+    justify-self: center;
+  }
+
+  .c08Shelf {
+    justify-content: stretch;
+  }
+
+  .c08Actions {
+    width: 100%;
+  }
+}
+
+/* Unified V1 structure — ten interaction studies */
+.minimalHeader {
+  --header-motion: cubic-bezier(0.16, 1, 0.3, 1);
+  display: grid;
+  min-height: 8.75rem;
+  padding: 1rem 1.25rem;
+  background: #f5ebd8;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.minimalHeader > .logoLink,
+.minimalHeader > .headerActions {
+  position: relative;
+  z-index: 2;
+}
+
+.minimalHeader > .headerActions {
+  grid-column: 3;
+  justify-self: end;
+}
+
+/* Emil-inspired button-only hover studies */
+.minimalHeader .iconControl {
+  transform-origin: center;
+  transition:
+    color 160ms var(--header-motion),
+    filter 160ms var(--header-motion),
+    box-shadow 160ms var(--header-motion),
+    transform 160ms var(--header-motion);
+}
+
+.minimalHeader .iconControl::before {
+  transition: background-color 160ms var(--header-motion);
+}
+
+.headerV01 .iconControl:hover {
+  --edge: #d79d40;
+  filter: drop-shadow(0 3px 0 rgb(20 43 59 / 12%));
+  transform: translateY(-2px);
+}
+
+.headerV02 .iconControl:hover {
+  --edge: #122b3d;
+  --face: #f1d7a7;
+  transform: translateY(-1px);
+}
+
+.headerV03 .iconControl:hover {
+  --edge: #d79d40;
+  transform: scale(1.035);
+}
+
+.headerV04 .iconControl:hover {
+  --edge: #122b3d;
+  box-shadow: 0 4px 0 rgb(20 43 59 / 14%);
+  transform: translateY(-2px);
+}
+
+.headerV05 .iconControl:hover {
+  --edge: #d79d40;
+  filter: drop-shadow(0 0 6px rgb(215 157 64 / 34%));
+  transform: none;
+}
+
+.headerV06 .iconControl:hover {
+  --edge: #d79d40;
+  transform: translateY(-1px) rotate(-1deg);
+}
+
+.headerV07 .iconControl:hover {
+  --edge: #d79d40;
+  --face: #122b3d;
+  --ink: #fffaf0;
+  transform: none;
+}
+
+.headerV08 .iconControl:hover {
+  --edge: #9c1e1b;
+  transform: translateY(-1px);
+}
+
+.headerV09 .iconControl:hover {
+  --edge: #122b3d;
+  --face: #eadcc2;
+  box-shadow: 3px 3px 0 rgb(215 157 64 / 62%);
+  transform: translate(-1px, -1px);
+}
+
+.headerV10 .iconControl:hover {
+  --edge: #d79d40;
+  filter: drop-shadow(0 2px 2px rgb(20 43 59 / 12%));
+  transform: translateY(-1px) scale(1.02);
+}
+
+.minimalHeader .iconControl:active {
+  --edge: #9c1e1b;
+  filter: none;
+  box-shadow: none;
+  transform: scale(0.97);
+}
+
+.minimalHeader .scheduleControl {
+  transition: none;
+}
+
+.minimalHeader .scheduleControl:is(:hover, :active) {
+  --edge: #d79d40;
+  --face: #9c1e1b;
+  --ink: #fffaf0;
+  filter: none;
+  transform: none;
+}
+
+.headerV09 .headerIcon {
+  width: 1.15rem;
+  height: 1.15rem;
+  stroke-width: 1.8;
+}
+
+.headerV09 .scheduleControl {
+  transition:
+    filter 160ms var(--header-motion),
+    transform 160ms var(--header-motion);
+}
+
+.headerV09 .scheduleControl:hover {
+  filter: drop-shadow(3px 3px 0 rgb(20 43 59 / 78%));
+  transform: translate(-2px, -2px);
+}
+
+.headerV09 .scheduleControl:active {
+  filter: drop-shadow(1px 1px 0 rgb(20 43 59 / 78%));
+  transform: scale(0.98);
+}
+
+@media (max-width: 36rem) {
+  .minimalHeader {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+
+  .minimalHeader > .headerActions {
+    grid-column: 1;
+    justify-self: stretch;
+  }
+}
+
+/* Shared hero */
+.heroRole {
+  margin: 0;
+  color: var(--muted);
+  font: 700 0.66rem/1.35 ui-monospace, "SFMono-Regular", Menlo, monospace;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.heroBio {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.heroActions > span {
+  color: var(--muted);
+  font: 650 0.62rem/1 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Hero 01 — hover portrait */
+.hero01 {
+  display: grid;
+  min-height: 38rem;
+  padding: clamp(2rem, 7vw, 7rem);
+  align-content: center;
+  color: var(--ink);
+  background: #f6f2e9;
+  grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
+}
+
+.hero01 h2 {
+  margin: 0.5rem 0;
+  grid-column: 1;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(3.6rem, 8vw, 8.5rem);
+  font-weight: 500;
+  letter-spacing: -0.075em;
+  line-height: 0.9;
+}
+
+.hero01 .heroBio {
+  max-width: 40ch;
+  grid-column: 2;
+  grid-row: 2;
+  align-self: center;
+  font-size: 1.05rem;
+}
+
+.hero01 .heroActions {
+  margin-top: 2rem;
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.avatarWord {
+  position: relative;
+  display: inline;
+  padding: 0 0.05em;
+  border: 0;
+  color: var(--red);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 0.045em;
+  text-underline-offset: 0.08em;
+}
+
+.avatarWordImage {
+  position: absolute;
+  z-index: 4;
+  bottom: 82%;
+  left: 52%;
+  display: block;
+  width: clamp(9rem, 18vw, 15rem);
+  padding: 0.35rem;
+  border: 1px solid var(--ink);
+  background: white;
+  box-shadow: 0 1.5rem 3rem rgb(20 36 58 / 18%);
+}
+
+.avatarWordImage img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.avatarWordImage small {
+  display: block;
+  padding: 0.35rem 0.15rem 0.1rem;
+  color: var(--muted);
+  font: 700 0.55rem/1 ui-monospace, Menlo, monospace;
+  text-align: left;
+}
+
+/* Hero 02 — split manifesto */
+.hero02 {
+  position: relative;
+  display: grid;
+  min-height: 40rem;
+  overflow: hidden;
+  color: #fffaf0;
+  background: #9f3732;
+  grid-template-columns: minmax(13rem, 0.38fr) minmax(0, 0.62fr);
+}
+
+.splitRole {
+  display: flex;
+  padding: 3rem;
+  border-right: 1px solid rgb(255 255 255 / 35%);
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.splitRole span {
+  font: 700 0.7rem/1 ui-monospace, Menlo, monospace;
+}
+
+.splitRole p {
+  margin: 0;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(1.5rem, 2.8vw, 2.7rem);
+  line-height: 1.05;
+}
+
+.splitCopy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  padding: clamp(3rem, 7vw, 7rem);
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.splitCopy > p {
+  max-width: 33ch;
+  margin: 0 0 2rem;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(1.65rem, 3.2vw, 3.2rem);
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+
+.splitWord {
+  position: absolute;
+  right: -0.04em;
+  bottom: -0.23em;
+  margin: 0;
+  color: rgb(255 255 255 / 8%);
+  font-size: clamp(8rem, 25vw, 24rem);
+  font-weight: 900;
+  letter-spacing: -0.08em;
+  line-height: 0.75;
+}
+
+/* Hero 03 — type stack */
+.hero03 {
+  position: relative;
+  min-height: 40rem;
+  overflow: hidden;
+  color: #f9f4e8;
+  background: #13273a;
+}
+
+.stackWords {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  opacity: 0.16;
+  font-size: clamp(5rem, 14vw, 13rem);
+  font-weight: 900;
+  letter-spacing: -0.08em;
+  line-height: 0.7;
+}
+
+.stackWords span:nth-child(2) {
+  margin-left: 15%;
+  color: var(--gold);
+}
+
+.stackWords span:nth-child(3) {
+  margin-left: 34%;
+  color: var(--red);
+}
+
+.stackCopy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-height: 40rem;
+  padding: clamp(2rem, 7vw, 7rem);
+  grid-template-columns: 1fr minmax(18rem, 0.55fr);
+  align-items: end;
+  gap: 3rem;
+}
+
+.stackCopy .heroRole {
+  align-self: start;
+  color: #d5d0c6;
+}
+
+.stackCopy > p:nth-child(2) {
+  max-width: 42ch;
+  margin: 0;
+  grid-column: 2;
+  color: #e2ddd2;
+  line-height: 1.65;
+}
+
+.stackCopy > a {
+  grid-column: 2;
+}
+
+/* Hero 04 — contact sheet */
+.hero04 {
+  display: grid;
+  min-height: 42rem;
+  padding: clamp(2rem, 6vw, 6rem);
+  background: #fffdf8;
+  grid-template-columns: minmax(17rem, 0.7fr) minmax(0, 1.3fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 6rem);
+}
+
+.contactCopy h2 {
+  margin: 0.6rem 0 1.4rem;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(2.6rem, 5vw, 5.2rem);
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  line-height: 0.94;
+}
+
+.contactCopy > p:nth-of-type(2) {
+  max-width: 40ch;
+  margin-bottom: 2rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.avatarSheet {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.avatarSheet img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid #dad4c9;
+  object-fit: cover;
+  transform-origin: center;
+}
+
+/* Hero 05 — terminal */
+.hero05 {
+  min-height: 38rem;
+  padding: clamp(1.5rem, 5vw, 5rem);
+  color: #b7dfc2;
+  background: #0b110e;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
+.terminalTop {
+  display: flex;
+  min-height: 3.5rem;
+  padding-inline: 1rem;
+  border: 1px solid #30443a;
+  align-items: center;
+  gap: 0.5rem;
+  background: #111a15;
+}
+
+.terminalTop > span {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: #d05a50;
+}
+
+.terminalTop > span:nth-child(2) { background: #d5a843; }
+.terminalTop > span:nth-child(3) { background: #57b976; }
+.terminalTop code { margin-left: auto; color: #7f9f88; font-size: 0.7rem; }
+
+.terminalBody {
+  min-height: 26rem;
+  padding: clamp(2rem, 5vw, 4.5rem);
+  border: 1px solid #30443a;
+  border-top: 0;
+  background:
+    linear-gradient(rgb(85 185 118 / 4%) 1px, transparent 1px),
+    #0d1510;
+  background-size: 100% 1.8rem;
+}
+
+.terminalBody code,
+.terminalBody p {
+  display: block;
+  max-width: 80ch;
+  margin: 0 0 1rem;
+  font-size: clamp(0.8rem, 1.6vw, 1.12rem);
+  line-height: 1.65;
+}
+
+.terminalBody code span,
+.terminalBody b {
+  color: #e1a93f;
+}
+
+.terminalBody > a {
+  margin-top: 2rem;
+}
+
+/* Hero 06 — editorial profile */
+.hero06 {
+  position: relative;
+  display: grid;
+  min-height: 42rem;
+  padding: clamp(2rem, 6vw, 6rem);
+  background: #f1ede3;
+  grid-template-columns: minmax(14rem, 0.45fr) minmax(0, 0.55fr);
+  align-items: center;
+  gap: clamp(2rem, 7vw, 7rem);
+}
+
+.hero06 figure {
+  margin: 0;
+}
+
+.hero06 figure img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  filter: grayscale(1) contrast(1.03);
+  object-fit: cover;
+}
+
+.hero06 figcaption {
+  padding-top: 0.65rem;
+  color: var(--muted);
+  font: 650 0.62rem/1 ui-monospace, Menlo, monospace;
+  text-transform: uppercase;
+}
+
+.editorialCopy h2 {
+  max-width: 9ch;
+  margin: 0.7rem 0 1.4rem;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(3rem, 6vw, 6.2rem);
+  font-weight: 500;
+  letter-spacing: -0.06em;
+  line-height: 0.9;
+}
+
+.editorialCopy > p:nth-of-type(2) {
+  max-width: 43ch;
+  margin-bottom: 2rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.editorialFolio {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 1rem;
+  color: #a9a59d;
+  font: 650 0.62rem/1 ui-monospace, Menlo, monospace;
+}
+
+/* Hero 07 — solar portrait */
+.hero07 {
+  display: grid;
+  min-height: 42rem;
+  overflow: hidden;
+  color: #fff8e9;
+  background: #9d332f;
+  grid-template-columns: minmax(18rem, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+}
+
+.solarPortrait {
+  position: relative;
+  display: grid;
+  min-height: 42rem;
+  place-items: center;
+}
+
+.solarPortrait > span {
+  position: absolute;
+  width: min(30vw, 24rem);
+  aspect-ratio: 1;
+  border: 1px solid #e0ac47;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 2rem rgb(224 172 71 / 8%),
+    0 0 0 4rem rgb(224 172 71 / 5%);
+}
+
+.solarPortrait img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(70%, 23rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.solarPortrait small {
+  position: absolute;
+  z-index: 2;
+  right: 7%;
+  bottom: 12%;
+  font: 700 0.64rem/1.3 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.solarCopy {
+  padding: clamp(2rem, 7vw, 7rem);
+}
+
+.solarCopy .heroRole {
+  color: #eedbc0;
+}
+
+.solarCopy h2 {
+  max-width: 10ch;
+  margin: 0.7rem 0 1.4rem;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(3rem, 6vw, 6.2rem);
+  font-weight: 500;
+  letter-spacing: -0.06em;
+  line-height: 0.9;
+}
+
+.solarCopy > p:nth-of-type(2) {
+  max-width: 42ch;
+  margin-bottom: 2rem;
+  color: #f2dfcc;
+  line-height: 1.65;
+}
+
+/* Hero 08 — modular blocks */
+.hero08 {
+  display: grid;
+  min-height: 44rem;
+  padding: clamp(1rem, 2vw, 2rem);
+  color: var(--ink);
+  background: #ddd8ce;
+  grid-template-columns: 1.1fr 0.55fr 0.7fr;
+  grid-template-rows: 1fr 0.65fr;
+  gap: 0.75rem;
+}
+
+.moduleTitle,
+.moduleRole,
+.moduleBio,
+.moduleAvatar,
+.moduleCall {
+  border: 1px solid #c5beb2;
+  background: #fffdf7;
+}
+
+.moduleTitle {
+  padding: clamp(2rem, 5vw, 5rem);
+  grid-column: 1 / 3;
+}
+
+.moduleTitle h2 {
+  margin: 0.7rem 0 0;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(2.6rem, 5vw, 5.5rem);
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  line-height: 0.92;
+}
+
+.moduleRole {
+  display: flex;
+  padding: 2rem;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.moduleRole span {
+  color: var(--muted);
+  font: 650 0.62rem/1 ui-monospace, Menlo, monospace;
+  text-transform: uppercase;
+}
+
+.moduleRole strong {
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.moduleBio {
+  margin: 0;
+  padding: 2rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.moduleAvatar {
+  overflow: hidden;
+}
+
+.moduleAvatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.moduleCall {
+  align-self: stretch;
+}
+
+/* Hero 09 — layered cards */
+.hero09 {
+  position: relative;
+  display: grid;
+  min-height: 43rem;
+  padding: clamp(3rem, 7vw, 7rem);
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgb(20 36 58 / 6%) 1px, transparent 1px),
+    linear-gradient(rgb(20 36 58 / 6%) 1px, transparent 1px),
+    #e7e2d8;
+  background-size: 2rem 2rem;
+  grid-template-columns: minmax(15rem, 0.5fr) minmax(20rem, 0.65fr);
+  place-content: center;
+}
+
+.layerPortrait {
+  position: relative;
+  z-index: 2;
+  margin: 0 -2rem 0 0;
+  border: 0.75rem solid #fffdf7;
+  background: white;
+  box-shadow: 0 2rem 4rem rgb(20 36 58 / 18%);
+}
+
+.layerPortrait img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.layerCopy {
+  position: relative;
+  z-index: 1;
+  padding: clamp(2rem, 5vw, 5rem);
+  color: #f9f4e8;
+  background: var(--ink);
+  box-shadow: 0 2rem 4rem rgb(20 36 58 / 17%);
+}
+
+.layerCopy .heroRole {
+  color: #c7c5bf;
+}
+
+.layerCopy h2 {
+  margin: 0.8rem 0 1rem;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(2.8rem, 5vw, 5rem);
+  font-weight: 500;
+  letter-spacing: -0.055em;
+}
+
+.layerCopy > p:nth-of-type(2) {
+  color: #d6d3cb;
+  line-height: 1.65;
+}
+
+.layerNote {
+  position: absolute;
+  right: 3rem;
+  bottom: 2rem;
+  color: var(--muted);
+  font: 650 0.62rem/1 ui-monospace, Menlo, monospace;
+  text-transform: uppercase;
+}
+
+/* Hero 10 — quiet signal */
+.hero10 {
+  position: relative;
+  display: grid;
+  min-height: 44rem;
+  overflow: hidden;
+  padding: clamp(2rem, 5vw, 5rem);
+  background: #faf8f2;
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+}
+
+.quietMonogram {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  margin: 0;
+  color: #ece7dc;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(14rem, 38vw, 38rem);
+  letter-spacing: -0.15em;
+  line-height: 0.6;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.quietRole {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-self: start;
+  justify-content: space-between;
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font: 650 0.64rem/1 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.quietCopy {
+  position: relative;
+  z-index: 1;
+  max-width: 39rem;
+  padding: 2rem;
+  border-left: 2px solid var(--red);
+  grid-column: 2;
+  background: rgb(250 248 242 / 78%);
+  backdrop-filter: blur(5px);
+}
+
+.quietCopy p {
+  margin: 0 0 2rem;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(1.2rem, 2vw, 1.7rem);
+  line-height: 1.45;
+}
+
+/* Hero 11 — manifesto portrait */
+.hero11 {
+  position: relative;
+  display: grid;
+  min-height: 42rem;
+  padding: clamp(2rem, 6vw, 6rem);
+  overflow: hidden;
+  background: #f4ebd9;
+  grid-template-columns: minmax(0, 1.25fr) minmax(17rem, 0.75fr);
+  grid-template-rows: auto 1fr;
+  gap: 3rem;
+}
+
+.hero11Index {
+  margin: 0;
+  grid-column: 1;
+  grid-row: 1;
+  color: var(--muted);
+  font: 700 0.65rem/1 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero11Title {
+  align-self: end;
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.hero11Title > span {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--red);
+  font: 700 0.68rem/1 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.hero11Title h2 {
+  max-width: 10ch;
+  margin: 0;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(4rem, 8.5vw, 8.5rem);
+  font-weight: 500;
+  letter-spacing: -0.075em;
+  line-height: 0.82;
+}
+
+.hero11Copy {
+  align-self: end;
+  padding: 2rem 0 0 2rem;
+  border-left: 1px solid var(--ink);
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.hero11Copy p {
+  max-width: 37ch;
+  margin: 0 0 2rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.hero11Rule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0.55rem;
+  height: 100%;
+  background: var(--red);
+}
+
+/* Hero 12 — cut type */
+.hero12 {
+  position: relative;
+  display: grid;
+  min-height: 43rem;
+  padding: clamp(2rem, 5vw, 5rem);
+  overflow: hidden;
+  color: #fffaf0;
+  background: #102b43;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.42fr);
+  grid-template-rows: 1fr auto;
+}
+
+.hero12Words {
+  position: absolute;
+  inset: 1rem 0 auto;
+  display: grid;
+  margin: 0;
+  color: transparent;
+  font-size: clamp(6rem, 17vw, 16rem);
+  font-weight: 900;
+  letter-spacing: -0.085em;
+  line-height: 0.68;
+  -webkit-text-stroke: 1px rgb(255 250 240 / 52%);
+}
+
+.hero12Words span:nth-child(2) {
+  padding-left: 13%;
+  color: #d49c38;
+  -webkit-text-stroke: 0;
+}
+
+.hero12Words span:nth-child(3) {
+  padding-left: 28%;
+  color: #a33832;
+  -webkit-text-stroke: 0;
+}
+
+.hero12Portrait {
+  position: relative;
+  z-index: 2;
+  align-self: center;
+  margin: 0;
+  grid-column: 2;
+  grid-row: 1 / -1;
+  transform: rotate(2deg);
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero12Portrait:hover {
+  transform: rotate(0) translateY(-5px);
+}
+
+.hero12Portrait img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border: 0.5rem solid #fffaf0;
+  object-fit: cover;
+}
+
+.hero12Portrait figcaption {
+  padding-top: 0.65rem;
+  color: #d8d5ce;
+  font: 650 0.6rem/1 ui-monospace, Menlo, monospace;
+  text-transform: uppercase;
+}
+
+.hero12Copy {
+  position: relative;
+  z-index: 2;
+  align-self: end;
+  max-width: 35rem;
+  padding: 1.5rem;
+  background: rgb(16 43 67 / 88%);
+  backdrop-filter: blur(5px);
+}
+
+.hero12Copy p {
+  margin: 0 0 1.5rem;
+  color: #dedbd3;
+  line-height: 1.6;
+}
+
+/* Hero 13 — folded introduction */
+.hero13 {
+  display: grid;
+  min-height: 43rem;
+  padding: clamp(2rem, 6vw, 6rem);
+  overflow: hidden;
+  background: #dce4df;
+  grid-template-columns: minmax(0, 0.8fr) minmax(22rem, 1.2fr);
+  align-items: center;
+  gap: clamp(3rem, 7vw, 8rem);
+}
+
+.hero13Intro h2 {
+  max-width: 9ch;
+  margin: 0.75rem 0 0;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(3.5rem, 6.5vw, 7rem);
+  font-weight: 500;
+  letter-spacing: -0.065em;
+  line-height: 0.88;
+}
+
+.hero13Stack {
+  position: relative;
+  display: grid;
+  min-height: 31rem;
+  align-items: center;
+}
+
+.hero13Portrait {
+  position: absolute;
+  z-index: 2;
+  top: 1rem;
+  left: 0;
+  width: min(48%, 18rem);
+  margin: 0;
+  border: 0.65rem solid #fffdf7;
+  background: #fffdf7;
+  box-shadow: 0 1.5rem 3rem rgb(20 36 58 / 18%);
+  transform: rotate(-2deg);
+}
+
+.hero13Portrait img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.hero13Card {
+  position: relative;
+  z-index: 1;
+  width: 76%;
+  min-height: 22rem;
+  margin-left: auto;
+  padding: clamp(2rem, 4vw, 4rem);
+  color: #fffaf0;
+  background: var(--red);
+  box-shadow: 0 1.5rem 3rem rgb(20 36 58 / 16%);
+  transform: rotate(2deg);
+}
+
+.hero13Card p {
+  margin: 0 0 2rem;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(1.15rem, 2vw, 1.75rem);
+  line-height: 1.48;
+}
+
+/* Hero 14 — glyph workshop */
+.hero14 {
+  position: relative;
+  display: grid;
+  min-height: 42rem;
+  overflow: hidden;
+  color: #102b43;
+  background: #102b43;
+  grid-template-columns: minmax(21rem, 0.58fr) minmax(0, 1fr);
+}
+
+.hero14Heading {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  padding: clamp(1.25rem, 2.5vw, 2.5rem);
+  background: #102b43;
+  grid-template-rows: 1fr;
+}
+
+.hero14Identity {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  min-height: 72px;
+  padding-bottom: 1rem;
+  align-items: center;
+  border-bottom: 1px solid rgb(16 43 67 / 24%);
+}
+
+.hero14Identity .logo {
+  width: 5.8rem;
+}
+
+.hero14Socials {
+  display: flex;
+  width: fit-content;
+  margin-top: 1.35rem;
+  padding-top: 1.15rem;
+  align-items: center;
+  border-top: 1px solid rgb(16 43 67 / 18%);
+  gap: 0.45rem;
+}
+
+.hero14Social {
+  --edge: #102b43;
+  --face: #fffaf0;
+  --ink: #102b43;
+  width: 48px;
+  min-width: 48px;
+  padding-inline: 0;
+}
+
+.hero14Social:hover {
+  --edge: #122b3d;
+  --face: #eadcc2;
+  box-shadow: 3px 3px 0 rgb(215 157 64 / 62%);
+  filter: none;
+  transform: translate(-1px, -1px);
+}
+
+.hero14Social .headerIcon {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.hero14Workshop {
+  display: grid;
+  height: 100%;
+  min-height: 33rem;
+  grid-template-rows: auto 1fr auto;
+}
+
+.hero14WorkshopHeader {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  color: #aeb8bf;
+  font: 750 0.62rem/1 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hero14WorkshopHeader button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 0.25rem;
+  border: 0;
+  color: #fffaf0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3rem;
+}
+
+.hero14Stage {
+  position: relative;
+  min-height: 26rem;
+  overflow: hidden;
+  background:
+    radial-gradient(circle, rgb(255 250 240 / 14%) 1px, transparent 1.5px);
+  background-size: 1.35rem 1.35rem;
+  isolation: isolate;
+}
+
+.hero14Guide {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: transparent;
+  font-size: clamp(12rem, 24vw, 24rem);
+  font-weight: 900;
+  letter-spacing: -0.16em;
+  line-height: 0.6;
+  opacity: 0.22;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  -webkit-text-stroke: 1px #fffaf0;
+}
+
+.hero14Piece {
+  position: absolute;
+  z-index: 2;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  cursor: grab;
+  touch-action: none;
+  filter: drop-shadow(0 1rem 1.2rem rgb(0 0 0 / 22%));
+  transition: filter 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero14Piece:hover {
+  z-index: 4;
+  filter: drop-shadow(0 1.35rem 1.5rem rgb(0 0 0 / 32%)) brightness(1.04);
+}
+
+.hero14Piece:active {
+  cursor: grabbing;
+}
+
+.hero14Piece > span {
+  position: absolute;
+  top: 0.55rem;
+  left: 0.65rem;
+  color: #102b43;
+  font: 750 0.55rem/1 ui-monospace, Menlo, monospace;
+  pointer-events: none;
+}
+
+.hero14PieceM {
+  top: 15%;
+  left: 8%;
+  width: clamp(10rem, 24vw, 23rem);
+  height: clamp(14rem, 27vw, 25rem);
+  background: #f5e6c6;
+  clip-path: polygon(0 0, 29% 0, 50% 31%, 71% 0, 100% 0, 100% 100%, 70% 100%, 70% 47%, 50% 73%, 30% 47%, 30% 100%, 0 100%);
+}
+
+.hero14PieceO {
+  top: 32%;
+  right: 10%;
+  width: clamp(8rem, 16vw, 15rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #f5e6c6;
+}
+
+.hero14PieceO::after {
+  position: absolute;
+  inset: 29%;
+  border-radius: inherit;
+  background: #102b43;
+  content: "";
+  pointer-events: none;
+}
+
+.hero14PieceSun {
+  top: 11%;
+  right: 17%;
+  width: clamp(3.75rem, 6vw, 5.75rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #9f3732;
+}
+
+.hero14PieceSun::after {
+  position: absolute;
+  inset: 42%;
+  border: 1px solid #fffaf0;
+  border-radius: inherit;
+  content: "";
+  pointer-events: none;
+}
+
+.hero14PieceSun > span {
+  color: #fffaf0;
+}
+
+.hero14PieceStep {
+  right: 22%;
+  bottom: 8%;
+  width: clamp(8.5rem, 14vw, 13rem);
+  height: clamp(3.75rem, 6vw, 5.5rem);
+  border: 2px solid #9f3732;
+  background: #fffaf0;
+  clip-path: polygon(0 0, 82% 0, 100% 38%, 100% 100%, 18% 100%, 0 62%);
+}
+
+.hero14PieceStep > span {
+  color: #102b43;
+}
+
+.hero14WorkshopHint {
+  position: relative;
+  z-index: 5;
+  margin: 0;
+  color: #aeb8bf;
+  font: 650 0.58rem/1.4 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hero14Copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  padding: clamp(1.25rem, 2.5vw, 2.5rem);
+  background: #f5ebd8;
+  grid-template-rows: auto 1fr;
+}
+
+.hero14CopyBody {
+  display: flex;
+  padding: clamp(2rem, 4vw, 4rem) clamp(0.5rem, 1.5vw, 1.5rem);
+  justify-content: center;
+  flex-direction: column;
+}
+
+.hero14Copy .heroRole {
+  margin-bottom: 1.25rem;
+  color: #6d716e;
+}
+
+.hero14Title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  margin: -1px;
+  white-space: nowrap;
+}
+
+.hero14CopyBody > p:last-of-type {
+  max-width: 36ch;
+  margin: 0 0 2rem;
+  color: #3f4c52;
+  font-size: clamp(1rem, 1.35vw, 1.22rem);
+  line-height: 1.68;
+}
+
+.hero14MoWord {
+  position: relative;
+  display: inline;
+  min-width: 44px;
+  min-height: 44px;
+  margin: -0.7rem -0.45rem;
+  padding: 0.7rem 0.45rem;
+  border: 0;
+  color: #9f3732;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 850;
+  line-height: inherit;
+  text-align: left;
+}
+
+.hero14MoLabel {
+  position: relative;
+  z-index: 2;
+  text-decoration-line: underline;
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.12em;
+}
+
+.hero14MoWord:focus-visible {
+  outline: 2px solid #102b43;
+  outline-offset: 2px;
+}
+
+.hero14PortraitDeck {
+  position: absolute;
+  z-index: 20;
+  top: -5.6rem;
+  left: calc(100% + 0.8rem);
+  display: block;
+  width: clamp(10.5rem, 17vw, 14rem);
+  aspect-ratio: 4 / 5;
+  padding: 0.5rem 0.5rem 1.8rem;
+  color: #102b43;
+  background: #fffaf0;
+  box-shadow:
+    0 0 0 1px rgb(16 43 67 / 10%),
+    0 1.5rem 3rem rgb(16 43 67 / 24%);
+  pointer-events: none;
+  transform-origin: left center;
+}
+
+.hero14PortraitDeck::before {
+  position: absolute;
+  z-index: -1;
+  inset: -1.4rem;
+  border: 1px solid rgb(159 55 50 / 45%);
+  border-radius: 50%;
+  content: "";
+}
+
+.hero14PortraitDeck img {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  display: block;
+  width: calc(100% - 1rem);
+  height: calc(100% - 2.3rem);
+  border: 0.38rem solid #fffaf0;
+  object-fit: cover;
+  box-shadow: 0 0.45rem 1rem rgb(16 43 67 / 20%);
+}
+
+.hero14PortraitBackLeft {
+  z-index: -1;
+  opacity: 0.72;
+  transform: translate(-22%, 5%) rotate(-9deg);
+}
+
+.hero14PortraitBackRight {
+  z-index: -1;
+  opacity: 0.72;
+  transform: translate(22%, 4%) rotate(9deg);
+}
+
+.hero14PortraitFront {
+  z-index: 2;
+}
+
+.hero14PortraitDeck small {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.48rem;
+  left: 0.5rem;
+  overflow: hidden;
+  font: 700 0.5rem/1 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.hero14Call {
+  --edge: #102b43;
+  --face: #9f3732;
+  --ink: #fffaf0;
+  align-self: flex-start;
+  min-width: 12rem;
+}
+
+/* Hero 15 — margin notes */
+.hero15 {
+  position: relative;
+  display: grid;
+  min-height: 44rem;
+  padding: clamp(2rem, 5vw, 5rem);
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, transparent 0 24.9%, rgb(20 36 58 / 8%) 25% 25.1%, transparent 25.2% 74.9%, rgb(20 36 58 / 8%) 75% 75.1%, transparent 75.2%),
+    #fbf8ef;
+  grid-template-columns: 0.32fr minmax(0, 1fr) 0.36fr;
+  gap: clamp(2rem, 5vw, 5rem);
+}
+
+.hero15Aside {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  color: var(--muted);
+  font: 650 0.62rem/1.45 ui-monospace, Menlo, monospace;
+  text-transform: uppercase;
+}
+
+.hero15Aside p {
+  margin: 0;
+}
+
+.hero15Center {
+  align-self: center;
+}
+
+.hero15Center h2 {
+  margin: 0.75rem 0 0;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(3.7rem, 7vw, 7.5rem);
+  font-weight: 500;
+  letter-spacing: -0.07em;
+  line-height: 0.79;
+}
+
+.hero15Copy {
+  align-self: end;
+}
+
+.hero15Copy > p {
+  margin: 0 0 2rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.hero15Stamp {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  width: 6rem;
+  margin: 0;
+  padding: 0.35rem;
+  border: 1px solid var(--red);
+  background: #fffdf7;
+  transform: rotate(4deg);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero15Stamp:hover {
+  transform: rotate(0) translateY(-3px);
+}
+
+.hero15Stamp img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  filter: grayscale(1);
+  object-fit: cover;
+}
+
+/* Hero 16 — precision line */
+.hero16 {
+  display: grid;
+  min-height: 42rem;
+  padding: clamp(2rem, 5vw, 5rem);
+  background: #fffdf8;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.35fr);
+  grid-template-rows: 1fr auto;
+  gap: clamp(2rem, 5vw, 5rem);
+}
+
+.hero16Heading {
+  align-self: center;
+}
+
+.hero16Heading > p {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font: 700 0.62rem/1 ui-monospace, Menlo, monospace;
+  text-transform: uppercase;
+}
+
+.hero16Heading h2 {
+  margin: 0;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(3.2rem, 7vw, 7.3rem);
+  font-weight: 500;
+  letter-spacing: -0.065em;
+  line-height: 0.88;
+}
+
+.hero16Portrait {
+  align-self: center;
+  margin: 0;
+}
+
+.hero16Portrait img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  clip-path: polygon(8% 0, 100% 0, 100% 92%, 92% 100%, 0 100%, 0 8%);
+  filter: grayscale(1);
+  object-fit: cover;
+  transition:
+    filter 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero16Portrait:hover img {
+  filter: grayscale(0);
+  transform: translateY(-5px);
+}
+
+.hero16Portrait figcaption {
+  padding-top: 0.65rem;
+  color: var(--muted);
+  font: 650 0.58rem/1.3 ui-monospace, Menlo, monospace;
+  text-transform: uppercase;
+}
+
+.hero16Copy {
+  display: grid;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--ink);
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 2rem;
+}
+
+.hero16Copy p {
+  max-width: 48ch;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* Hero 17 — solar index */
+.hero17 {
+  display: grid;
+  min-height: 43rem;
+  overflow: hidden;
+  color: #fffaf0;
+  background: #143a5b;
+  grid-template-columns: minmax(20rem, 0.85fr) minmax(0, 1.15fr);
+  align-items: center;
+}
+
+.hero17Orbit {
+  position: relative;
+  display: grid;
+  min-height: 43rem;
+  border-right: 1px solid rgb(255 250 240 / 18%);
+  place-items: center;
+}
+
+.hero17Orbit > span {
+  position: absolute;
+  width: min(70%, 27rem);
+  aspect-ratio: 1;
+  border: 1px solid #d49c38;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 2rem rgb(212 156 56 / 8%),
+    0 0 0 4rem rgb(212 156 56 / 4%);
+  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero17Orbit:hover > span {
+  transform: scale(1.04);
+}
+
+.hero17Orbit figure {
+  position: relative;
+  z-index: 1;
+  width: min(57%, 20rem);
+  margin: 0;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.hero17Orbit img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.hero17Orbit small {
+  position: absolute;
+  right: 8%;
+  bottom: 8%;
+  font: 700 0.62rem/1.4 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero17Copy {
+  padding: clamp(2rem, 7vw, 7rem);
+}
+
+.hero17Copy .heroRole {
+  color: #d9d8d1;
+}
+
+.hero17Copy h2 {
+  margin: 0.75rem 0 1.5rem;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(3.6rem, 7vw, 7rem);
+  font-weight: 500;
+  letter-spacing: -0.07em;
+  line-height: 0.84;
+}
+
+.hero17Copy > p:nth-of-type(2) {
+  max-width: 41ch;
+  margin: 0 0 2rem;
+  color: #d9d8d1;
+  line-height: 1.65;
+}
+
+/* Hero 18 — poster stack */
+.hero18 {
+  position: relative;
+  display: grid;
+  min-height: 44rem;
+  padding: clamp(3rem, 7vw, 7rem);
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgb(20 36 58 / 6%) 1px, transparent 1px),
+    #e9dfcb;
+  background-size: 4rem 100%;
+  grid-template-columns: minmax(14rem, 0.42fr) minmax(21rem, 0.7fr);
+  place-content: center;
+}
+
+.hero18Backdrop {
+  position: absolute;
+  top: 0;
+  left: -0.04em;
+  margin: 0;
+  color: var(--red);
+  font-size: clamp(8rem, 23vw, 22rem);
+  font-weight: 900;
+  letter-spacing: -0.09em;
+  line-height: 0.72;
+  opacity: 0.88;
+}
+
+.hero18Portrait {
+  position: relative;
+  z-index: 2;
+  align-self: center;
+  margin: 0 -1.2rem 0 0;
+  padding: 0.55rem;
+  background: #fffdf7;
+  box-shadow: 0 2rem 4rem rgb(20 36 58 / 22%);
+  transform: rotate(-2deg);
+}
+
+.hero18Portrait img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.hero18Portrait figcaption {
+  padding: 0.5rem 0.15rem 0.1rem;
+  color: var(--muted);
+  font: 650 0.58rem/1 ui-monospace, Menlo, monospace;
+  text-transform: uppercase;
+}
+
+.hero18Copy {
+  position: relative;
+  z-index: 1;
+  padding: clamp(2.5rem, 5vw, 5rem);
+  background: #fffdf7;
+  box-shadow: 0 2rem 4rem rgb(20 36 58 / 16%);
+  transform: rotate(1.5deg);
+}
+
+.hero18Copy h2 {
+  margin: 0.75rem 0 1.25rem;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(3rem, 5.8vw, 6rem);
+  font-weight: 500;
+  letter-spacing: -0.06em;
+  line-height: 0.88;
+}
+
+.hero18Copy > p:nth-of-type(2) {
+  max-width: 40ch;
+  margin: 0 0 2rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* Hero 19 — detail dial */
+.hero19 {
+  display: grid;
+  min-height: 43rem;
+  overflow: hidden;
+  color: #fffaf0;
+  background: #983832;
+  grid-template-columns: minmax(19rem, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+}
+
+.hero19Dial {
+  position: relative;
+  display: grid;
+  min-height: 43rem;
+  border-right: 1px solid rgb(255 250 240 / 23%);
+  place-items: center;
+}
+
+.hero19Dial::before,
+.hero19Dial::after {
+  position: absolute;
+  width: min(72%, 27rem);
+  aspect-ratio: 1;
+  border: 1px solid rgb(255 250 240 / 44%);
+  border-radius: 50%;
+  content: "";
+}
+
+.hero19Dial::after {
+  width: min(90%, 34rem);
+  border-color: rgb(255 250 240 / 15%);
+  clip-path: inset(0 0 50% 0);
+}
+
+.hero19Dial > span {
+  position: absolute;
+  top: 8%;
+  left: 8%;
+  font: 700 0.65rem/1 ui-monospace, Menlo, monospace;
+}
+
+.hero19Dial figure {
+  position: relative;
+  z-index: 1;
+  width: min(48%, 18rem);
+  margin: 0;
+  overflow: hidden;
+  border: 0.35rem solid #fffaf0;
+  border-radius: 50%;
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero19Dial:hover figure {
+  transform: translateY(-5px) rotate(-2deg);
+}
+
+.hero19Dial img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.hero19Dial small {
+  position: absolute;
+  right: 8%;
+  bottom: 8%;
+  font: 700 0.6rem/1.4 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.hero19Copy {
+  padding: clamp(2rem, 7vw, 7rem);
+}
+
+.hero19Copy .heroRole {
+  color: #f0d9cc;
+}
+
+.hero19Copy h2 {
+  margin: 0.7rem 0 1.2rem;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(4rem, 8vw, 8rem);
+  font-weight: 500;
+  letter-spacing: -0.075em;
+  line-height: 0.78;
+}
+
+.hero19Copy .avatarWord {
+  color: #fffaf0;
+}
+
+.hero19Copy > p:nth-of-type(2) {
+  max-width: 40ch;
+  margin: 0 0 2rem;
+  color: #f0d9cc;
+  line-height: 1.65;
+}
+
+/* Hero 20 — quiet collision */
+.hero20 {
+  position: relative;
+  display: grid;
+  min-height: 43rem;
+  padding: clamp(2rem, 5vw, 5rem);
+  overflow: hidden;
+  background: #efc34e;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.42fr);
+  grid-template-rows: 1fr auto;
+}
+
+.hero20Hello {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  margin: 0;
+  color: #143a5b;
+  font-size: clamp(9rem, 27vw, 27rem);
+  font-weight: 900;
+  letter-spacing: -0.1em;
+  line-height: 0.62;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.hero20Portrait {
+  position: relative;
+  z-index: 2;
+  align-self: center;
+  width: min(24vw, 16rem);
+  margin: 0;
+  padding: 0.45rem;
+  grid-column: 2;
+  background: #fffdf7;
+  box-shadow: 0 1.5rem 3rem rgb(20 58 91 / 22%);
+  transform: rotate(3deg);
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero20Portrait:hover {
+  transform: rotate(0) translateY(-6px);
+}
+
+.hero20Portrait img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.hero20Copy {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  padding-top: 1.5rem;
+  border-top: 1px solid #143a5b;
+  grid-column: 1 / -1;
+  grid-template-columns: 0.35fr minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 2rem;
+}
+
+.hero20Copy .heroRole {
+  color: #143a5b;
+}
+
+.hero20Copy > p:nth-child(2) {
+  max-width: 43ch;
+  margin: 0;
+  color: #334558;
+  line-height: 1.55;
+}
+
+.hero20Mark {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  color: var(--red);
+  font-size: 2rem;
+}
+
+.footer {
+  display: flex;
+  min-height: 8rem;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.footer p {
+  margin: 0;
+}
+
+.footer a {
+  color: var(--ink);
+  font-weight: 700;
+  text-underline-offset: 0.25rem;
+}
+
+.lab a:focus-visible,
+.lab button:focus-visible,
+.lab select:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+
+@media (max-width: 72rem) {
+  .pairingControls {
+    grid-template-columns: 1fr;
+  }
+
+  .pairingControls nav + nav {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .hero01,
+  .hero04 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 52rem) {
+  .labHeader,
+  .pairingHeading {
+    grid-template-columns: 1fr;
+  }
+
+  .labHeader {
+    gap: 3rem;
+  }
+
+  .explorationCard > header {
+    grid-template-columns: 3rem 1fr;
+  }
+
+  .explorationCard > header button {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .header01,
+  .header02,
+  .header04,
+  .header07,
+  .header10 {
+    grid-template-columns: 1fr;
+  }
+
+  .header01 {
+    gap: 1rem;
+  }
+
+  .galleryActions,
+  .signatureActions {
+    justify-self: stretch;
+  }
+
+  .ledgerBrand {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .header04 {
+    gap: 1rem;
+  }
+
+  .cornerRole {
+    justify-self: start;
+    text-align: left;
+  }
+
+  .mastheadTitle {
+    grid-template-columns: auto 1fr;
+  }
+
+  .mastheadTitle > span {
+    display: none;
+  }
+
+  .mastheadRule {
+    grid-template-columns: 1fr auto;
+  }
+
+  .mastheadRule > span:last-child {
+    display: none;
+  }
+
+  .statusLine > span:last-child,
+  .tickerMain > p {
+    display: none;
+  }
+
+  .tickerMain {
+    grid-template-columns: auto 1fr;
+  }
+
+  .header07 > p {
+    text-align: center;
+  }
+
+  .orbitNote {
+    justify-self: center;
+    text-align: center;
+  }
+
+  .header08 {
+    grid-template-columns: 1fr;
+  }
+
+  .ribbonActions {
+    justify-self: start;
+  }
+
+  .header09 {
+    grid-template-columns: auto 1fr;
+  }
+
+  .commandStatus {
+    display: none;
+  }
+
+  .commandActions {
+    justify-self: end;
+  }
+
+  .signature {
+    flex-wrap: wrap;
+  }
+
+  .hero01,
+  .hero02,
+  .hero04,
+  .hero06,
+  .hero07,
+  .hero10 {
+    grid-template-columns: 1fr;
+  }
+
+  .hero01 .heroBio,
+  .hero01 .heroActions {
+    margin-top: 1.5rem;
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .hero02 {
+    grid-template-rows: auto 1fr;
+  }
+
+  .splitRole {
+    min-height: 9rem;
+    border-right: 0;
+    border-bottom: 1px solid rgb(255 255 255 / 30%);
+  }
+
+  .stackCopy {
+    grid-template-columns: 1fr;
+  }
+
+  .stackCopy > p:nth-child(2),
+  .stackCopy > a {
+    grid-column: 1;
+  }
+
+  .avatarSheet {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .solarPortrait {
+    min-height: 28rem;
+  }
+
+  .solarPortrait > span {
+    width: 16rem;
+  }
+
+  .hero08 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+
+  .moduleTitle {
+    grid-column: 1 / -1;
+  }
+
+  .moduleBio {
+    grid-column: 1 / -1;
+  }
+
+  .hero09 {
+    grid-template-columns: minmax(10rem, 0.55fr) minmax(15rem, 0.75fr);
+  }
+
+  .quietCopy {
+    grid-column: 1;
+  }
+
+  .hero11,
+  .hero13,
+  .hero17,
+  .hero19 {
+    grid-template-columns: 1fr;
+  }
+
+  .hero11Copy {
+    padding: 1.5rem 0 0;
+    border-top: 1px solid var(--ink);
+    border-left: 0;
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .hero12 {
+    grid-template-columns: minmax(0, 1fr) minmax(11rem, 0.38fr);
+  }
+
+  .hero13 {
+    gap: 2rem;
+  }
+
+  .hero13Intro h2 {
+    max-width: none;
+  }
+
+  .hero14 {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(30rem, 1fr);
+  }
+
+  .hero14Workshop {
+    min-height: 26rem;
+  }
+
+  .hero14Copy {
+    min-height: 18rem;
+  }
+
+  .hero15 {
+    grid-template-columns: 0.32fr 1fr;
+  }
+
+  .hero15Copy {
+    padding-top: 2rem;
+    border-top: 1px solid var(--ink);
+    grid-column: 1 / -1;
+  }
+
+  .hero17Orbit,
+  .hero19Dial {
+    min-height: 30rem;
+    border-right: 0;
+    border-bottom: 1px solid rgb(255 250 240 / 20%);
+  }
+
+  .hero18 {
+    grid-template-columns: minmax(11rem, 0.4fr) minmax(16rem, 0.7fr);
+  }
+
+  .hero20 {
+    grid-template-columns: 1fr minmax(12rem, 0.35fr);
+  }
+
+  .hero20Copy {
+    grid-template-columns: 0.3fr 1fr;
+  }
+
+  .hero20Copy > a {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 36rem) {
+  .lab a,
+  .lab button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .lab .header04 nav a {
+    min-height: 44px;
+  }
+
+  .labHeader,
+  .pairing,
+  .explorations,
+  .footer {
+    width: min(calc(100% - 1.5rem), 96rem);
+  }
+
+  .pairingControls {
+    overflow-x: auto;
+  }
+
+  .pairingControls nav {
+    min-width: 34rem;
+  }
+
+  .pairingControls nav:last-child {
+    min-width: 60rem;
+  }
+
+  .explorationCard > header {
+    grid-template-columns: 1fr;
+  }
+
+  .explorationCard > header button {
+    grid-column: 1;
+  }
+
+  .capsule {
+    border-radius: 1rem;
+    grid-template-columns: 1fr;
+  }
+
+  .capsule > span {
+    display: none;
+  }
+
+  .mastheadRule > span:first-child,
+  .header08 .ribbonBrand span,
+  .commandBrand code,
+  .signature small {
+    display: none;
+  }
+
+  .mastheadRule {
+    grid-template-columns: 1fr;
+  }
+
+  .mastheadActions {
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .header10 {
+    grid-template-columns: 1fr;
+  }
+
+  .headerActions,
+  .ledgerActions,
+  .cornerActions,
+  .orbitActions {
+    position: relative;
+    inset: auto;
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
+  }
+
+  .headerActions .iconControl {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .headerActions .scheduleControl {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    min-width: 0;
+    grid-column: 1 / -1;
+    justify-self: stretch;
+  }
+
+  .orbit {
+    height: auto;
+    padding-block: 1rem;
+    gap: 1.5rem;
+  }
+
+  .orbitRing {
+    top: 0;
+  }
+
+  .orbitActions {
+    margin-top: 8rem;
+  }
+
+  .hero01,
+  .hero02,
+  .hero03,
+  .hero04,
+  .hero05,
+  .hero06,
+  .hero07,
+  .hero08,
+  .hero09,
+  .hero10 {
+    min-height: 34rem;
+  }
+
+  .hero01 {
+    padding: 2rem 1.25rem;
+  }
+
+  .hero01 h2 {
+    font-size: 3.6rem;
+  }
+
+  .heroActions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .avatarWordImage {
+    right: -1rem;
+    left: auto;
+  }
+
+  .avatarSheet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero06 {
+    gap: 2rem;
+  }
+
+  .hero06 figure img {
+    max-height: 20rem;
+  }
+
+  .hero08,
+  .hero09 {
+    grid-template-columns: 1fr;
+  }
+
+  .moduleTitle,
+  .moduleRole,
+  .moduleBio,
+  .moduleAvatar,
+  .moduleCall {
+    grid-column: 1;
+  }
+
+  .moduleAvatar {
+    max-height: 18rem;
+  }
+
+  .layerPortrait {
+    width: 70%;
+    margin: 0 auto -2rem;
+  }
+
+  .layerCopy {
+    padding-top: 4rem;
+  }
+
+  .quietRole {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .hero11,
+  .hero12,
+  .hero13,
+  .hero14,
+  .hero15,
+  .hero16,
+  .hero17,
+  .hero18,
+  .hero19,
+  .hero20 {
+    min-height: 34rem;
+  }
+
+  .hero11,
+  .hero12,
+  .hero15,
+  .hero16,
+  .hero18,
+  .hero20 {
+    grid-template-columns: 1fr;
+  }
+
+  .hero11 {
+    gap: 2rem;
+  }
+
+  .hero11Title h2 {
+    font-size: 3.75rem;
+  }
+
+  .hero12 {
+    min-height: 45rem;
+    grid-template-rows: 1fr auto;
+  }
+
+  .hero12Words {
+    font-size: clamp(4.5rem, 24vw, 6.5rem);
+  }
+
+  .hero12Portrait {
+    width: 48%;
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .hero12Copy {
+    grid-column: 1;
+  }
+
+  .hero13Stack {
+    min-height: 28rem;
+  }
+
+  .hero13Card {
+    width: 82%;
+    padding: 3rem 1.5rem 2rem;
+  }
+
+  .hero13Portrait {
+    width: 45%;
+  }
+
+  .hero14Heading {
+    padding: 1rem;
+  }
+
+  .hero14Workshop {
+    min-height: 25rem;
+  }
+
+  .hero14Stage {
+    min-height: 20rem;
+  }
+
+  .hero14Identity {
+    min-height: 64px;
+  }
+
+  .hero14Identity .logo {
+    width: 4.8rem;
+  }
+
+  .hero14Socials {
+    gap: 0.3rem;
+  }
+
+  .hero14Social {
+    width: 44px;
+    min-width: 44px;
+  }
+
+  .hero14PieceM {
+    left: 2%;
+  }
+
+  .hero14PieceO {
+    right: 3%;
+  }
+
+  .hero14PieceSun {
+    right: 10%;
+  }
+
+  .hero14PieceStep {
+    right: 14%;
+  }
+
+  .hero14Copy {
+    padding: 1rem;
+  }
+
+  .hero14CopyBody {
+    padding: 2rem 0.5rem;
+  }
+
+  .hero14PortraitDeck {
+    top: -4.65rem;
+    left: calc(100% + 0.45rem);
+    width: 10.5rem;
+  }
+
+  .hero15 {
+    background: #fbf8ef;
+  }
+
+  .hero15Aside {
+    min-height: 5rem;
+    flex-direction: row;
+  }
+
+  .hero15Center h2 {
+    font-size: 3.8rem;
+  }
+
+  .hero15Copy {
+    grid-column: 1;
+  }
+
+  .hero15Stamp {
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 4.5rem;
+  }
+
+  .hero16Heading h2 {
+    font-size: 3.4rem;
+  }
+
+  .hero16Portrait {
+    width: 45%;
+    grid-column: 1;
+    justify-self: end;
+  }
+
+  .hero16Copy {
+    grid-column: 1;
+    grid-template-columns: 1fr;
+  }
+
+  .hero17Orbit,
+  .hero19Dial {
+    min-height: 24rem;
+  }
+
+  .hero17Copy h2,
+  .hero19Copy h2 {
+    font-size: 3.8rem;
+  }
+
+  .hero18 {
+    min-height: 48rem;
+    padding: 3rem 1.5rem;
+    place-content: center;
+  }
+
+  .hero18Portrait {
+    width: 58%;
+    margin: 0 auto -1.5rem;
+  }
+
+  .hero18Copy {
+    padding-top: 3.5rem;
+  }
+
+  .hero18Backdrop {
+    font-size: 7rem;
+  }
+
+  .hero20 {
+    min-height: 42rem;
+    grid-template-rows: 1fr auto;
+  }
+
+  .hero20Hello {
+    top: 34%;
+    font-size: 8.2rem;
+  }
+
+  .hero20Portrait {
+    width: 9rem;
+    grid-column: 1;
+    justify-self: end;
+  }
+
+  .hero20Copy {
+    grid-column: 1;
+    grid-template-columns: 1fr;
+  }
+
+  .hero20Copy > a {
+    grid-column: 1;
+  }
+
+  .footer {
+    padding-block: 2rem;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab *,
+  .lab *::before,
+  .lab *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .explorationCard,
+  .liveFrame,
+  .pairingControls {
+    border: 2px solid CanvasText;
+  }
+}

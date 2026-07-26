@@ -1,0 +1,628 @@
+.root {
+  --canvas-accent: #d8ad4f;
+  --canvas-background: #102331;
+  --canvas-foreground: #f5f0e7;
+  --canvas-surface: #193447;
+  min-height: min(800px, 90svh);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--canvas-background);
+  color: var(--canvas-foreground);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.ambientStage,
+.ambientPalette,
+.canvasGrain,
+.colorCloud,
+.solarDisc,
+.pixelHorizon,
+.loadingGlow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ambientStage {
+  z-index: -2;
+  overflow: hidden;
+  background: var(--canvas-background);
+}
+
+.ambientPalette {
+  overflow: hidden;
+  background:
+    linear-gradient(108deg, var(--canvas-background) 4%, var(--canvas-surface) 100%);
+}
+
+.colorCloud {
+  inset: -24%;
+  background:
+    radial-gradient(circle at 22% 34%, color-mix(in srgb, var(--canvas-accent) 42%, transparent) 0 8%, transparent 31%),
+    radial-gradient(circle at 77% 65%, color-mix(in srgb, var(--canvas-surface) 86%, transparent) 0 12%, transparent 40%),
+    linear-gradient(136deg, transparent 32%, color-mix(in srgb, var(--canvas-accent) 10%, transparent) 70%, transparent);
+  transform: rotate(-4deg) scale(1.08);
+}
+
+.solarDisc {
+  inset: 8% auto auto 64%;
+  width: min(30vw, 24rem);
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--canvas-accent) 42%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--canvas-accent) 7%, transparent);
+  box-shadow:
+    0 0 0 2.8rem color-mix(in srgb, var(--canvas-accent) 3%, transparent),
+    0 0 8rem color-mix(in srgb, var(--canvas-accent) 18%, transparent);
+}
+
+.pixelHorizon {
+  inset: auto -4% 0;
+  height: 23%;
+  background: color-mix(in srgb, var(--canvas-foreground) 6%, transparent);
+  clip-path: polygon(
+    0 100%, 0 72%, 9% 72%, 9% 58%, 18% 58%, 18% 46%, 27% 46%, 27% 68%,
+    38% 68%, 38% 42%, 45% 42%, 45% 24%, 51% 24%, 51% 42%, 58% 42%, 58% 65%,
+    70% 65%, 70% 51%, 80% 51%, 80% 72%, 91% 72%, 91% 58%, 100% 58%, 100% 100%
+  );
+}
+
+.canvasGrain {
+  z-index: 2;
+  opacity: 0.32;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--canvas-foreground) 3%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--canvas-foreground) 3%, transparent) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: linear-gradient(to bottom, #000, transparent 85%);
+}
+
+.header,
+.footer {
+  display: flex;
+  position: relative;
+  z-index: 2;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header {
+  gap: 1.5rem;
+  padding: clamp(1rem, 2.7vw, 2.25rem) clamp(1rem, 3.4vw, 3.25rem) 0;
+}
+
+.headingGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.mark {
+  width: 0.7rem;
+  height: 2.3rem;
+  background: var(--canvas-accent);
+  clip-path: polygon(0 0, 100% 0, 100% 72%, 62% 72%, 62% 100%, 0 100%);
+}
+
+.headingGroup p,
+.headingGroup h2,
+.footer p,
+.position,
+.collaborators,
+.empty p,
+.empty span {
+  margin: 0;
+}
+
+.headingGroup p,
+.position,
+.footer,
+.empty p {
+  font-size: 0.66rem;
+  font-weight: 720;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.headingGroup p {
+  color: color-mix(in srgb, var(--canvas-foreground) 58%, transparent);
+}
+
+.headingGroup h2 {
+  margin-top: 0.18rem;
+  font-size: clamp(1rem, 1.5vw, 1.35rem);
+  font-weight: 540;
+  letter-spacing: -0.025em;
+}
+
+.projectNav {
+  min-width: 0;
+}
+
+.tabs {
+  display: flex;
+  max-width: 100%;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.25rem;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar,
+.viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  display: block;
+  flex: 0 0 auto;
+  width: clamp(2.85rem, 4vw, 3.6rem);
+  min-width: 44px;
+  height: clamp(2.85rem, 4vw, 3.6rem);
+  min-height: 44px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--canvas-foreground) 24%, transparent);
+  padding: 0;
+  background: var(--canvas-surface);
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+  transition:
+    border-color 160ms ease,
+    opacity 160ms ease,
+    transform 140ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tabImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.56;
+  filter: saturate(0.25);
+  transition: opacity 180ms ease, filter 180ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tabTint {
+  position: absolute;
+  inset: auto 0 0;
+  height: 5px;
+  background: var(--tab-accent);
+  transform: scaleX(0.42);
+  transform-origin: left;
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tab[aria-selected="true"] {
+  border-color: var(--tab-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tab-accent) 24%, transparent);
+}
+
+.tab[aria-selected="true"] .tabImage {
+  opacity: 1;
+  filter: saturate(0.82);
+}
+
+.tab[aria-selected="true"] .tabTint {
+  transform: scaleX(1);
+}
+
+.tab:active {
+  transform: scale(0.94);
+}
+
+.tab:focus-visible,
+.viewport:focus-visible {
+  outline: 3px solid var(--canvas-accent);
+  outline-offset: 3px;
+}
+
+.viewport {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  touch-action: pan-x pan-y;
+}
+
+.track {
+  display: flex;
+  min-height: clamp(31rem, 68svh, 42rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.slide {
+  display: grid;
+  flex: 0 0 100%;
+  min-width: 0;
+  place-items: center;
+  padding: clamp(1.25rem, 3vw, 3rem) clamp(1rem, 3.4vw, 3.25rem);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.project {
+  display: grid;
+  width: min(100%, 82rem);
+  grid-template-columns: minmax(0, 1.55fr) minmax(18rem, 0.72fr);
+  align-items: center;
+  gap: clamp(1.5rem, 5vw, 5.5rem);
+}
+
+.mediaFrame {
+  aspect-ratio: 3018 / 1498;
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  border: 1px solid color-mix(in srgb, var(--canvas-foreground) 26%, transparent);
+  background: var(--canvas-surface);
+  box-shadow:
+    0 1.6rem 4.5rem color-mix(in srgb, #000 24%, transparent),
+    -0.65rem 0.65rem 0 color-mix(in srgb, var(--canvas-accent) 25%, transparent);
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}
+
+.projectImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mediaEdge {
+  position: absolute;
+  inset: 0;
+  border: 7px solid color-mix(in srgb, var(--canvas-accent) 10%, transparent);
+  pointer-events: none;
+}
+
+.projectInfo {
+  display: flex;
+  min-width: 0;
+  min-height: 20rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 1.25rem 0;
+}
+
+.position {
+  color: var(--canvas-accent);
+}
+
+.projectInfo h3 {
+  max-width: 10ch;
+  margin: 0.8rem 0 1.2rem;
+  font-size: clamp(2.5rem, 5.2vw, 6.4rem);
+  font-weight: 510;
+  letter-spacing: -0.065em;
+  line-height: 0.88;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 36ch;
+  margin: 0;
+  color: color-mix(in srgb, var(--canvas-foreground) 76%, transparent);
+  font-size: clamp(0.94rem, 1.2vw, 1.08rem);
+  line-height: 1.65;
+}
+
+.projectFooter {
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.collaborators {
+  max-width: 24ch;
+  color: color-mix(in srgb, var(--canvas-foreground) 72%, transparent);
+  font-size: 0.74rem;
+  line-height: 1.55;
+}
+
+.collaborators span {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: color-mix(in srgb, var(--canvas-foreground) 46%, transparent);
+  font-size: 0.6rem;
+  font-weight: 720;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.projectLink {
+  flex: 0 0 auto;
+}
+
+.footer {
+  gap: 1rem;
+  padding: 0 clamp(1rem, 3.4vw, 3.25rem) clamp(1rem, 2.7vw, 2.25rem);
+  color: color-mix(in srgb, var(--canvas-foreground) 58%, transparent);
+}
+
+.progress {
+  flex: 1;
+  height: 1px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--canvas-foreground) 20%, transparent);
+}
+
+.progress i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--canvas-accent);
+  transform-origin: left;
+  transition: transform 240ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.loading,
+.empty {
+  display: grid;
+  min-height: min(800px, 90svh);
+  padding: clamp(1rem, 3.4vw, 3.25rem);
+}
+
+.loading {
+  grid-template-rows: auto 1fr;
+  gap: 2rem;
+  background: #102331;
+  color: #f5f0e7;
+}
+
+.loadingGlow {
+  background: radial-gradient(circle at 72% 25%, #d8ad4f20, transparent 32%);
+}
+
+.loadingHeader,
+.loadingSlide {
+  display: flex;
+  position: relative;
+  z-index: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.loadingTabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.skeleton {
+  display: block;
+  border: 1px solid #ffffff10;
+  background: #ffffff12;
+  animation: ambientPulse 1.5s ease-in-out infinite alternate;
+}
+
+.loadingHeading {
+  width: 9rem;
+  height: 2.5rem;
+}
+
+.loadingTab {
+  width: 3rem;
+  height: 3rem;
+}
+
+.loadingSlide {
+  width: min(100%, 82rem);
+  justify-self: center;
+}
+
+.loadingImage {
+  width: 64%;
+  aspect-ratio: 3018 / 1498;
+}
+
+.loadingCopy {
+  display: flex;
+  width: 29%;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.loadingCopy i {
+  font-style: normal;
+}
+
+.loadingName {
+  width: 86%;
+  height: 4.5rem;
+}
+
+.loadingLine {
+  width: 100%;
+  height: 0.85rem;
+}
+
+.loadingLineShort {
+  width: 68%;
+  height: 0.85rem;
+}
+
+.empty {
+  position: relative;
+  place-content: center;
+  background: #eee8dc;
+  color: #102331;
+  text-align: center;
+}
+
+.emptySun {
+  inset: 50% auto auto 50%;
+  width: min(48vw, 25rem);
+  aspect-ratio: 1;
+  border: 1px solid #a92b2638;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.empty p {
+  position: relative;
+  color: #a92b26;
+}
+
+.empty h2 {
+  position: relative;
+  max-width: 15ch;
+  margin: 0.7rem auto;
+  font-size: clamp(2.25rem, 5vw, 5rem);
+  font-weight: 520;
+  letter-spacing: -0.055em;
+  line-height: 0.94;
+}
+
+.empty span:not(.emptySun) {
+  position: relative;
+  color: #102331a3;
+  font-size: 0.85rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.srOnly {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@keyframes ambientPulse {
+  from { opacity: 0.45; }
+  to { opacity: 0.9; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tab:hover {
+    border-color: var(--tab-accent);
+  }
+
+  .tab:hover .tabImage {
+    opacity: 0.9;
+    filter: saturate(0.7);
+    transform: scale(1.045);
+  }
+}
+
+@media (max-width: 760px) {
+  .root {
+    min-height: 760px;
+  }
+
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .projectNav,
+  .tabs {
+    width: 100%;
+  }
+
+  .track {
+    min-height: 590px;
+  }
+
+  .slide {
+    align-items: start;
+    padding-top: 1.35rem;
+  }
+
+  .project {
+    grid-template-columns: 1fr;
+    gap: 1.45rem;
+  }
+
+  .mediaFrame {
+    box-shadow:
+      0 1.2rem 3rem color-mix(in srgb, #000 20%, transparent),
+      -0.38rem 0.38rem 0 color-mix(in srgb, var(--canvas-accent) 25%, transparent);
+  }
+
+  .projectInfo {
+    min-height: 0;
+    padding: 0;
+  }
+
+  .projectInfo h3 {
+    margin: 0.55rem 0 0.75rem;
+    font-size: clamp(2.5rem, 13vw, 4.4rem);
+  }
+
+  .description {
+    line-height: 1.55;
+  }
+
+  .projectFooter {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-top: 1.25rem;
+  }
+
+  .footer {
+    padding-top: 0.5rem;
+  }
+
+  .footer p:last-child {
+    display: none;
+  }
+
+  .solarDisc {
+    top: 21%;
+    left: 58%;
+    width: 54vw;
+  }
+
+  .pixelHorizon {
+    height: 16%;
+  }
+
+  .loadingHeader,
+  .loadingSlide {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .loadingTabs {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .loadingImage,
+  .loadingCopy {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+
+  .tab,
+  .tabImage,
+  .tabTint,
+  .progress i {
+    transition-duration: 0s;
+  }
+}
+
+.root[data-motion-off="true"] .progress i {
+  transition-duration: 0s;
+}

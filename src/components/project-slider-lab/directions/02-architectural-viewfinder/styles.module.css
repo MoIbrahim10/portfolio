@@ -1,0 +1,665 @@
+.root {
+  --viewfinder-accent: #d8ad4f;
+  --viewfinder-background: #102331;
+  --viewfinder-foreground: #f5f0e7;
+  --viewfinder-surface: #193447;
+  position: relative;
+  min-height: min(48rem, 88dvh);
+  overflow: hidden;
+  color: var(--viewfinder-foreground);
+  background: var(--viewfinder-background);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  isolation: isolate;
+}
+
+.backgroundStage,
+.paletteWash {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  pointer-events: none;
+}
+
+.paletteWash::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(255 255 255 / 3%) 1px, transparent 1px) 0 0 / clamp(4rem, 9vw, 9rem) 100%,
+    linear-gradient(rgb(255 255 255 / 2%) 1px, transparent 1px) 0 0 / 100% clamp(4rem, 9vw, 9rem);
+  content: '';
+  mask-image: linear-gradient(90deg, black, transparent 74%);
+}
+
+.architectureLine {
+  position: absolute;
+  display: block;
+  background: var(--viewfinder-accent);
+  transform-origin: left center;
+}
+
+.architectureLineTop {
+  top: 15%;
+  left: 4%;
+  width: 42%;
+  height: 1px;
+}
+
+.architectureLineTop::after {
+  position: absolute;
+  top: -0.25rem;
+  right: 0;
+  width: 0.55rem;
+  height: 0.55rem;
+  border: 1px solid var(--viewfinder-accent);
+  content: '';
+  transform: rotate(45deg);
+}
+
+.architectureLineSide {
+  top: 15%;
+  left: 46%;
+  width: 1px;
+  height: 70%;
+  transform-origin: center top;
+}
+
+.solarDisc {
+  position: absolute;
+  top: 8%;
+  right: 8%;
+  width: clamp(4.75rem, 9vw, 8.5rem);
+  aspect-ratio: 1;
+  border: 1px solid var(--viewfinder-accent);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 clamp(0.6rem, 1.1vw, 1rem) rgb(255 255 255 / 3%),
+    0 0 0 1.05rem rgb(255 255 255 / 2%);
+}
+
+.solarDisc::before,
+.solarDisc::after {
+  position: absolute;
+  background: var(--viewfinder-accent);
+  content: '';
+  opacity: 0.56;
+}
+
+.solarDisc::before {
+  top: 50%;
+  right: -2.4rem;
+  left: -2.4rem;
+  height: 1px;
+}
+
+.solarDisc::after {
+  top: -2.4rem;
+  bottom: -2.4rem;
+  left: 50%;
+  width: 1px;
+}
+
+.cornerCut {
+  position: absolute;
+  right: 3%;
+  bottom: 4%;
+  width: clamp(5rem, 12vw, 11rem);
+  aspect-ratio: 1;
+  border-right: 1px solid var(--viewfinder-accent);
+  border-bottom: 1px solid var(--viewfinder-accent);
+  clip-path: polygon(28% 0, 100% 0, 100% 100%, 0 100%, 0 28%);
+}
+
+.header {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(11rem, 1fr) auto minmax(4.5rem, 0.3fr);
+  gap: clamp(1.25rem, 3.2vw, 3.75rem);
+  align-items: start;
+  padding: clamp(1.2rem, 2.8vw, 2.6rem) clamp(1rem, 4vw, 4rem) 0;
+}
+
+.identity {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
+.identityMark {
+  width: 1.55rem;
+  height: 1.55rem;
+  flex: 0 0 auto;
+  margin-top: 0.08rem;
+  border-top: 2px solid var(--viewfinder-accent);
+  border-left: 2px solid var(--viewfinder-accent);
+  clip-path: polygon(0 0, 100% 0, 100% 32%, 32% 32%, 32% 100%, 0 100%);
+}
+
+.kicker,
+.collaborators > p,
+.footer,
+.position {
+  margin: 0;
+  font: 700 0.64rem/1.25 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.kicker {
+  margin-bottom: 0.4rem;
+  color: var(--viewfinder-accent);
+}
+
+.header h2 {
+  margin: 0;
+  font-size: clamp(0.84rem, 1.25vw, 1.05rem);
+  font-weight: 540;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.apertureTabs {
+  display: flex;
+  min-height: 5.3rem;
+  gap: clamp(0.35rem, 0.7vw, 0.65rem);
+  align-items: flex-start;
+}
+
+.apertureTab {
+  position: relative;
+  width: clamp(2.75rem, 4.4vw, 3.8rem);
+  min-width: 2.75rem;
+  height: clamp(2.75rem, 4.4vw, 3.8rem);
+  min-height: 2.75rem;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  background: var(--viewfinder-surface);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--viewfinder-foreground) 24%, transparent);
+  cursor: pointer;
+  clip-path: polygon(0.5rem 0, 100% 0, 100% calc(100% - 0.5rem), calc(100% - 0.5rem) 100%, 0 100%, 0 0.5rem);
+  transition:
+    filter 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.apertureTab:nth-child(2),
+.apertureTab:nth-child(5) {
+  margin-top: 0.5rem;
+}
+
+.apertureTab:nth-child(3),
+.apertureTab:nth-child(4) {
+  margin-top: 1rem;
+}
+
+.apertureTab:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+}
+
+.apertureTab:active {
+  transform: scale(0.97);
+}
+
+.apertureTab:focus-visible {
+  outline: 3px solid var(--viewfinder-accent);
+  outline-offset: 3px;
+}
+
+.apertureTab[aria-selected='true'] {
+  box-shadow:
+    0 0 0 2px var(--viewfinder-accent),
+    0 0 0 5px color-mix(in srgb, var(--viewfinder-accent) 24%, transparent);
+}
+
+.tabImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.58;
+  filter: saturate(0.3) contrast(1.05);
+  transition:
+    filter 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.apertureTab:hover .tabImage,
+.apertureTab[aria-selected='true'] .tabImage {
+  opacity: 1;
+  filter: saturate(0.86) contrast(1.02);
+  transform: scale(1.035);
+}
+
+.tabGate {
+  position: absolute;
+  inset: 0.22rem;
+  border-top: 1px solid rgb(255 255 255 / 54%);
+  border-left: 1px solid rgb(255 255 255 / 54%);
+  pointer-events: none;
+}
+
+.position {
+  justify-self: end;
+  color: color-mix(in srgb, var(--viewfinder-foreground) 56%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+.position span:first-child {
+  color: var(--viewfinder-accent);
+}
+
+.viewport {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  margin-top: clamp(1.4rem, 3vw, 3rem);
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  touch-action: pan-x pan-y;
+}
+
+.viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.viewport:focus-visible {
+  outline: 3px solid var(--viewfinder-accent);
+  outline-offset: -3px;
+}
+
+.track {
+  display: flex;
+  width: 100%;
+}
+
+.project {
+  display: grid;
+  width: 100%;
+  min-width: 100%;
+  min-height: clamp(29rem, 59vh, 39rem);
+  grid-template-columns: minmax(0, 1.62fr) minmax(16rem, 0.72fr);
+  padding: 0 clamp(1rem, 4vw, 4rem);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.projectImageFrame {
+  position: relative;
+  min-width: 0;
+  align-self: center;
+  aspect-ratio: 3018 / 1498;
+  margin: 0;
+  overflow: hidden;
+  background: var(--viewfinder-surface);
+  clip-path: polygon(1.15rem 0, 100% 0, 100% calc(100% - 1.15rem), calc(100% - 1.15rem) 100%, 0 100%, 0 1.15rem);
+  box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 20%);
+}
+
+.projectImageFrame::before,
+.projectImageFrame::after {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  content: '';
+}
+
+.projectImageFrame::before {
+  inset: 0;
+  border: 1px solid rgb(255 255 255 / 16%);
+  clip-path: inherit;
+}
+
+.projectImageFrame::after {
+  top: 1rem;
+  left: 1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-top: 2px solid var(--viewfinder-accent);
+  border-left: 2px solid var(--viewfinder-accent);
+}
+
+.projectImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 3018 / 1498;
+  object-fit: cover;
+}
+
+.projectCopy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(2rem, 5vw, 5.5rem) clamp(1.2rem, 3.2vw, 3.5rem) clamp(1rem, 2vw, 2rem);
+  color: var(--viewfinder-foreground);
+  background: color-mix(in srgb, var(--viewfinder-surface) 72%, transparent);
+  backdrop-filter: blur(1.25rem);
+}
+
+.projectCopy h3 {
+  max-width: 11ch;
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.25rem, 5vw, 5.75rem);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 32rem;
+  margin: clamp(1.25rem, 2.8vw, 2.75rem) 0 0;
+  color: color-mix(in srgb, var(--viewfinder-foreground) 70%, transparent);
+  font-size: clamp(0.86rem, 1.08vw, 1rem);
+  line-height: 1.65;
+}
+
+.projectFooter {
+  display: flex;
+  gap: 1.25rem;
+  align-items: end;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.collaborators > p {
+  margin-bottom: 0.45rem;
+  color: color-mix(in srgb, var(--viewfinder-foreground) 50%, transparent);
+}
+
+.collaborators ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.collaborators li {
+  color: color-mix(in srgb, var(--viewfinder-foreground) 76%, transparent);
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.projectLink {
+  min-width: max-content;
+  min-height: 2.75rem;
+}
+
+.footer {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: clamp(1rem, 2vw, 1.8rem) clamp(1rem, 4vw, 4rem);
+  color: color-mix(in srgb, var(--viewfinder-foreground) 48%, transparent);
+}
+
+.footerRule {
+  width: min(8rem, 16vw);
+  height: 1px;
+  background: color-mix(in srgb, var(--viewfinder-foreground) 24%, transparent);
+}
+
+.loading {
+  padding: clamp(1.2rem, 3vw, 3rem) clamp(1rem, 4vw, 4rem);
+}
+
+.loading .header {
+  padding: 0;
+}
+
+.loadingTabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.loadingTab {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.loadingProject {
+  display: grid;
+  min-height: 34rem;
+  grid-template-columns: minmax(0, 1.62fr) minmax(16rem, 0.72fr);
+  margin-top: 3rem;
+}
+
+.loadingCopy {
+  padding: clamp(2rem, 5vw, 5rem) clamp(1.2rem, 3vw, 3rem);
+  background: rgb(255 255 255 / 4%);
+}
+
+.skeleton {
+  display: block;
+  background: linear-gradient(100deg, rgb(255 255 255 / 7%) 30%, rgb(255 255 255 / 15%) 48%, rgb(255 255 255 / 7%) 66%) 100% 0 / 240% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+.loadingLabel {
+  width: 11rem;
+  height: 1.5rem;
+}
+
+.loadingImage {
+  min-height: 34rem;
+}
+
+.loadingTitle {
+  width: min(17rem, 84%);
+  height: 4.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.loadingLine,
+.loadingLineShort {
+  width: 100%;
+  height: 0.75rem;
+  margin-top: 0.8rem;
+}
+
+.loadingLineShort {
+  width: 64%;
+}
+
+.empty {
+  display: grid;
+  min-height: min(44rem, 80dvh);
+  place-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.emptySun {
+  width: 4.5rem;
+  aspect-ratio: 1;
+  justify-self: center;
+  margin-bottom: 2rem;
+  border: 1px solid var(--viewfinder-accent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 0.75rem rgb(216 173 79 / 8%);
+}
+
+.empty h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+}
+
+.empty > p:last-child {
+  margin: 1rem 0 0;
+  color: rgb(245 240 231 / 64%);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  margin: -1px;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .root {
+    min-height: auto;
+  }
+
+  .header {
+    grid-template-columns: 1fr auto;
+  }
+
+  .apertureTabs {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    order: 3;
+    overflow-x: auto;
+    padding: 0.25rem 0.2rem 0.5rem;
+    scrollbar-width: none;
+  }
+
+  .apertureTabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .position {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .viewport {
+    margin-top: 0.8rem;
+  }
+
+  .project,
+  .loadingProject {
+    min-height: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .projectImageFrame,
+  .loadingImage {
+    min-height: 0;
+    aspect-ratio: 3018 / 1498;
+  }
+
+  .projectCopy {
+    min-height: 23rem;
+    padding: 2rem clamp(1rem, 5vw, 2.5rem);
+  }
+
+  .projectCopy h3 {
+    max-width: 14ch;
+    font-size: clamp(2.5rem, 11vw, 4.75rem);
+  }
+
+  .architectureLineSide {
+    left: 72%;
+  }
+
+  .architectureLineTop {
+    width: 68%;
+  }
+}
+
+@media (max-width: 540px) {
+  .header {
+    gap: 1rem;
+  }
+
+  .header h2 {
+    max-width: 12rem;
+  }
+
+  .apertureTabs {
+    min-height: 4.6rem;
+  }
+
+  .apertureTab:nth-child(2),
+  .apertureTab:nth-child(5) {
+    margin-top: 0.3rem;
+  }
+
+  .apertureTab:nth-child(3),
+  .apertureTab:nth-child(4) {
+    margin-top: 0.6rem;
+  }
+
+  .project {
+    padding: 0 0.75rem;
+  }
+
+  .projectCopy {
+    min-height: 24rem;
+  }
+
+  .projectFooter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .projectLink {
+    width: 100%;
+  }
+
+  .footer {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .apertureTab,
+  .tabImage {
+    transition-duration: 0.01ms !important;
+  }
+
+  .viewport {
+    scroll-behavior: auto;
+  }
+
+  .skeleton {
+    animation: none;
+    background-position: 0 0;
+  }
+}
+
+@media (forced-colors: active) {
+  .apertureTab[aria-selected='true'] {
+    outline: 3px solid Highlight;
+    outline-offset: 3px;
+  }
+
+  .architectureLine,
+  .solarDisc::before,
+  .solarDisc::after,
+  .footerRule {
+    background: CanvasText;
+  }
+}

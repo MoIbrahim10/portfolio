@@ -1,0 +1,633 @@
+.root {
+  --stage-accent: #d8ad4f;
+  --stage-background: #102331;
+  --stage-foreground: #f5f0e7;
+  --stage-surface: #193447;
+  position: relative;
+  min-height: min(50rem, 92dvh);
+  overflow: hidden;
+  color: var(--stage-foreground);
+  background: var(--stage-background);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  isolation: isolate;
+}
+
+.backgroundStage,
+.sceneWash {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sceneWash::after {
+  position: absolute;
+  background:
+    linear-gradient(90deg, rgb(3 10 15 / 6%), transparent 42%, rgb(3 10 15 / 24%)),
+    radial-gradient(circle at 72% 34%, color-mix(in srgb, var(--stage-accent) 18%, transparent), transparent 34%);
+  content: '';
+  inset: 0;
+}
+
+.lightSweep {
+  position: absolute;
+  top: -18%;
+  bottom: -18%;
+  left: 0;
+  width: 38%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--stage-accent) 36%, transparent),
+    rgb(255 248 225 / 16%),
+    transparent
+  );
+  clip-path: polygon(16% 0, 100% 0, 84% 100%, 0 100%);
+  pointer-events: none;
+}
+
+.solarDisc {
+  position: absolute;
+  top: 21%;
+  right: clamp(-9rem, -6vw, -4rem);
+  width: clamp(17rem, 34vw, 34rem);
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--stage-accent) 34%, transparent);
+  border-radius: 50%;
+  opacity: 0.58;
+}
+
+.solarDisc::before,
+.solarDisc::after {
+  position: absolute;
+  border: 1px solid color-mix(in srgb, var(--stage-foreground) 12%, transparent);
+  border-radius: inherit;
+  content: '';
+  inset: 13%;
+}
+
+.solarDisc::after {
+  inset: 31%;
+  border-color: color-mix(in srgb, var(--stage-accent) 44%, transparent);
+}
+
+.stageLines {
+  position: absolute;
+  background:
+    linear-gradient(90deg, transparent 0 63%, color-mix(in srgb, var(--stage-foreground) 9%, transparent) 63% 63.1%, transparent 63.1%),
+    repeating-linear-gradient(0deg, transparent 0 5.5rem, color-mix(in srgb, var(--stage-foreground) 6%, transparent) 5.5rem calc(5.5rem + 1px));
+  inset: 0;
+}
+
+.header {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: minmax(10rem, 1fr) auto minmax(3.5rem, 1fr);
+  gap: clamp(1rem, 3vw, 3rem);
+  align-items: start;
+  padding: clamp(1rem, 2.4vw, 2.1rem) clamp(1rem, 4vw, 4rem) 0;
+}
+
+.identity {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.identityStep {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 auto;
+  margin-top: 0.08rem;
+  border: 1px solid var(--stage-accent);
+  background: linear-gradient(135deg, transparent 48%, var(--stage-accent) 49% 63%, transparent 64%);
+  clip-path: polygon(0 0, 100% 0, 100% 66%, 66% 66%, 66% 100%, 0 100%);
+}
+
+.eyebrow,
+.sceneLabel,
+.counter,
+.frameNumber,
+.collaborators > p,
+.footer {
+  margin: 0;
+  font: 700 0.64rem/1.25 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.eyebrow,
+.sceneLabel,
+.collaborators > p {
+  color: var(--stage-accent);
+}
+
+.eyebrow {
+  margin-bottom: 0.35rem;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: clamp(0.88rem, 1.2vw, 1.04rem);
+  font-weight: 580;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.cueStrip {
+  display: flex;
+  padding: 0.32rem;
+  border: 1px solid color-mix(in srgb, var(--stage-foreground) 14%, transparent);
+  gap: 0.36rem;
+  background: rgb(5 13 18 / 32%);
+  box-shadow: 0 0.7rem 2.2rem rgb(2 8 12 / 14%);
+}
+
+.cue {
+  position: relative;
+  width: clamp(2.75rem, 3.7vw, 3.4rem);
+  min-width: 2.75rem;
+  height: clamp(2.75rem, 3.7vw, 3.4rem);
+  min-height: 2.75rem;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--stage-foreground) 24%, transparent);
+  border-radius: 0;
+  background: var(--stage-surface);
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    opacity 160ms ease,
+    transform 140ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cue img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.cueTint {
+  position: absolute;
+  background: rgb(4 12 17 / 48%);
+  inset: 0;
+  transition: opacity 160ms ease;
+}
+
+.root[data-motion='off'] .cue,
+.root[data-motion='off'] .cueTint,
+.root[data-motion='off'] .cue::after {
+  transition-duration: 0ms;
+}
+
+.cue::after {
+  position: absolute;
+  right: 0.18rem;
+  bottom: 0.18rem;
+  width: 0.28rem;
+  height: 0.28rem;
+  background: var(--stage-accent);
+  content: '';
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.cue[aria-selected='true'] {
+  border-color: var(--stage-accent);
+  box-shadow:
+    0 0 0 2px var(--stage-accent),
+    0.45rem 0.45rem 0 color-mix(in srgb, var(--stage-accent) 20%, transparent);
+}
+
+.cue[aria-selected='true'] .cueTint,
+.cue[aria-selected='true']::after {
+  opacity: 0;
+}
+
+.cue[aria-selected='true']::after {
+  opacity: 1;
+}
+
+.cue:active {
+  transform: scale(0.96);
+}
+
+.cue:focus-visible,
+.viewport:focus-visible {
+  outline: 3px solid var(--stage-accent);
+  outline-offset: 3px;
+}
+
+.counter {
+  justify-self: end;
+  color: color-mix(in srgb, var(--stage-foreground) 62%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+.counter span:first-child {
+  color: var(--stage-accent);
+}
+
+.viewport {
+  position: relative;
+  z-index: 1;
+  overflow-x: auto;
+  margin-top: clamp(1rem, 2vw, 2rem);
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  touch-action: pan-x pan-y;
+}
+
+.viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.track {
+  display: flex;
+}
+
+.scene {
+  display: grid;
+  width: 100%;
+  min-width: 100%;
+  min-height: clamp(32rem, 66dvh, 43rem);
+  padding: clamp(1rem, 2vw, 2rem) clamp(1rem, 4vw, 4rem) clamp(2rem, 3.5vw, 3.5rem);
+  grid-template-columns: minmax(0, 1.62fr) minmax(15rem, 0.72fr);
+  gap: clamp(1.5rem, 5.5vw, 6.5rem);
+  align-items: center;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.projection {
+  position: relative;
+  padding: clamp(0.48rem, 0.8vw, 0.72rem);
+  background: color-mix(in srgb, var(--stage-foreground) 5%, transparent);
+  clip-path: polygon(1.15rem 0, 100% 0, 100% calc(100% - 1.15rem), calc(100% - 1.15rem) 100%, 0 100%, 0 1.15rem);
+}
+
+.projection::before {
+  position: absolute;
+  z-index: -1;
+  border: 1px solid color-mix(in srgb, var(--stage-accent) 66%, transparent);
+  content: '';
+  inset: 0;
+  clip-path: inherit;
+}
+
+.projection::after {
+  position: absolute;
+  right: -0.52rem;
+  bottom: -0.52rem;
+  width: calc(100% - 1rem);
+  height: calc(100% - 1rem);
+  border-right: 1px solid color-mix(in srgb, var(--stage-accent) 34%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--stage-accent) 34%, transparent);
+  content: '';
+  pointer-events: none;
+}
+
+.projectionImage {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3018 / 1498;
+  background: var(--stage-surface);
+}
+
+.projectionImage::after {
+  position: absolute;
+  background: linear-gradient(120deg, transparent 58%, color-mix(in srgb, var(--stage-accent) 12%, transparent));
+  content: '';
+  pointer-events: none;
+  inset: 0;
+}
+
+.projectionImage img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.frameNumber {
+  position: absolute;
+  z-index: 1;
+  right: 1rem;
+  bottom: 1rem;
+  padding: 0.48rem 0.58rem;
+  color: #f7f2e9;
+  background: rgb(4 12 17 / 76%);
+}
+
+.credits {
+  max-width: 28rem;
+}
+
+.sceneLabel {
+  margin-bottom: 0.85rem;
+}
+
+.credits h3 {
+  max-width: 10ch;
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.5rem, 5vw, 5.65rem);
+  font-weight: 400;
+  line-height: 0.91;
+  letter-spacing: -0.06em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 37ch;
+  margin: clamp(1.2rem, 2.5vw, 2rem) 0 0;
+  color: color-mix(in srgb, var(--stage-foreground) 76%, transparent);
+  font-size: clamp(0.92rem, 1.05vw, 1.04rem);
+  line-height: 1.65;
+}
+
+.collaborators {
+  margin: clamp(1.2rem, 2.5vw, 2rem) 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid color-mix(in srgb, var(--stage-foreground) 18%, transparent);
+}
+
+.collaborators > p {
+  margin-bottom: 0.5rem;
+}
+
+.collaborators ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  gap: 0.3rem 1rem;
+  flex-wrap: wrap;
+  list-style: none;
+}
+
+.collaborators li {
+  color: color-mix(in srgb, var(--stage-foreground) 66%, transparent);
+  font-size: 0.78rem;
+}
+
+.footer {
+  position: absolute;
+  z-index: 3;
+  right: clamp(1rem, 4vw, 4rem);
+  bottom: 0.9rem;
+  left: clamp(1rem, 4vw, 4rem);
+  display: grid;
+  grid-template-columns: auto minmax(6rem, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  color: color-mix(in srgb, var(--stage-foreground) 48%, transparent);
+}
+
+.progressTrack {
+  height: 1px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--stage-foreground) 16%, transparent);
+}
+
+.progressValue {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--stage-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.loading {
+  padding: clamp(1rem, 4vw, 4rem);
+  color: #f5f0e7;
+  background: #102331;
+}
+
+.loadingHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.loadingCues {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.skeleton {
+  display: block;
+  border: 1px solid rgb(246 238 221 / 8%);
+  background: linear-gradient(105deg, rgb(246 238 221 / 6%) 34%, rgb(246 238 221 / 14%) 46%, rgb(246 238 221 / 6%) 58%);
+  background-size: 200% 100%;
+  animation: shimmer 1.45s linear infinite;
+}
+
+.loadingLabel {
+  width: 8rem;
+  height: 1.5rem;
+}
+
+.loadingCue {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.loadingScene {
+  display: grid;
+  min-height: 34rem;
+  margin-top: 2.5rem;
+  grid-template-columns: minmax(0, 1.62fr) minmax(15rem, 0.72fr);
+  gap: clamp(1.5rem, 5.5vw, 6.5rem);
+  align-items: center;
+}
+
+.loadingMedia {
+  width: 100%;
+  aspect-ratio: 3018 / 1498;
+}
+
+.loadingCredits {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.loadingKicker {
+  width: 5rem;
+  height: 0.7rem;
+}
+
+.loadingTitle {
+  width: min(100%, 18rem);
+  height: 4.8rem;
+}
+
+.loadingLine,
+.loadingLineShort {
+  width: min(100%, 22rem);
+  height: 0.85rem;
+}
+
+.loadingLineShort {
+  width: min(72%, 16rem);
+}
+
+.empty {
+  display: grid;
+  min-height: 34rem;
+  padding: clamp(2rem, 6vw, 6rem);
+  place-content: center;
+  text-align: center;
+  color: #f5f0e7;
+  background: #102331;
+}
+
+.emptySun {
+  width: 4.4rem;
+  aspect-ratio: 1;
+  margin: 0 auto 1.5rem;
+  border: 1px solid #d8ad4f;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1rem rgb(216 173 79 / 12%);
+}
+
+.empty h2 {
+  max-width: 12ch;
+  margin: 0;
+  font: 400 clamp(2.2rem, 6vw, 5rem) / 0.95 Georgia, "Times New Roman", serif;
+  letter-spacing: -0.05em;
+}
+
+.empty > p:last-child {
+  margin: 1rem 0 0;
+  color: rgb(245 240 231 / 64%);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  margin: -1px;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cue:not([aria-selected='true']):hover {
+    border-color: color-mix(in srgb, var(--stage-accent) 72%, transparent);
+    transform: translateY(-0.15rem);
+  }
+
+  .cue:not([aria-selected='true']):hover .cueTint {
+    opacity: 0.18;
+  }
+}
+
+@media (max-width: 760px) {
+  .root {
+    min-height: 50rem;
+  }
+
+  .header {
+    grid-template-columns: 1fr auto;
+  }
+
+  .cueStrip {
+    width: 100%;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: center;
+    order: 3;
+  }
+
+  .counter {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .scene,
+  .loadingScene {
+    min-height: 39rem;
+    grid-template-columns: 1fr;
+    gap: 1.35rem;
+    align-content: start;
+  }
+
+  .scene {
+    padding-top: 0.5rem;
+  }
+
+  .projection {
+    align-self: start;
+  }
+
+  .credits {
+    max-width: none;
+  }
+
+  .credits h3 {
+    max-width: 14ch;
+    font-size: clamp(2.35rem, 12vw, 4rem);
+  }
+
+  .description {
+    margin-top: 0.9rem;
+  }
+
+  .collaborators {
+    margin: 0.9rem 0;
+  }
+
+  .footer {
+    display: none;
+  }
+
+  .loadingHeader {
+    display: grid;
+  }
+}
+
+@media (max-width: 430px) {
+  .cueStrip {
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+  }
+
+  .cueStrip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cue {
+    flex: 0 0 2.75rem;
+  }
+
+  .scene {
+    min-height: 41rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root *,
+  .root *::before,
+  .root *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

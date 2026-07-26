@@ -1,0 +1,347 @@
+.lab {
+  color: #242424;
+  background: #f6f6f4;
+}
+
+.hero {
+  width: min(100%, 76rem);
+  min-height: auto;
+  margin-inline: auto;
+  padding: clamp(4rem, 9vw, 8rem) clamp(1.25rem, 5vw, 5rem);
+  color: #242424;
+  background: #fbfbfa;
+  border-inline: 1px solid rgb(20 20 20 / 7%);
+}
+
+.hero h1 {
+  max-width: 14ch;
+  font-family: "Helvetica Neue", "Avenir Next", ui-sans-serif, sans-serif;
+  font-size: clamp(2.8rem, 6vw, 5.4rem);
+  font-weight: 450;
+  line-height: 0.96;
+  letter-spacing: -0.065em;
+}
+
+.eyebrow {
+  color: #777;
+  letter-spacing: 0.12em;
+}
+
+.hero .intro {
+  max-width: 39rem;
+  color: #6d6d6d;
+  font-size: clamp(0.95rem, 1.3vw, 1.08rem);
+  line-height: 1.6;
+}
+
+.heroStats {
+  max-width: 39rem;
+  margin-block: 1.75rem;
+  border-color: rgb(20 20 20 / 9%);
+}
+
+.heroStats dt {
+  color: #8a8a8a;
+}
+
+.heroStats dd {
+  color: #343434;
+  font-family: "Helvetica Neue", "Avenir Next", ui-sans-serif, sans-serif;
+  font-size: 0.9rem;
+}
+
+.brandPanel {
+  width: min(100%, 24rem);
+  padding: 1.5rem;
+  color: #323232;
+  background: #fff;
+  border-color: rgb(20 20 20 / 9%);
+}
+
+.brandPanel::before,
+.brandPanel::after {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-color: #9c7737;
+  border-width: 1px;
+}
+
+.brandPanel > p {
+  color: #898989;
+}
+
+.logo {
+  width: min(100%, 15rem);
+}
+
+.index {
+  width: min(100%, 76rem);
+  margin-inline: auto;
+  padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 5vw, 5rem);
+  background: #fbfbfa;
+  border-inline: 1px solid rgb(20 20 20 / 7%);
+}
+
+.sectionHeading {
+  gap: 4rem;
+  margin-bottom: 2rem;
+}
+
+.sectionHeading h2 {
+  max-width: 17ch;
+  font-family: "Helvetica Neue", "Avenir Next", ui-sans-serif, sans-serif;
+  font-size: clamp(2rem, 4.2vw, 3.8rem);
+  font-weight: 450;
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.sectionHeading > p {
+  max-width: 35rem;
+  color: #757575;
+  font-size: 0.92rem;
+}
+
+.directionGrid {
+  border-color: rgb(20 20 20 / 8%);
+}
+
+.directionGrid > li {
+  border-color: rgb(20 20 20 / 8%);
+}
+
+.directionActive {
+  background: #f3f2ee;
+  box-shadow: inset 0 2px #9c7737;
+}
+
+.directionCard {
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.directionCard h3 {
+  font-family: "Helvetica Neue", "Avenir Next", ui-sans-serif, sans-serif;
+  font-size: clamp(1.1rem, 1.7vw, 1.35rem);
+  font-weight: 550;
+  letter-spacing: -0.025em;
+}
+
+.directionCard > p {
+  color: #777;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.preview {
+  background: #efefec;
+}
+
+.previewBar {
+  min-height: 68px;
+  color: #252525;
+  background: rgb(251 251 250 / 94%);
+  border-color: rgb(20 20 20 / 9%);
+  box-shadow: 0 1px rgb(20 20 20 / 4%);
+}
+
+.previewTitle > span {
+  color: #7d715d;
+}
+
+.previewTitle h2 {
+  font-family: "Helvetica Neue", "Avenir Next", ui-sans-serif, sans-serif;
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  font-weight: 550;
+  letter-spacing: -0.02em;
+}
+
+.previewCanvas {
+  padding: clamp(1rem, 2.5vw, 2.5rem);
+  background: #efefec;
+  border-color: rgb(20 20 20 / 8%);
+}
+
+.directionFrame {
+  width: min(100%, 76rem);
+  margin-inline: auto;
+}
+
+.directionFrame > section {
+  min-height: min(38rem, 78svh) !important;
+  color: var(
+    --foreground,
+    var(
+      --viewfinder-foreground,
+      var(
+        --slider-foreground,
+        var(
+          --solar-foreground,
+          var(
+            --rail-foreground,
+            var(
+              --canvas-foreground,
+              var(--stack-foreground, var(--gallery-foreground, var(--stage-foreground, var(--switch-foreground, #242424))))
+            )
+          )
+        )
+      )
+    )
+  ) !important;
+  background: var(
+    --background,
+    var(
+      --viewfinder-background,
+      var(
+        --slider-background,
+        var(
+          --solar-surface,
+          var(
+            --rail-background,
+            var(
+              --canvas-background,
+              var(--stack-background, var(--gallery-background, var(--stage-background, var(--switch-background, #f7f7f5))))
+            )
+          )
+        )
+      )
+    )
+  ) !important;
+  border: 0 !important;
+  box-shadow: 0 0 0 1px rgb(20 20 20 / 7%) !important;
+  font-family: "Helvetica Neue", "Avenir Next", ui-sans-serif, sans-serif !important;
+  transition: color 180ms cubic-bezier(0.22, 1, 0.36, 1), background-color 180ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.directionFrame > section > header {
+  min-height: 0 !important;
+  padding: clamp(1.25rem, 2.4vw, 2rem) clamp(1rem, 3vw, 2.5rem) 0.75rem !important;
+}
+
+.directionFrame > section > header h2 {
+  max-width: none !important;
+  margin-top: 0.2rem !important;
+  font-family: "Helvetica Neue", "Avenir Next", ui-sans-serif, sans-serif !important;
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem) !important;
+  font-weight: 560 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.directionFrame :global([class*="backgroundStage"]),
+.directionFrame :global([class*="backgrounds"]),
+.directionFrame :global([class*="paletteWash"]),
+.directionFrame :global([class*="colorField"]),
+.directionFrame :global([class*="paperStage"]),
+.directionFrame :global([class*="ambientStage"]),
+.directionFrame :global([class*="materialStage"]),
+.directionFrame :global([class*="sceneWash"]),
+.directionFrame :global([class*="projectorGlow"]),
+.directionFrame :global([class*="frameLines"]),
+.directionFrame :global([class*="solarOrbit"]),
+.directionFrame :global([class*="solarDisc"]),
+.directionFrame :global([class*="sunLine"]),
+.directionFrame :global([class*="colorCloud"]),
+.directionFrame :global([class*="pixelHorizon"]),
+.directionFrame :global([class*="canvasGrain"]),
+.directionFrame :global([class*="baselines"]),
+.directionFrame :global([class*="lightSweep"]),
+.directionFrame :global([class*="stageLines"]),
+.directionFrame :global([class*="grid"]),
+.directionFrame :global([class*="progressField"]),
+.directionFrame :global([class*="channelScan"]),
+.directionFrame :global([class*="scanLine"]) {
+  opacity: 0.035 !important;
+  animation: none !important;
+  filter: none !important;
+}
+
+.directionFrame :global(article) {
+  color: #262626;
+}
+
+.directionFrame :global(article h3) {
+  color: #202020 !important;
+  font-family: "Helvetica Neue", "Avenir Next", ui-sans-serif, sans-serif !important;
+  font-size: clamp(1.65rem, 3.2vw, 2.65rem) !important;
+  font-weight: 470 !important;
+  line-height: 0.98 !important;
+  letter-spacing: -0.055em !important;
+}
+
+.directionFrame :global(article p) {
+  color: #696969 !important;
+}
+
+.directionFrame :global(figure) {
+  background: #fff !important;
+  box-shadow: 0 0 0 1px rgb(20 20 20 / 6%), 0 8px 24px rgb(20 20 20 / 4%) !important;
+}
+
+.directionFrame :global(figure img) {
+  object-fit: contain !important;
+}
+
+.directionFrame :global(button img) {
+  filter: grayscale(0.65) contrast(0.94) !important;
+}
+
+.directionFrame :global(button[aria-selected="true"] img),
+.directionFrame :global(button[aria-pressed="true"] img) {
+  filter: none !important;
+}
+
+.footer {
+  width: min(100%, 76rem);
+  margin-inline: auto;
+  color: #777;
+  background: #fbfbfa;
+  border-inline: 1px solid rgb(20 20 20 / 7%);
+}
+
+.footer a {
+  color: #333;
+}
+
+@media (max-width: 70rem) {
+  .hero,
+  .index,
+  .footer {
+    border-inline: 0;
+  }
+
+  .brandPanel {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 46rem) {
+  .hero {
+    padding-block: 3.5rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.65rem, 13vw, 4.1rem);
+  }
+
+  .index {
+    padding-block: 3.5rem;
+  }
+
+  .previewCanvas {
+    padding: 0.75rem;
+  }
+
+  .directionFrame > section {
+    min-height: 39rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .directionFrame > section,
+  .directionFrame > section * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,356 @@
+.lab {
+  --lab-navy: #0d283a;
+  --lab-ink: #102c3f;
+  --lab-gold: #d79d40;
+  --lab-paper: #f6f1e8;
+  min-height: 100svh;
+  background: var(--lab-paper);
+  color: var(--lab-ink);
+}
+
+.skipLink {
+  position: fixed;
+  z-index: 100;
+  top: 0.75rem;
+  left: 0.75rem;
+  min-height: 44px;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--lab-gold);
+  background: var(--lab-navy);
+  color: #fffaf1;
+  font-weight: 750;
+  transform: translateY(-150%);
+  transition: transform 160ms ease;
+}
+
+.skipLink:focus {
+  transform: translateY(0);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.9fr);
+  gap: clamp(2.5rem, 6vw, 6rem);
+  align-items: center;
+  min-height: min(44rem, 82svh);
+  padding: clamp(2rem, 6vw, 7rem) max(1.25rem, calc((100vw - 88rem) / 2));
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, transparent 0 74%, rgb(215 157 64 / 9%) 74% 74.15%, transparent 74.15%),
+    linear-gradient(180deg, #0b2232, #102f43);
+  color: #fffaf1;
+}
+
+.heroCopy {
+  max-width: 46rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.8rem;
+  color: var(--lab-gold);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.hero h1,
+.index h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+}
+
+.hero h1 {
+  max-width: 14ch;
+  font-size: clamp(2.8rem, 6vw, 6rem);
+  line-height: 0.94;
+}
+
+.intro {
+  max-width: 41rem;
+  margin: 1.7rem 0 0;
+  color: rgb(255 250 241 / 72%);
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  line-height: 1.7;
+}
+
+.reviewStatus {
+  display: flex;
+  gap: 0.45rem 1.25rem;
+  align-items: baseline;
+  width: fit-content;
+  margin-top: 2rem;
+  padding: 0.8rem 1rem;
+  border-left: 3px solid var(--lab-gold);
+  background: rgb(255 255 255 / 5%);
+}
+
+.reviewStatus span,
+.selectionLabel span {
+  color: rgb(255 250 241 / 58%);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.reviewStatus strong,
+.selectionLabel strong {
+  font-size: 0.86rem;
+}
+
+.brandSelection {
+  position: relative;
+  display: grid;
+  gap: 1.2rem;
+  place-items: center;
+  width: min(100%, 34rem);
+  justify-self: end;
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid rgb(215 157 64 / 34%);
+  background: rgb(3 18 28 / 28%);
+}
+
+.brandSelection::before,
+.brandSelection::after {
+  position: absolute;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-color: var(--lab-gold);
+  content: "";
+  pointer-events: none;
+}
+
+.brandSelection::before {
+  top: -1px;
+  left: -1px;
+  border-top: 3px solid;
+  border-left: 3px solid;
+}
+
+.brandSelection::after {
+  right: -1px;
+  bottom: -1px;
+  border-right: 3px solid;
+  border-bottom: 3px solid;
+}
+
+.selectionLabel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  align-items: baseline;
+  width: 100%;
+}
+
+.brandSelection .brandMark {
+  width: min(100%, 26rem);
+  margin: 1rem 0;
+}
+
+.brandSelection > p {
+  margin: 0;
+  color: rgb(255 250 241 / 52%);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.index {
+  padding: clamp(4rem, 8vw, 8rem) max(1.25rem, calc((100vw - 88rem) / 2));
+}
+
+.indexHeading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.7fr);
+  gap: 2rem;
+  align-items: end;
+  margin-bottom: 2.5rem;
+}
+
+.index h2 {
+  font-size: clamp(2.2rem, 5vw, 4.8rem);
+  line-height: 0.95;
+}
+
+.indexHeading > p {
+  margin: 0;
+  color: rgb(16 44 63 / 68%);
+  line-height: 1.65;
+}
+
+.conceptGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid rgb(16 44 63 / 18%);
+  border-left: 1px solid rgb(16 44 63 / 18%);
+}
+
+.conceptCard {
+  min-width: 0;
+  padding: clamp(1.2rem, 3vw, 2rem);
+  border-right: 1px solid rgb(16 44 63 / 18%);
+  border-bottom: 1px solid rgb(16 44 63 / 18%);
+  background: rgb(255 252 247 / 48%);
+}
+
+.conceptLink {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr) auto;
+  gap: 0.8rem;
+  align-items: center;
+  min-height: 44px;
+  color: var(--lab-ink);
+  text-decoration: none;
+}
+
+.conceptLink > span {
+  color: var(--lab-gold);
+  font: 800 0.72rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.12em;
+}
+
+.conceptLink strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.25rem, 2vw, 1.65rem);
+  font-weight: 500;
+}
+
+.conceptLink small {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.conceptLink:hover strong {
+  color: #8f641f;
+}
+
+.conceptLink:focus-visible,
+.systemRail a:focus-visible {
+  outline: 3px solid #9c1e1b;
+  outline-offset: 4px;
+}
+
+.conceptCard > p {
+  max-width: 52ch;
+  margin: 0.9rem 0 1.1rem 3rem;
+  color: rgb(16 44 63 / 66%);
+  line-height: 1.55;
+}
+
+.systems {
+  display: grid;
+  gap: clamp(4rem, 9vw, 9rem);
+  padding: clamp(2rem, 5vw, 5rem) max(0.75rem, calc((100vw - 98rem) / 2)) clamp(6rem, 12vw, 12rem);
+  background: #071a26;
+}
+
+.systemFrame {
+  min-width: 0;
+  scroll-margin-top: 1rem;
+  overflow: hidden;
+  border: 1px solid rgb(215 157 64 / 26%);
+  background: var(--lab-paper);
+  box-shadow: 0 2.5rem 6rem rgb(0 0 0 / 22%);
+}
+
+.systemRail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 1rem;
+  align-items: center;
+  min-height: 48px;
+  padding: 0.5rem clamp(0.8rem, 2vw, 1.4rem);
+  border-bottom: 1px solid rgb(215 157 64 / 26%);
+  background: #061824;
+  color: #fffaf1;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.systemRail > span:nth-child(2) {
+  padding: 0.3rem 0.55rem;
+  border: 1px solid rgb(215 157 64 / 46%);
+  color: var(--lab-gold);
+}
+
+.systemRail a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: rgb(255 250 241 / 68%);
+  text-decoration: none;
+}
+
+.systemRail a:hover {
+  color: #fffaf1;
+}
+
+@media (max-width: 64rem) {
+  .hero,
+  .indexHeading {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    min-height: auto;
+  }
+
+  .brandSelection {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 46rem) {
+  .conceptGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .reviewStatus,
+  .selectionLabel {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .systemRail {
+    grid-template-columns: 1fr auto;
+  }
+
+  .systemRail > span:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 30rem) {
+  .conceptLink {
+    grid-template-columns: 2rem minmax(0, 1fr);
+  }
+
+  .conceptLink small {
+    grid-column: 2;
+  }
+
+  .conceptCard > p {
+    margin-left: 2.8rem;
+  }
+
+  .systemRail {
+    letter-spacing: 0.08em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skipLink {
+    transition: none;
+  }
+
+  .lab {
+    scroll-behavior: auto;
+  }
+}

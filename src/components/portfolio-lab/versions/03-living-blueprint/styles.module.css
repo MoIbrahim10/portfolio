@@ -1,0 +1,758 @@
+.page {
+  --canvas: #f7f4ec;
+  --sheet: #fffdf8;
+  --navy: #122b3d;
+  --navy-shadow: #0f2636;
+  --graphite: #58616a;
+  --line: #d8d3c7;
+  --gold: #d79d40;
+  --red: #9c1e1b;
+  min-height: 100%;
+  overflow: clip;
+  color: var(--navy);
+  background: var(--canvas);
+  font-family: Charter, "Bitstream Charter", "Sitka Text", "Iowan Old Style", serif;
+}
+
+.page *,
+.page *::before,
+.page *::after {
+  box-sizing: border-box;
+}
+
+.header,
+.hero,
+.projects,
+.contact,
+.footer {
+  width: min(100% - clamp(2.25rem, 8vw, 7.5rem), 80rem);
+  margin-inline: auto;
+}
+
+.header {
+  display: flex;
+  min-height: 6.5rem;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.logoLink {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+}
+
+.logo {
+  width: 3.5rem;
+}
+
+.headerNav {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.4rem);
+  margin-left: auto;
+}
+
+.headerNav > a:not(:last-child),
+.contactActions > a,
+.secondaryLink,
+.footer > a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: inherit;
+  font: 600 0.75rem/1 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.04em;
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 28%, transparent);
+  text-underline-offset: 0.35em;
+}
+
+.headerNav > a:hover,
+.contactActions > a:hover,
+.secondaryLink:hover,
+.footer > a:hover {
+  text-decoration-color: currentColor;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(17rem, 0.8fr) minmax(19rem, 1fr);
+  gap: clamp(3rem, 8vw, 8rem);
+  padding-block: clamp(4.5rem, 9vw, 8rem);
+}
+
+.eyebrow,
+.sectionNumber,
+.detailHeader p {
+  margin: 0 0 1rem;
+  color: var(--graphite);
+  font: 600 0.71rem/1.35 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  max-width: 11ch;
+  margin: 0;
+  font-family: "Bahnschrift SemiCondensed", "Avenir Next Condensed", "Franklin Gothic Condensed", "Nimbus Sans Narrow", sans-serif;
+  font-size: clamp(2.6rem, 5vw, 4rem);
+  font-weight: 600;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+.heroCopy {
+  align-self: end;
+}
+
+.heroCopy > p {
+  max-width: 39rem;
+  margin: 0 0 1.8rem;
+  color: var(--graphite);
+  font-size: clamp(1rem, 1.25vw, 1.125rem);
+  line-height: 1.65;
+}
+
+.projects {
+  padding-bottom: clamp(6rem, 12vw, 10rem);
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.sectionHeading h2,
+.contact h2 {
+  margin: 0;
+  font-family: "Bahnschrift SemiCondensed", "Avenir Next Condensed", "Franklin Gothic Condensed", "Nimbus Sans Narrow", sans-serif;
+  font-size: clamp(1.65rem, 2.5vw, 2.35rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.sectionHeading > p {
+  margin: 0;
+  color: var(--graphite);
+  font-size: 0.9rem;
+}
+
+.plan {
+  position: relative;
+  padding: clamp(3rem, 6vw, 5.5rem) 0 0;
+}
+
+.datumLine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0.55rem;
+  width: 1px;
+  background: var(--line);
+}
+
+.datumLine::before {
+  position: absolute;
+  top: 0;
+  left: -4px;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--gold);
+  background: var(--canvas);
+  content: "";
+}
+
+.project {
+  --project-accent: var(--gold);
+  --sheet-step: 0%;
+  position: relative;
+  margin: 0 0 clamp(3.75rem, 8vw, 7rem);
+  padding-left: 2.5rem;
+}
+
+.project::before {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.2rem;
+  width: 0.75rem;
+  height: 1px;
+  background: var(--navy);
+  content: "";
+}
+
+.sheetPosition {
+  width: min(74%, 54rem);
+  margin-left: var(--sheet-step);
+}
+
+.projectButton {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: var(--sheet);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--navy) 8%, transparent);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+  cursor: pointer;
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.projectButton:hover {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--navy) 12%, transparent),
+    0 14px 38px #122b3d14;
+  transform: translateY(-4px);
+}
+
+.projectButton:active {
+  transform: translateY(-1px) scale(0.992);
+}
+
+.activeEdge {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--project-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.projectButton:hover .activeEdge,
+.projectButton:focus-visible .activeEdge,
+.projectButton[aria-expanded="true"] .activeEdge {
+  transform: scaleX(1);
+}
+
+.imageFrame {
+  position: relative;
+  display: grid;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  place-items: center;
+  background: #efede6;
+}
+
+.imageFrame > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.imageSkeleton {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  gap: 0.65rem;
+  padding-inline: 12%;
+  background: #efede6;
+}
+
+.imageSkeleton > span {
+  display: block;
+  width: 58%;
+  height: 1px;
+  background: #c9c5ba;
+}
+
+.imageSkeleton > span:last-child {
+  width: 34%;
+}
+
+.imageFallback {
+  display: flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--graphite);
+  font: 600 0.74rem/1.3 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.04em;
+}
+
+.imageFallback > span {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--red);
+  place-items: center;
+  color: var(--red);
+}
+
+.sheetCaption {
+  display: grid;
+  grid-template-columns: 3rem 1fr auto;
+  align-items: baseline;
+  gap: 1rem;
+  padding-top: 0.9rem;
+}
+
+.sheetCaption > span {
+  color: var(--graphite);
+  font: 600 0.69rem/1.35 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sheetCaption h3 {
+  margin: 0;
+  font-family: "Bahnschrift SemiCondensed", "Avenir Next Condensed", "Franklin Gothic Condensed", "Nimbus Sans Narrow", sans-serif;
+  font-size: clamp(1.25rem, 2vw, 1.65rem);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.detailLayer {
+  position: relative;
+  width: 100%;
+  margin-top: clamp(2rem, 4vw, 3.5rem);
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border-top: 1px solid var(--navy);
+  border-bottom: 1px solid var(--line);
+  background: var(--sheet);
+}
+
+.detailLayer::before,
+.detailLayer::after {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-color: var(--navy);
+  content: "";
+  pointer-events: none;
+}
+
+.detailLayer::before {
+  top: 8px;
+  left: 8px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+.detailLayer::after {
+  right: 8px;
+  bottom: 8px;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.detailRule {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: min(12rem, 30%);
+  height: 3px;
+  background: var(--project-accent);
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.detailHeader {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.detailHeader h4 {
+  margin: 0;
+  font-family: "Bahnschrift SemiCondensed", "Avenir Next Condensed", "Franklin Gothic Condensed", "Nimbus Sans Narrow", sans-serif;
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.closeButton {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--line);
+  color: var(--navy);
+  background: transparent;
+  font: 600 0.72rem/1 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  cursor: pointer;
+  transition: transform 100ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.closeButton:hover {
+  border-color: var(--red);
+}
+
+.closeButton:active {
+  transform: translateY(1px);
+}
+
+.closeButton > span {
+  color: var(--red);
+  font-size: 1rem;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.75fr) minmax(16rem, 0.75fr);
+  gap: clamp(2rem, 5vw, 5rem);
+}
+
+.gallery .imageFrame {
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+}
+
+.thumbnailGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.thumbnail {
+  position: relative;
+  min-width: 44px;
+  min-height: 44px;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid var(--line);
+  background: #efede6;
+  cursor: pointer;
+  transition: transform 140ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.thumbnail:hover {
+  border-color: var(--navy);
+  transform: translateY(-2px);
+}
+
+.thumbnail:active {
+  transform: translateY(0);
+}
+
+.thumbnail[aria-pressed="true"] {
+  border-color: var(--navy);
+  box-shadow: inset 0 -3px 0 var(--project-accent);
+}
+
+.thumbnail img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+}
+
+.thumbnail span {
+  position: absolute;
+  right: 0.35rem;
+  bottom: 0.25rem;
+  padding: 0.1rem 0.25rem;
+  color: var(--navy);
+  background: var(--sheet);
+  font: 600 0.62rem/1.2 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+}
+
+.projectNotes {
+  align-self: start;
+}
+
+.description {
+  margin: 0;
+  color: var(--graphite);
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  line-height: 1.65;
+}
+
+.noteBlock {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.noteBlock h5 {
+  margin: 0 0 0.75rem;
+  font: 600 0.72rem/1.35 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.noteBlock ul {
+  margin: 0;
+  padding-left: 1rem;
+  color: var(--graphite);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem 1.2rem;
+  margin-top: 2rem;
+}
+
+.emptyState {
+  min-height: 15rem;
+  margin-top: 3rem;
+  padding: 2rem;
+  border: 1px solid var(--line);
+  background: var(--sheet);
+}
+
+.emptyState > span {
+  display: block;
+  width: 4rem;
+  height: 1px;
+  margin-bottom: 2rem;
+  background: var(--gold);
+}
+
+.emptyState p {
+  margin: 0;
+  color: var(--graphite);
+}
+
+.contact {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 3rem;
+  padding-block: clamp(3rem, 7vw, 5.5rem);
+  border-top: 1px solid var(--line);
+}
+
+.contact h2 {
+  max-width: 23ch;
+}
+
+.contactActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 2rem;
+  min-height: 7rem;
+  border-top: 1px solid var(--line);
+  color: var(--graphite);
+  font: 500 0.72rem/1.45 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+}
+
+.footerBrand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.footerLogo {
+  width: 2.35rem;
+}
+
+.projectButton:focus-visible,
+.thumbnail:focus-visible,
+.closeButton:focus-visible,
+.logoLink:focus-visible,
+.headerNav > a:focus-visible,
+.contactActions > a:focus-visible,
+.secondaryLink:focus-visible,
+.footer > a:focus-visible {
+  outline: 3px solid var(--navy);
+  outline-offset: 3px;
+}
+
+.detailHeader h4:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 6px;
+}
+
+@media (max-width: 760px) {
+  .header,
+  .hero,
+  .projects,
+  .contact,
+  .footer {
+    width: min(100% - 2.25rem, 80rem);
+  }
+
+  .header {
+    min-height: 5.5rem;
+  }
+
+  .headerNav > a:not(:last-child) {
+    display: none;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    padding-block: 4rem 5rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.4rem, 12vw, 3.15rem);
+  }
+
+  .sectionHeading {
+    align-items: start;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .sectionHeading > p {
+    max-width: 24rem;
+  }
+
+  .plan {
+    padding-top: 3.5rem;
+  }
+
+  .project {
+    margin-bottom: 4.5rem;
+    padding-left: 1.5rem;
+  }
+
+  .datumLine {
+    left: 0.3rem;
+  }
+
+  .project::before {
+    left: -0.05rem;
+  }
+
+  .sheetPosition {
+    width: calc(100% - min(var(--sheet-step), 12%));
+    margin-left: min(var(--sheet-step), 12%);
+  }
+
+  .sheetCaption {
+    grid-template-columns: 2rem 1fr;
+    gap: 0.65rem;
+  }
+
+  .sheetCaption > span:last-child {
+    grid-column: 2;
+  }
+
+  .detailLayer {
+    margin-left: -1.5rem;
+    width: calc(100% + 1.5rem);
+    padding: 1.4rem;
+  }
+
+  .detailGrid {
+    grid-template-columns: 1fr;
+    gap: 1.8rem;
+  }
+
+  .detailHeader {
+    gap: 1rem;
+  }
+
+  .closeButton {
+    font-size: 0;
+  }
+
+  .closeButton > span {
+    font-size: 1.15rem;
+  }
+
+  .contact {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .contactActions {
+    flex-wrap: wrap;
+  }
+
+  .footer {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding-block: 2rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .header,
+  .hero,
+  .projects,
+  .contact,
+  .footer {
+    width: calc(100% - 2rem);
+  }
+
+  .logo {
+    width: 3rem;
+  }
+
+  .headerNav {
+    gap: 0.5rem;
+  }
+
+  .sheetPosition {
+    width: calc(100% - min(var(--sheet-step), 8%));
+    margin-left: min(var(--sheet-step), 8%);
+  }
+
+  .thumbnailGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .projectButton,
+  .activeEdge,
+  .closeButton,
+  .thumbnail {
+    transition: none;
+  }
+
+  .projectButton:hover,
+  .projectButton:active,
+  .thumbnail:hover,
+  .thumbnail:active,
+  .closeButton:active {
+    transform: none;
+  }
+
+  html:has(.page) {
+    scroll-behavior: auto;
+  }
+}
+
+@media (forced-colors: active) {
+  .projectButton,
+  .detailLayer,
+  .thumbnail,
+  .closeButton {
+    border: 1px solid ButtonText;
+    clip-path: none;
+  }
+
+  .activeEdge,
+  .detailRule {
+    background: Highlight;
+  }
+}

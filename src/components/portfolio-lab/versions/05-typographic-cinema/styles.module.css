@@ -1,0 +1,857 @@
+.page {
+  --canvas: #f4f2ec;
+  --paper: #fffefa;
+  --screen: #10151d;
+  --navy: #17233d;
+  --carbon: #202228;
+  --slate: #6b7078;
+  --rule: #d8d5cc;
+  --gold: #d49a3a;
+  --red: #9c2926;
+  min-width: 0;
+  overflow-x: clip;
+  color: var(--carbon);
+  background: var(--canvas);
+  font-family: Optima, Candara, "Noto Sans", "Segoe UI", sans-serif;
+}
+
+.page *,
+.page *::before,
+.page *::after {
+  box-sizing: border-box;
+}
+
+.masthead,
+.hero,
+.work,
+.contact,
+.footer {
+  width: min(calc(100% - clamp(2.5rem, 7vw, 7rem)), 92.5rem);
+  margin-inline: auto;
+}
+
+.masthead {
+  display: flex;
+  min-height: 4.75rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.logoLink,
+.footerLogoLink {
+  display: inline-flex;
+  align-items: center;
+}
+
+.logo {
+  width: 4.25rem;
+}
+
+.primaryNav,
+.contactActions {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.1rem, 2.2vw, 2rem);
+}
+
+.primaryNav > a:not(:last-child),
+.contactActions > a {
+  display: inline-flex;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  color: var(--navy);
+  font: 600 0.78rem/1 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+  text-underline-offset: 0.28rem;
+}
+
+.primaryNav > a:not(:last-child):hover,
+.contactActions > a:hover,
+.repositoryLink:hover,
+.footer > a:hover {
+  color: var(--red);
+}
+
+.hero {
+  display: grid;
+  min-height: clamp(19rem, 43vh, 29rem);
+  grid-template-columns: minmax(0, 1.22fr) minmax(18rem, 0.78fr);
+  align-items: center;
+  gap: clamp(2rem, 7vw, 7rem);
+  padding-block: clamp(3rem, 7vh, 5.5rem);
+}
+
+.eyebrow,
+.credit {
+  margin: 0 0 0.75rem;
+  color: var(--slate);
+  font: 600 0.7rem/1.4 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  max-width: 15ch;
+  margin: 0;
+  color: var(--carbon);
+  font-family: "Avenir Next Condensed", "Helvetica Neue Condensed",
+    "Franklin Gothic Condensed", "Nimbus Sans Narrow", sans-serif;
+  font-size: clamp(2.25rem, 4.5vw, 4.75rem);
+  font-stretch: condensed;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+}
+
+.heroCopy {
+  max-width: 48ch;
+}
+
+.heroCopy > p {
+  margin: 0 0 1.5rem;
+  color: var(--slate);
+  font-size: clamp(1rem, 1.35vw, 1.15rem);
+  line-height: 1.55;
+}
+
+.work {
+  padding-block: 1rem clamp(5rem, 10vw, 9rem);
+}
+
+.workHeading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-block: 1.25rem;
+  border-top: 1px solid var(--navy);
+  border-bottom: 1px solid var(--rule);
+}
+
+.workHeading h2,
+.contact h2 {
+  margin: 0;
+  color: var(--carbon);
+  font-family: "Avenir Next Condensed", "Helvetica Neue Condensed",
+    "Franklin Gothic Condensed", "Nimbus Sans Narrow", sans-serif;
+  font-size: clamp(1.5rem, 2.2vw, 2.15rem);
+  font-weight: 620;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.instructions {
+  margin: 0;
+  color: var(--slate);
+  font: 500 0.72rem/1.4 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+}
+
+.screening {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(1.5rem, 2.3vw, 2rem);
+  transition: opacity 140ms ease;
+}
+
+.screeningDimmed {
+  opacity: 0.4;
+}
+
+.stageColumn {
+  grid-column: 1 / span 8;
+  min-width: 0;
+}
+
+.stage {
+  position: sticky;
+  top: clamp(1rem, 5vh, 4rem);
+  padding-block: clamp(2rem, 6vh, 5rem);
+}
+
+.screen {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  background: var(--screen);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 10px) 0,
+    calc(100% - 10px) 5px,
+    calc(100% - 5px) 5px,
+    calc(100% - 5px) 10px,
+    100% 10px,
+    100% 100%,
+    0 100%
+  );
+}
+
+.screenCut,
+.screenRest {
+  position: absolute;
+  inset: 0;
+}
+
+.screenCut {
+  will-change: clip-path, opacity;
+}
+
+.screenRest {
+  background: #e3e0d7;
+}
+
+.mediaFrame {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: var(--media-ratio);
+  background: #e3e0d7;
+}
+
+.mediaFrame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  object-fit: cover;
+  transition: opacity 140ms ease;
+}
+
+.mediaFrame .imageLoaded {
+  opacity: 1;
+}
+
+.stageImage {
+  height: 100%;
+  aspect-ratio: auto;
+  background: var(--screen);
+}
+
+.stageImage img {
+  object-position: center;
+}
+
+.mediaLoading {
+  position: absolute;
+  inset: 0;
+  background: #e3e0d7;
+}
+
+.mediaError {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  margin: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  color: var(--navy);
+  font: 600 0.75rem/1.4 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+}
+
+.mediaError span {
+  color: var(--red);
+  font-size: 1rem;
+}
+
+.stageCaption {
+  min-height: 3.25rem;
+  padding-top: 0.8rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.stageCaption p {
+  display: flex;
+  margin: 0;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--carbon);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.stageCaption span {
+  color: var(--slate);
+  font: 500 0.7rem/1 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+  letter-spacing: 0.06em;
+}
+
+.preload {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  pointer-events: none;
+}
+
+.shotList {
+  grid-column: 9 / -1;
+  min-width: 0;
+  padding-top: clamp(2rem, 6vh, 5rem);
+}
+
+.chapter {
+  position: relative;
+  display: flex;
+  min-height: 42vh;
+  flex-direction: column;
+  justify-content: center;
+  border-bottom: 1px solid var(--rule);
+}
+
+.chapter:first-child {
+  border-top: 1px solid var(--rule);
+}
+
+.chapterCue {
+  display: grid;
+  width: 100%;
+  min-height: 7rem;
+  grid-template-columns: 3px 2.3rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0.9rem;
+  padding: 1.25rem 0.8rem 1.25rem 0;
+  color: inherit;
+  text-align: left;
+}
+
+.chapterMarker {
+  width: 3px;
+  height: 0.75rem;
+  margin-top: 0.18rem;
+  background: var(--project-accent);
+  transition: height 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.chapterCount {
+  color: var(--slate);
+  font: 500 0.68rem/1.4 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+  letter-spacing: 0.06em;
+}
+
+.chapterText {
+  display: block;
+  transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.chapterText h3 {
+  margin: 0 0 0.65rem;
+}
+
+.chapterTitleButton {
+  min-height: 2.75rem;
+  margin: -0.7rem 0 -0.7rem -0.55rem;
+  padding: 0.55rem;
+  border: 0;
+  color: var(--carbon);
+  text-align: left;
+  background: transparent;
+  font-family: "Avenir Next Condensed", "Helvetica Neue Condensed",
+    "Franklin Gothic Condensed", "Nimbus Sans Narrow", sans-serif;
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.chapterText > span {
+  display: block;
+  max-width: 34ch;
+  color: var(--slate);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.chapter:has(.chapterTitleButton:hover) .chapterMarker,
+.chapterActive .chapterMarker {
+  height: 1.5rem;
+}
+
+.chapter:has(.chapterTitleButton:hover) .chapterText,
+.chapterActive .chapterText {
+  transform: translateX(4px);
+}
+
+.chapter:has(.chapterTitleButton:active) .chapterText {
+  transform: scale(0.99);
+}
+
+.openButton {
+  display: inline-flex;
+  width: max-content;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.45rem;
+  margin: -0.65rem 0 1.25rem 3.95rem;
+  padding: 0 0.8rem;
+  border: 0;
+  color: var(--navy);
+  font: 600 0.72rem/1 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+  background: transparent;
+  cursor: pointer;
+}
+
+.openButton span {
+  color: var(--gold);
+  transition: transform 160ms ease;
+}
+
+.openButton:hover span {
+  transform: translate(2px, 2px);
+}
+
+.openButton:active {
+  color: var(--red);
+}
+
+.mobileMedia {
+  display: none;
+}
+
+.chapterSummary {
+  width: 100%;
+}
+
+.emptyState {
+  min-height: 20rem;
+  margin: 0;
+  padding: 4rem 0;
+  color: var(--slate);
+  border-bottom: 1px solid var(--rule);
+}
+
+.intermission {
+  scroll-margin-top: 1.5rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  color: var(--carbon);
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+}
+
+.intermissionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.intermissionHeader .credit {
+  margin: 0;
+}
+
+.closeButton {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--rule);
+  color: var(--navy);
+  background: transparent;
+  font: 600 0.72rem/1 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+  cursor: pointer;
+}
+
+.closeButton span {
+  color: var(--red);
+  font-size: 1rem;
+}
+
+.closeButton:hover {
+  border-color: var(--navy);
+}
+
+.closeButton:active {
+  background: var(--canvas);
+}
+
+.intermissionGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(17rem, 1fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+  padding-block: clamp(2rem, 5vw, 4.5rem);
+}
+
+.intermissionHero {
+  min-width: 0;
+}
+
+.intermissionImage {
+  aspect-ratio: 16 / 10;
+  background: var(--screen);
+}
+
+.intermissionCopy {
+  max-width: 33rem;
+  padding-top: 0.2rem;
+}
+
+.intermissionCopy h3 {
+  margin: 0 0 1rem;
+  color: var(--carbon);
+  font-family: "Avenir Next Condensed", "Helvetica Neue Condensed",
+    "Franklin Gothic Condensed", "Nimbus Sans Narrow", sans-serif;
+  font-size: clamp(2rem, 4vw, 3.6rem);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+}
+
+.intermissionCopy > p {
+  margin: 0;
+  color: var(--slate);
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  line-height: 1.55;
+}
+
+.detailBlock {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+
+.detailBlock h4 {
+  margin: 0 0 0.65rem;
+  color: var(--slate);
+  font: 600 0.68rem/1.4 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.detailBlock ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.detailBlock li {
+  padding-block: 0.35rem;
+}
+
+.detailActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  margin-top: 2rem;
+}
+
+.repositoryLink {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--navy);
+  font-size: 0.9rem;
+  text-underline-offset: 0.28rem;
+}
+
+.gallery {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  padding-top: clamp(1.5rem, 4vw, 3rem);
+  border-top: 1px solid var(--rule);
+}
+
+.gallery figure {
+  width: min(100%, 75rem);
+  margin: 0 auto;
+}
+
+.contact {
+  display: flex;
+  min-height: clamp(17rem, 38vh, 25rem);
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+  border-top: 1px solid var(--navy);
+}
+
+.contact h2 {
+  max-width: 22ch;
+  font-size: clamp(1.7rem, 3vw, 3rem);
+  line-height: 1.05;
+}
+
+.footer {
+  display: grid;
+  min-height: 8rem;
+  grid-template-columns: 1.4fr 1fr auto;
+  align-items: center;
+  gap: 2rem;
+  color: var(--slate);
+  border-top: 1px solid var(--rule);
+  font: 500 0.7rem/1.5 ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+}
+
+.footer p {
+  margin: 0;
+}
+
+.footerIdentity {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footerLogo {
+  width: 2.65rem;
+}
+
+.footer > a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--navy);
+  text-underline-offset: 0.28rem;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.page :where(a, button):focus-visible {
+  outline: 3px solid var(--navy);
+  outline-offset: 3px;
+}
+
+@media (max-width: 779px) {
+  .masthead,
+  .hero,
+  .work,
+  .contact,
+  .footer {
+    width: min(calc(100% - 2.5rem), 92.5rem);
+  }
+
+  .masthead {
+    min-height: 4.5rem;
+  }
+
+  .logo {
+    width: 3.7rem;
+  }
+
+  .primaryNav > a:not(:last-child) {
+    display: none;
+  }
+
+  .hero {
+    display: block;
+    min-height: auto;
+    padding-block: 3.5rem 4rem;
+  }
+
+  .hero h1 {
+    max-width: 11ch;
+    font-size: clamp(2.45rem, 14vw, 4.25rem);
+  }
+
+  .heroCopy {
+    margin-top: 2.25rem;
+  }
+
+  .workHeading {
+    display: block;
+  }
+
+  .instructions {
+    margin-top: 1rem;
+  }
+
+  .screening,
+  .screeningDimmed {
+    display: block;
+    opacity: 1;
+  }
+
+  .stageColumn {
+    display: none;
+  }
+
+  .shotList {
+    padding-top: 0;
+  }
+
+  .chapter {
+    min-height: auto;
+    padding-block: 2.5rem;
+  }
+
+  .chapter:first-child {
+    border-top: 0;
+  }
+
+  .mobileMedia {
+    display: block;
+    margin-bottom: 1.25rem;
+  }
+
+  .mobileMedia .mediaFrame {
+    aspect-ratio: 4 / 3;
+  }
+
+  .chapterCue {
+    min-height: 5.5rem;
+    grid-template-columns: 3px 2rem minmax(0, 1fr);
+    padding-block: 0.25rem 1rem;
+  }
+
+  .chapterText h3 {
+    font-size: 1.45rem;
+  }
+
+  .openButton {
+    margin: 0 0 0 3.55rem;
+  }
+
+  .chapter:has(.intermission) {
+    padding-block: 0;
+    border: 0;
+  }
+
+  .intermission {
+    margin-inline: -1.25rem;
+    padding: 1.25rem;
+  }
+
+  .intermissionHeader,
+  .intermissionGrid {
+    display: block;
+  }
+
+  .closeButton {
+    margin-top: 1rem;
+  }
+
+  .intermissionHero {
+    margin-top: 1.5rem;
+  }
+
+  .intermissionImage {
+    aspect-ratio: 4 / 3;
+  }
+
+  .intermissionCopy {
+    padding-top: 2rem;
+  }
+
+  .intermissionCopy h3 {
+    font-size: clamp(2rem, 11vw, 3.1rem);
+  }
+
+  .gallery {
+    margin-top: 2rem;
+  }
+
+  .contact {
+    display: block;
+    min-height: auto;
+    padding-block: 4.5rem;
+  }
+
+  .contactActions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-top: 2rem;
+  }
+
+  .footer {
+    display: grid;
+    min-height: auto;
+    grid-template-columns: 1fr auto;
+    padding-block: 2.5rem max(2.5rem, env(safe-area-inset-bottom));
+  }
+
+  .footerIdentity {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 350px) {
+  .masthead,
+  .hero,
+  .work,
+  .contact,
+  .footer {
+    width: calc(100% - 2.25rem);
+  }
+
+  .primaryNav {
+    gap: 0.5rem;
+  }
+
+  .chapterCue {
+    grid-template-columns: 3px 1.65rem minmax(0, 1fr);
+    gap: 0.6rem;
+  }
+
+  .openButton {
+    margin-left: 2.85rem;
+  }
+
+  .footer {
+    grid-template-columns: 1fr;
+  }
+
+  .footerIdentity,
+  .footer > * {
+    grid-column: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screening,
+  .mediaFrame img,
+  .chapterMarker,
+  .chapterText,
+  .openButton span {
+    transition: none;
+  }
+
+  .chapter:has(.chapterTitleButton:active) .chapterText {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .screen {
+    border: 1px solid CanvasText;
+    clip-path: none;
+  }
+
+  .chapterMarker {
+    background: Highlight;
+  }
+
+  .closeButton {
+    border-color: ButtonText;
+  }
+}
