@@ -49,6 +49,7 @@ interface StoryChapter {
   contain?: boolean
   media: PortfolioMedia
   objectPosition?: string
+  posterMedia?: PortfolioMedia
   project?: PortfolioProject
   videoSrc?: string
 }
@@ -172,6 +173,7 @@ const STORIES: ProjectStory[] = [
           src: goodInvoice.media[2].src,
           width: 1056,
         },
+        posterMedia: goodInvoice.media[1],
         project: goodInvoice,
         videoSrc: '/portfolio/projects/good-invoice/feedback-links.mp4',
       },
@@ -628,6 +630,7 @@ function StoryMedia({
             active={active}
             eager={eager}
             media={chapter.media}
+            posterMedia={chapter.posterMedia}
             src={chapter.videoSrc}
           />
         ) : (
@@ -733,19 +736,23 @@ function ResilientVideo({
   active,
   eager,
   media,
+  posterMedia = media,
   src,
 }: {
   active: boolean
   eager: boolean
   media: PortfolioMedia
+  posterMedia?: PortfolioMedia
   src: string
 }) {
   const reducedMotion = useReducedMotion()
   const [inView, setInView] = useState(false)
   const [playing, setPlaying] = useState(false)
+  const [ready, setReady] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
-  const fallbackSrc = media.fallbackSrc ?? media.src
+  const fallbackSrc = posterMedia.fallbackSrc ?? posterMedia.src
+  const showVideo = playing && ready
 
   useEffect(() => {
     const root = rootRef.current
@@ -758,7 +765,7 @@ function ResilientVideo({
 
     const observer = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.1 },
+      { root: root.closest('[role="region"]'), threshold: 0.1 },
     )
     observer.observe(root)
 
@@ -767,51 +774,62 @@ function ResilientVideo({
 
   useEffect(() => {
     const video = videoRef.current
+    if (video && video.readyState >= 2) setReady(true)
+  }, [src])
+
+  useEffect(() => {
+    const video = videoRef.current
     if (!video) return
 
-    if (!active || !inView || reducedMotion) {
+    if (!active || !inView || !ready || reducedMotion) {
       video.pause()
       setPlaying(false)
       return
     }
 
-    void video.play().catch(() => setPlaying(false))
-  }, [active, inView, reducedMotion])
+    if (!playing) {
+      void video.play().catch(() => setPlaying(false))
+    }
+  }, [active, inView, playing, ready, reducedMotion])
 
   return (
     <div className={styles.videoStack} ref={rootRef}>
       <picture
         aria-hidden="true"
         className={`${styles.videoPoster} ${
-          playing ? styles.videoPosterHidden : ''
+          showVideo ? styles.videoPosterHidden : ''
         }`}
       >
-        {media.fallbackSrc ? (
-          <source srcSet={media.src} type="image/webp" />
+        {posterMedia.fallbackSrc ? (
+          <source srcSet={posterMedia.src} type="image/webp" />
         ) : null}
         <img
           alt=""
           decoding="async"
           fetchPriority={eager ? 'high' : 'auto'}
-          height={media.height}
+          height={posterMedia.height}
           loading={eager ? 'eager' : 'lazy'}
           src={fallbackSrc}
-          width={media.width}
+          width={posterMedia.width}
         />
       </picture>
       <video
         aria-label={media.alt}
         className={`${styles.videoLayer} ${
-          playing ? styles.videoLayerPlaying : ''
+          showVideo ? styles.videoLayerPlaying : ''
         }`}
         height={media.height}
         loop
         muted
-        onError={() => setPlaying(false)}
+        onError={() => {
+          setPlaying(false)
+          setReady(false)
+        }}
+        onLoadedData={() => setReady(true)}
         onPause={() => setPlaying(false)}
         onPlaying={() => setPlaying(true)}
         playsInline
-        poster={media.src}
+        poster={posterMedia.src}
         preload={eager ? 'auto' : 'metadata'}
         ref={videoRef}
         src={src}
@@ -830,9 +848,11 @@ function formatVideoTime(value: number) {
 
 function ViewerVideo({
   media,
+  posterMedia = media,
   src,
 }: {
   media: PortfolioMedia
+  posterMedia?: PortfolioMedia
   src: string
 }) {
   const reducedMotion = useReducedMotion()
@@ -840,9 +860,11 @@ function ViewerVideo({
   const [duration, setDuration] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [ready, setReady] = useState(false)
+  const [hasPresentedFrame, setHasPresentedFrame] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
-  const fallbackSrc = media.fallbackSrc ?? media.src
+  const fallbackSrc = posterMedia.fallbackSrc ?? posterMedia.src
   const progress = duration > 0 ? currentTime / duration : 0
+  const showVideo = ready && hasPresentedFrame
 
   useEffect(() => {
     const video = videoRef.current
@@ -884,24 +906,24 @@ function ViewerVideo({
       <picture
         aria-hidden="true"
         className={`${styles.viewerVideoPoster} ${
-          ready ? styles.viewerVideoPosterHidden : ''
+          showVideo ? styles.viewerVideoPosterHidden : ''
         }`}
       >
-        {media.fallbackSrc ? (
-          <source srcSet={media.src} type="image/webp" />
+        {posterMedia.fallbackSrc ? (
+          <source srcSet={posterMedia.src} type="image/webp" />
         ) : null}
         <img
           alt=""
           decoding="async"
-          height={media.height}
+          height={posterMedia.height}
           src={fallbackSrc}
-          width={media.width}
+          width={posterMedia.width}
         />
       </picture>
       <video
         aria-label={media.alt}
         className={`${styles.viewerVideoElement} ${
-          ready ? styles.viewerVideoElementReady : ''
+          showVideo ? styles.viewerVideoElementReady : ''
         }`}
         height={media.height}
         loop
@@ -910,15 +932,19 @@ function ViewerVideo({
         onError={() => {
           setPlaying(false)
           setReady(false)
+          setHasPresentedFrame(false)
         }}
         onLoadedData={() => setReady(true)}
         onPause={() => setPlaying(false)}
-        onPlaying={() => setPlaying(true)}
+        onPlaying={() => {
+          setHasPresentedFrame(true)
+          setPlaying(true)
+        }}
         onTimeUpdate={(event) =>
           setCurrentTime(event.currentTarget.currentTime)
         }
         playsInline
-        poster={media.src}
+        poster={posterMedia.src}
         preload="auto"
         ref={videoRef}
         src={src}
@@ -1094,6 +1120,11 @@ function MediaViewerContent({
             className={`${styles.mediaFrame} ${styles.viewerMedia}`}
             data-fit="contain"
             data-media-type={chapter.videoSrc ? 'video' : 'image'}
+            data-orientation={
+              chapter.media.width >= chapter.media.height
+                ? 'landscape'
+                : 'portrait'
+            }
             style={{
               '--media-ratio': `${chapter.media.width} / ${chapter.media.height}`,
             } as CSSProperties}
@@ -1101,6 +1132,7 @@ function MediaViewerContent({
             {chapter.videoSrc ? (
               <ViewerVideo
                 media={chapter.media}
+                posterMedia={chapter.posterMedia}
                 src={chapter.videoSrc}
               />
             ) : (
@@ -1128,7 +1160,6 @@ function MediaViewerContent({
           transition={{ duration: instant ? 0 : 0.22, ease: EASE }}
         >
           <p id={captionId}>{chapter.caption}</p>
-          <span>{chapter.videoSrc ? 'Motion' : 'Still'}</span>
         </motion.footer>
       </div>
     </div>
@@ -1542,10 +1573,12 @@ export function CrossAxisProjectRail({
       frameRef.current = null
     })
 
-    snapTimerRef.current = window.setTimeout(
-      () => snapToNearestProject(viewport),
-      32,
-    )
+    if (!window.matchMedia('(pointer: coarse)').matches) {
+      snapTimerRef.current = window.setTimeout(
+        () => snapToNearestProject(viewport),
+        32,
+      )
+    }
   }
 
   function handleHorizontalKey(
@@ -1598,8 +1631,16 @@ export function CrossAxisProjectRail({
           aria-label="Projects. Swipe or scroll horizontally to change project."
           className={styles.horizontalViewport}
           onKeyDown={(event) => handleHorizontalKey(event)}
-          onPointerCancel={(event) => snapToNearestProject(event.currentTarget)}
-          onPointerUp={(event) => snapToNearestProject(event.currentTarget)}
+          onPointerCancel={(event) => {
+            if (event.pointerType !== 'touch') {
+              snapToNearestProject(event.currentTarget)
+            }
+          }}
+          onPointerUp={(event) => {
+            if (event.pointerType !== 'touch') {
+              snapToNearestProject(event.currentTarget)
+            }
+          }}
           onScroll={handleHorizontalScroll}
           ref={viewportRef}
           role="region"

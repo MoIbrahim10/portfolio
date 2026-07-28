@@ -20,11 +20,6 @@
   height: auto;
 }
 
-.placeholder {
-  width: min(92vw, 72rem);
-  aspect-ratio: 79 / 48;
-}
-
 .mark :global([id$="-logo-m-left"]),
 .mark :global([id$="-logo-m-right"]),
 .mark :global([id$="-logo-o"]),

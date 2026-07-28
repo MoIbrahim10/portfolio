@@ -381,6 +381,10 @@
   object-fit: contain;
 }
 
+.mediaFrame[data-fit='contain'] .videoPoster img {
+  object-fit: cover;
+}
+
 .mediaFrame[data-media-type='video'] .videoPoster,
 .mediaFrame[data-media-type='video'] .videoLayer {
   transform: scale(1.1);
@@ -799,8 +803,6 @@
 }
 
 .mediaViewer .viewerMedia[data-fit='contain'] {
-  --viewer-mat: clamp(0.75rem, 1.4vw, 1.15rem);
-
   width: auto;
   height: 100%;
   max-height: 100%;
@@ -810,7 +812,7 @@
   border: 0;
   aspect-ratio: var(--media-ratio);
   background: transparent;
-  box-shadow: 0 0 0 var(--viewer-mat) #f1e9d9;
+  box-shadow: none;
   clip-path: none;
 }
 
@@ -851,10 +853,9 @@
   transition: opacity 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.viewerMedia[data-media-type='video'] .viewerVideoPoster,
-.viewerMedia[data-media-type='video'] .viewerVideoElement {
-  transform: scale(1.1);
-  transform-origin: center;
+.mediaViewer .viewerMedia .viewerVideoPoster img,
+.mediaViewer .viewerMedia .viewerVideoElement {
+  object-fit: contain;
 }
 
 .viewerVideoElementReady {
@@ -1002,10 +1003,6 @@
   margin: 0;
 }
 
-.viewerCaption > span {
-  color: var(--viewer-accent);
-}
-
 .verticalStory[data-story='others'] .storyChapters {
   grid-template-columns: 1fr;
   gap: clamp(4rem, 9vw, 8rem);
@@ -1015,6 +1012,17 @@
 .verticalStory[data-story='others'] .storyChapter:nth-child(even) {
   width: 100%;
   justify-self: stretch;
+}
+
+@media (min-width: 769px) {
+  .root[data-presentation='editorial']
+    .verticalStory[data-story='others']
+    .storyChapter,
+  .root[data-presentation='editorial']
+    .verticalStory[data-story='others']
+    .storyChapter:nth-child(even) {
+    justify-self: center;
+  }
 }
 
 /* Technical Ledger */
@@ -1616,6 +1624,7 @@
     overflow: visible;
     overscroll-behavior-block: auto;
     scroll-snap-type: none;
+    touch-action: pan-x pan-y;
   }
 
   .stableScrollbar {
@@ -1776,13 +1785,15 @@
     clip-path: polygon(0 0, calc(100% - 0.7rem) 0, 100% 0.7rem, 100% 100%, 0 100%);
   }
 
+  .mediaViewer
+    .viewerMedia[data-fit='contain'][data-media-type='video'] {
+    width: 100%;
+    height: auto;
+  }
+
   .viewerCaption {
     min-height: 2.75rem;
     padding-top: 0.5rem;
-  }
-
-  .viewerCaption > span {
-    display: none;
   }
 
   .viewerVideoControls {

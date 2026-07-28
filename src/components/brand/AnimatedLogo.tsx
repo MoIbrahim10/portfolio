@@ -293,15 +293,13 @@ export function AnimatedLogo({
 
   const rootClassName = [styles.mark, className].filter(Boolean).join(' ')
 
-  if (loadFailed) {
+  if (!markup || loadFailed) {
     return (
       <div className={rootClassName} role="img" aria-label={label} style={{ opacity: 1 }}>
         <img className={styles.fallback} src={LOGO_URL} alt="" />
       </div>
     )
   }
-
-  if (!markup) return <div className={styles.placeholder} aria-hidden="true" />
 
   return (
     <motion.div
