@@ -17,95 +17,16 @@
   box-sizing: border-box;
 }
 
-.skipLink {
-  position: fixed;
-  z-index: 100;
-  top: 0.75rem;
-  left: 0.75rem;
-  padding: 0.8rem 1rem;
-  color: var(--paper);
-  background: var(--navy);
-  transform: translateY(-160%);
-}
-
-.skipLink:focus {
-  transform: translateY(0);
-}
-
-.labHeader,
-.showcasePicker,
-.preview,
-.footer {
-  width: min(calc(100% - clamp(1.5rem, 5vw, 5rem)), 94rem);
-  margin-inline: auto;
-}
-
-.labHeader {
-  display: grid;
-  min-height: 14rem;
-  padding-block: clamp(2rem, 5vw, 4rem);
-  align-items: end;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.55fr);
-  gap: 3rem;
-}
-
-.labHeader p {
-  margin: 0;
-}
-
-.labHeader > div > p {
-  color: #6f6d66;
-  font: 750 0.66rem/1 ui-monospace, "SFMono-Regular", Menlo, monospace;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.labHeader h1 {
-  margin: 0.7rem 0 0;
-  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  font-size: clamp(3.4rem, 7vw, 7.5rem);
-  font-weight: 600;
-  letter-spacing: -0.07em;
-  line-height: 0.82;
-  text-wrap: balance;
-}
-
-.labHeader > p {
-  max-width: 34ch;
-  justify-self: end;
-  color: #555d5e;
-  font-size: clamp(1rem, 1.25vw, 1.16rem);
-  line-height: 1.55;
-}
-
-.backLink {
-  display: inline-flex;
-  min-height: 44px;
-  margin-bottom: 1.5rem;
-  align-items: center;
-  color: var(--navy);
-  font-size: 0.76rem;
-  font-weight: 750;
-  text-underline-offset: 0.25rem;
-}
-
 .logoDock:focus-visible,
 .moTrigger:focus-visible {
   outline: 3px solid var(--gold);
   outline-offset: 3px;
 }
 
-.preview {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgb(16 43 67 / 10%);
-  background: var(--beige);
-}
-
 .stage {
   position: relative;
   display: grid;
-  min-height: clamp(44rem, 74svh, 54rem);
+  min-height: 100svh;
   overflow: hidden;
   background: var(--navy);
   grid-template-columns: minmax(21rem, 0.58fr) minmax(0, 1fr);
@@ -125,49 +46,6 @@
   overflow: hidden;
   color: var(--paper);
   background: var(--navy);
-}
-
-.showcasePicker {
-  display: flex;
-  padding: 0 0 1rem;
-  gap: 0.5rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.showcasePicker::-webkit-scrollbar {
-  display: none;
-}
-
-.showcasePicker button {
-  min-width: max-content;
-  min-height: 44px;
-  padding: 0.75rem 1rem;
-  border: 1px solid rgb(16 43 67 / 18%);
-  color: var(--navy);
-  background: transparent;
-  cursor: pointer;
-  font: 750 0.65rem/1 ui-monospace, "SFMono-Regular", Menlo, monospace;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  transition:
-    color 180ms cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.showcasePicker button:hover {
-  transform: translateY(-2px);
-}
-
-.showcasePicker button[aria-pressed="true"] {
-  color: var(--paper);
-  background: var(--navy);
-}
-
-.showcasePicker button:focus-visible {
-  outline: 3px solid var(--gold);
-  outline-offset: 2px;
 }
 
 .logoDock {
@@ -203,11 +81,22 @@
   text-transform: uppercase;
 }
 
+.role::selection {
+  color: var(--navy);
+  background: #bfd0dc;
+}
+
 .bio {
   max-width: 34ch;
   margin: 0;
   font-size: clamp(0.98rem, 1vw, 1.08rem);
   line-height: 1.55;
+}
+
+.bio::selection,
+.bio *::selection {
+  color: var(--navy);
+  background: #f4c1bd;
 }
 
 .contactActions {
@@ -352,75 +241,56 @@
   width: clamp(11.5rem, 15vw, 13.75rem);
 }
 
-.footer {
-  display: flex;
-  min-height: 7rem;
-  padding-block: 1.5rem;
-  align-items: center;
-  justify-content: space-between;
-  color: #5a605f;
-  font-size: 0.78rem;
-}
-
-.footer p {
-  margin: 0;
-}
-
-.footer p:first-child {
-  color: var(--navy);
-  font-weight: 750;
-}
-
-@media (max-width: 900px) {
-  .labHeader {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .labHeader > p {
-    justify-self: start;
-  }
-
+@media (max-width: 768px) {
   .stage {
-    min-height: 52rem;
+    min-height: 100svh;
+    overflow: visible;
     grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(30rem, 1fr);
+    grid-template-rows: auto auto;
   }
 
   .leftPanel {
-    min-height: 47rem;
+    display: grid;
+    min-height: 0;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    align-content: start;
+    gap: clamp(1.75rem, 5vw, 3rem);
   }
 
   .showcasePanel {
-    min-height: 32rem;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .introduction {
+    position: relative;
+    inset: auto;
+  }
+
+  .bio {
+    width: 100%;
+    max-width: none;
+  }
+
+  .stage[data-direction="wide-type"] .logoDock {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: clamp(10.25rem, 24vw, 13.75rem);
+    align-self: start;
+    justify-self: start;
   }
 }
 
 @media (max-width: 620px) {
-  .labHeader,
-  .showcasePicker,
-  .preview,
-  .footer {
-    width: min(calc(100% - 1.5rem), 94rem);
-  }
-
-  .labHeader {
-    min-height: 12rem;
-    padding-top: 1.5rem;
-  }
-
-  .labHeader h1 {
-    font-size: clamp(3.25rem, 17vw, 5.2rem);
+  .stage {
+    min-height: 100svh;
+    grid-template-rows: auto auto;
   }
 
   .leftPanel {
-    min-height: 48rem;
-  }
-
-  .introduction {
-    right: 1.4rem;
-    bottom: 2rem;
-    left: 1.4rem;
+    padding: 1.5rem 1.4rem 2rem;
+    gap: clamp(1.75rem, 8vw, 2.5rem);
   }
 
   .bio {
@@ -437,22 +307,17 @@
   }
 
   .moPortrait {
-    bottom: calc(100% + 1rem);
-    width: 9.75rem;
+    right: 0;
+    bottom: calc(100% + 0.75rem);
+    left: auto;
+    width: 7.5rem;
+    margin-inline: 0;
   }
 
   .stage[data-direction="wide-type"] .logoDock {
-    top: 1.75rem;
-    left: 1.15rem;
     width: 10.25rem;
   }
 
-  .footer {
-    align-items: flex-start;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.45rem;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -463,8 +328,7 @@
   }
 
   .logoDock:hover,
-  .socialLink:hover,
-  .showcasePicker button:hover {
+  .socialLink:hover {
     transform: none;
   }
 }

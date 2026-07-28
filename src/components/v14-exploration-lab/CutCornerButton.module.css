@@ -1,0 +1,59 @@
+.control {
+  --edge: #0f2636;
+  --face: #122b3d;
+  --ink: #fffaf0;
+  --cut: polygon(8px 0, calc(100% - 8px) 0, calc(100% - 8px) 4px, calc(100% - 4px) 4px, calc(100% - 4px) 8px, 100% 8px, 100% calc(100% - 8px), calc(100% - 4px) calc(100% - 8px), calc(100% - 4px) calc(100% - 4px), calc(100% - 8px) calc(100% - 4px), calc(100% - 8px) 100%, 8px 100%, 8px calc(100% - 4px), 4px calc(100% - 4px), 4px calc(100% - 8px), 0 calc(100% - 8px), 0 8px, 4px 8px, 4px 4px, 8px 4px);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1rem;
+  border: 0;
+  color: var(--ink);
+  background: var(--edge);
+  clip-path: var(--cut);
+  font: 650 0.78rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 130ms ease, filter 130ms ease, transform 100ms ease;
+}
+
+.control::before {
+  position: absolute;
+  z-index: -1;
+  inset: 2px;
+  background: var(--face);
+  clip-path: var(--cut);
+  content: '';
+}
+
+.control:hover:not(:disabled) { --edge: #d79d40; transform: translateY(-1px); }
+.control:active:not(:disabled) { --edge: #9c1e1b; transform: translateY(1px); }
+.control:focus-visible { outline: 3px solid #d79d40; outline-offset: 3px; }
+.control:disabled { cursor: progress; }
+.control[aria-busy='true'] { min-width: 8.5rem; }
+
+.gold { --edge: #d79d40; --face: #fffaf0; --ink: #122b3d; }
+.gold:hover { --face: #f1d7a7; }
+.paper { --edge: #d79d40; --face: #fffaf0; --ink: #122b3d; }
+.quiet { --edge: transparent; --face: transparent; --ink: currentColor; }
+.quiet:hover { --edge: #d79d40; }
+
+.hidden { visibility: hidden; }
+.loading { position: absolute; inset: 0; display: flex; gap: 0.55rem; align-items: center; justify-content: center; }
+.loading > span { width: 0.55rem; height: 0.55rem; border: 2px solid currentColor; animation: spin 600ms steps(4) infinite; }
+
+@keyframes spin { to { transform: rotate(1turn); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .control { transition: none; }
+  .loading > span { animation: none; }
+}
+
+@media (forced-colors: active) {
+  .control { border: 2px solid ButtonText; clip-path: none; }
+  .control::before { display: none; }
+}

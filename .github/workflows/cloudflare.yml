@@ -1,0 +1,56 @@
+name: Cloudflare
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-production
+  cancel-in-progress: false
+
+jobs:
+  validate-and-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Type-check
+        run: bun run check
+
+      - name: Build
+        run: bun run build
+
+      - name: Validate Worker bundle
+        run: bunx wrangler@4.114.0 deploy --dry-run
+
+      - name: Deploy production Worker
+        if: github.event_name != 'pull_request'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 263ad8907dc3ed688838c72e2e9f994f
+          packageManager: bun
+          wranglerVersion: 4.114.0
+          command: deploy
+
+      - name: Verify production
+        if: github.event_name != 'pull_request'
+        run: curl --fail --silent --show-error --retry 12 --retry-delay 5 --retry-all-errors https://m0code.com | grep -aFq '<title>MO — Portfolio</title>'

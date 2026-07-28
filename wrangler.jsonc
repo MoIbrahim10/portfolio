@@ -1,0 +1,17 @@
+{
+  "name": "portfolio",
+  "main": "./dist/server/server.js",
+  "compatibility_date": "2026-07-28",
+  "compatibility_flags": ["nodejs_compat"],
+  "account_id": "263ad8907dc3ed688838c72e2e9f994f",
+  "keep_vars": true,
+  "assets": {
+    "directory": "./dist/client"
+  },
+  "routes": [
+    {
+      "pattern": "m0code.com",
+      "custom_domain": true
+    }
+  ]
+}

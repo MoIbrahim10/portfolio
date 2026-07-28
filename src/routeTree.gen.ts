@@ -10,141 +10,43 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ButtonLabRouteImport } from './routes/button-lab'
-import { Route as IntroLabRouteImport } from './routes/intro-lab'
-import { Route as PortfolioLabRouteImport } from './routes/portfolio-lab'
-import { Route as ProjectCardLabRouteImport } from './routes/project-card-lab'
-import { Route as ProjectLabRouteImport } from './routes/project-lab'
-import { Route as ProjectSliderLabRouteImport } from './routes/project-slider-lab'
-import { Route as V14ExplorationLabRouteImport } from './routes/v14-exploration-lab'
-import { Route as V14IdleGapLabRouteImport } from './routes/v14-idle-gap-lab'
+import { Route as VideoPlayerLabRouteImport } from './routes/video-player-lab'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ButtonLabRoute = ButtonLabRouteImport.update({
-  id: '/button-lab',
-  path: '/button-lab',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IntroLabRoute = IntroLabRouteImport.update({
-  id: '/intro-lab',
-  path: '/intro-lab',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortfolioLabRoute = PortfolioLabRouteImport.update({
-  id: '/portfolio-lab',
-  path: '/portfolio-lab',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectCardLabRoute = ProjectCardLabRouteImport.update({
-  id: '/project-card-lab',
-  path: '/project-card-lab',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectLabRoute = ProjectLabRouteImport.update({
-  id: '/project-lab',
-  path: '/project-lab',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectSliderLabRoute = ProjectSliderLabRouteImport.update({
-  id: '/project-slider-lab',
-  path: '/project-slider-lab',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const V14ExplorationLabRoute = V14ExplorationLabRouteImport.update({
-  id: '/v14-exploration-lab',
-  path: '/v14-exploration-lab',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const V14IdleGapLabRoute = V14IdleGapLabRouteImport.update({
-  id: '/v14-idle-gap-lab',
-  path: '/v14-idle-gap-lab',
+const VideoPlayerLabRoute = VideoPlayerLabRouteImport.update({
+  id: '/video-player-lab',
+  path: '/video-player-lab',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/button-lab': typeof ButtonLabRoute
-  '/intro-lab': typeof IntroLabRoute
-  '/portfolio-lab': typeof PortfolioLabRoute
-  '/project-card-lab': typeof ProjectCardLabRoute
-  '/project-lab': typeof ProjectLabRoute
-  '/project-slider-lab': typeof ProjectSliderLabRoute
-  '/v14-exploration-lab': typeof V14ExplorationLabRoute
-  '/v14-idle-gap-lab': typeof V14IdleGapLabRoute
+  '/video-player-lab': typeof VideoPlayerLabRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/button-lab': typeof ButtonLabRoute
-  '/intro-lab': typeof IntroLabRoute
-  '/portfolio-lab': typeof PortfolioLabRoute
-  '/project-card-lab': typeof ProjectCardLabRoute
-  '/project-lab': typeof ProjectLabRoute
-  '/project-slider-lab': typeof ProjectSliderLabRoute
-  '/v14-exploration-lab': typeof V14ExplorationLabRoute
-  '/v14-idle-gap-lab': typeof V14IdleGapLabRoute
+  '/video-player-lab': typeof VideoPlayerLabRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/button-lab': typeof ButtonLabRoute
-  '/intro-lab': typeof IntroLabRoute
-  '/portfolio-lab': typeof PortfolioLabRoute
-  '/project-card-lab': typeof ProjectCardLabRoute
-  '/project-lab': typeof ProjectLabRoute
-  '/project-slider-lab': typeof ProjectSliderLabRoute
-  '/v14-exploration-lab': typeof V14ExplorationLabRoute
-  '/v14-idle-gap-lab': typeof V14IdleGapLabRoute
+  '/video-player-lab': typeof VideoPlayerLabRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/button-lab'
-    | '/intro-lab'
-    | '/portfolio-lab'
-    | '/project-card-lab'
-    | '/project-lab'
-    | '/project-slider-lab'
-    | '/v14-exploration-lab'
-    | '/v14-idle-gap-lab'
+  fullPaths: '/' | '/video-player-lab'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/button-lab'
-    | '/intro-lab'
-    | '/portfolio-lab'
-    | '/project-card-lab'
-    | '/project-lab'
-    | '/project-slider-lab'
-    | '/v14-exploration-lab'
-    | '/v14-idle-gap-lab'
-  id:
-    | '__root__'
-    | '/'
-    | '/button-lab'
-    | '/intro-lab'
-    | '/portfolio-lab'
-    | '/project-card-lab'
-    | '/project-lab'
-    | '/project-slider-lab'
-    | '/v14-exploration-lab'
-    | '/v14-idle-gap-lab'
+  to: '/' | '/video-player-lab'
+  id: '__root__' | '/' | '/video-player-lab'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ButtonLabRoute: typeof ButtonLabRoute
-  IntroLabRoute: typeof IntroLabRoute
-  PortfolioLabRoute: typeof PortfolioLabRoute
-  ProjectCardLabRoute: typeof ProjectCardLabRoute
-  ProjectLabRoute: typeof ProjectLabRoute
-  ProjectSliderLabRoute: typeof ProjectSliderLabRoute
-  V14ExplorationLabRoute: typeof V14ExplorationLabRoute
-  V14IdleGapLabRoute: typeof V14IdleGapLabRoute
+  VideoPlayerLabRoute: typeof VideoPlayerLabRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -156,60 +58,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/button-lab': {
-      id: '/button-lab'
-      path: '/button-lab'
-      fullPath: '/button-lab'
-      preLoaderRoute: typeof ButtonLabRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/intro-lab': {
-      id: '/intro-lab'
-      path: '/intro-lab'
-      fullPath: '/intro-lab'
-      preLoaderRoute: typeof IntroLabRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portfolio-lab': {
-      id: '/portfolio-lab'
-      path: '/portfolio-lab'
-      fullPath: '/portfolio-lab'
-      preLoaderRoute: typeof PortfolioLabRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/project-card-lab': {
-      id: '/project-card-lab'
-      path: '/project-card-lab'
-      fullPath: '/project-card-lab'
-      preLoaderRoute: typeof ProjectCardLabRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/project-lab': {
-      id: '/project-lab'
-      path: '/project-lab'
-      fullPath: '/project-lab'
-      preLoaderRoute: typeof ProjectLabRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/project-slider-lab': {
-      id: '/project-slider-lab'
-      path: '/project-slider-lab'
-      fullPath: '/project-slider-lab'
-      preLoaderRoute: typeof ProjectSliderLabRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/v14-exploration-lab': {
-      id: '/v14-exploration-lab'
-      path: '/v14-exploration-lab'
-      fullPath: '/v14-exploration-lab'
-      preLoaderRoute: typeof V14ExplorationLabRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/v14-idle-gap-lab': {
-      id: '/v14-idle-gap-lab'
-      path: '/v14-idle-gap-lab'
-      fullPath: '/v14-idle-gap-lab'
-      preLoaderRoute: typeof V14IdleGapLabRouteImport
+    '/video-player-lab': {
+      id: '/video-player-lab'
+      path: '/video-player-lab'
+      fullPath: '/video-player-lab'
+      preLoaderRoute: typeof VideoPlayerLabRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -217,14 +70,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ButtonLabRoute: ButtonLabRoute,
-  IntroLabRoute: IntroLabRoute,
-  PortfolioLabRoute: PortfolioLabRoute,
-  ProjectCardLabRoute: ProjectCardLabRoute,
-  ProjectLabRoute: ProjectLabRoute,
-  ProjectSliderLabRoute: ProjectSliderLabRoute,
-  V14ExplorationLabRoute: V14ExplorationLabRoute,
-  V14IdleGapLabRoute: V14IdleGapLabRoute,
+  VideoPlayerLabRoute: VideoPlayerLabRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

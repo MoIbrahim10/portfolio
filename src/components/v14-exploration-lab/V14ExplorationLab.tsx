@@ -2,9 +2,9 @@ import { MotionConfig, motion, useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 
 import { AnimatedLogo } from '#/components/brand/AnimatedLogo'
-import { CutCornerButton } from '#/components/project-lab/shared/CutCornerButton'
 
-import { CrossAxisProjectRail } from './CrossAxisProjectRail'
+import { CrossAxisPresentationLab } from './CrossAxisPresentationLab'
+import { CutCornerButton } from './CutCornerButton'
 import styles from './V14ExplorationLab.module.css'
 
 const LINKS = {
@@ -322,7 +322,7 @@ function HeroStage({
   return (
     <motion.article
       animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
-      aria-label={`${direction.name} introduction`}
+      aria-label="Mo Ibrahim portfolio"
       className={styles.stage}
       data-direction={direction.id}
       exit={{ filter: 'blur(3px)', opacity: 0, y: -8 }}
@@ -356,7 +356,7 @@ function HeroStage({
         </div>
       </div>
       <div className={styles.showcasePanel}>
-        <CrossAxisProjectRail />
+        <CrossAxisPresentationLab />
       </div>
     </motion.article>
   )
@@ -366,36 +366,7 @@ export function V14ExplorationLab() {
   return (
     <MotionConfig reducedMotion="user">
       <main className={styles.page}>
-        <a className={styles.skipLink} href="#v14-stage">
-          Skip to Wide Signal
-        </a>
-
-        <header className={styles.labHeader}>
-          <div>
-            <a className={styles.backLink} href="/intro-lab?header=09&hero=14#pairing">
-              ← Back to intro lab
-            </a>
-            <p>Cross-axis project rail</p>
-            <h1>One rail. Two directions.</h1>
-          </div>
-          <p>
-            Move sideways to change projects. Move down to travel through each
-            project. The title and color field follow the active work.
-          </p>
-        </header>
-
-        <section
-          aria-label="Cross-axis project rail"
-          className={styles.preview}
-          id="v14-stage"
-        >
-          <HeroStage direction={DIRECTION} />
-        </section>
-
-        <footer className={styles.footer}>
-          <p>Cross-axis rail</p>
-          <p>Horizontal projects. Vertical stories. One changing color field.</p>
-        </footer>
+        <HeroStage direction={DIRECTION} />
       </main>
     </MotionConfig>
   )
