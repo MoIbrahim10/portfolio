@@ -1316,15 +1316,6 @@ export function CrossAxisProjectRail({
   const scrollbarDragOffsetRef = useRef(0)
   const frameRef = useRef<number | null>(null)
   const snapTimerRef = useRef<number | null>(null)
-  const touchSwipeRef = useRef<{
-    horizontal: boolean
-    pointerId: number
-    startIndex: number
-    startScrollLeft: number
-    startTime: number
-    startX: number
-    startY: number
-  } | null>(null)
   const reducedMotion = useReducedMotion()
 
   useEffect(
@@ -1589,82 +1580,6 @@ export function CrossAxisProjectRail({
     }
   }
 
-  function handleHorizontalPointerDown(
-    event: ReactPointerEvent<HTMLDivElement>,
-  ) {
-    if (event.pointerType !== 'touch') return
-
-    touchSwipeRef.current = {
-      horizontal: false,
-      pointerId: event.pointerId,
-      startIndex: activeIndexRef.current,
-      startScrollLeft: event.currentTarget.scrollLeft,
-      startTime: performance.now(),
-      startX: event.clientX,
-      startY: event.clientY,
-    }
-  }
-
-  function handleHorizontalPointerMove(
-    event: ReactPointerEvent<HTMLDivElement>,
-  ) {
-    const swipe = touchSwipeRef.current
-    if (!swipe || swipe.pointerId !== event.pointerId) return
-
-    const deltaX = event.clientX - swipe.startX
-    const deltaY = event.clientY - swipe.startY
-
-    if (!swipe.horizontal) {
-      if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) return
-      if (Math.abs(deltaY) >= Math.abs(deltaX)) {
-        touchSwipeRef.current = null
-        return
-      }
-      swipe.horizontal = true
-    }
-
-    if (event.cancelable) event.preventDefault()
-    const maximum = event.currentTarget.scrollWidth - event.currentTarget.clientWidth
-    event.currentTarget.scrollLeft = Math.max(
-      0,
-      Math.min(maximum, swipe.startScrollLeft - deltaX),
-    )
-  }
-
-  function handleHorizontalPointerUp(
-    event: ReactPointerEvent<HTMLDivElement>,
-  ) {
-    if (event.pointerType !== 'touch') {
-      snapToNearestProject(event.currentTarget)
-      return
-    }
-
-    const swipe = touchSwipeRef.current
-    touchSwipeRef.current = null
-    if (!swipe || swipe.pointerId !== event.pointerId || !swipe.horizontal) return
-
-    const distance = event.clientX - swipe.startX
-    const elapsed = Math.max(1, performance.now() - swipe.startTime)
-    const threshold = Math.min(
-      64,
-      Math.max(32, event.currentTarget.clientWidth * 0.1),
-    )
-    const committed = Math.abs(distance) >= threshold || Math.abs(distance) / elapsed > 0.32
-    const destination = committed
-      ? swipe.startIndex + (distance < 0 ? 1 : -1)
-      : nearestProjectIndex(event.currentTarget)
-    const nextIndex = Math.max(0, Math.min(STORIES.length - 1, destination))
-    const target = slideRefs.current[nextIndex]
-
-    if (target) {
-      event.currentTarget.scrollTo({
-        behavior: 'auto',
-        left: target.offsetLeft,
-      })
-    }
-    updateActive(nextIndex, 'pointer')
-  }
-
   function handleHorizontalKey(
     event: KeyboardEvent<HTMLDivElement>,
     currentIndex = activeIndexRef.current,
@@ -1715,12 +1630,6 @@ export function CrossAxisProjectRail({
           aria-label="Projects. Swipe or scroll horizontally to change project."
           className={styles.horizontalViewport}
           onKeyDown={(event) => handleHorizontalKey(event)}
-          onPointerCancel={(event) => {
-            if (event.pointerType === 'touch') touchSwipeRef.current = null
-          }}
-          onPointerDown={handleHorizontalPointerDown}
-          onPointerMove={handleHorizontalPointerMove}
-          onPointerUp={handleHorizontalPointerUp}
           onScroll={handleHorizontalScroll}
           ref={viewportRef}
           role="region"
