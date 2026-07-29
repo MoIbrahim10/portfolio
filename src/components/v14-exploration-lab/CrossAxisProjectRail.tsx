@@ -5,6 +5,7 @@ import {
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
   type UIEvent,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -748,11 +749,25 @@ function ResilientVideo({
   const reducedMotion = useReducedMotion()
   const [inView, setInView] = useState(false)
   const [playing, setPlaying] = useState(false)
-  const [ready, setReady] = useState(false)
+  const [playbackBlocked, setPlaybackBlocked] = useState(false)
+  const [failed, setFailed] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const fallbackSrc = posterMedia.fallbackSrc ?? posterMedia.src
-  const showVideo = playing && ready
+  const shouldPlay = active && inView && !reducedMotion
+  const showFallback = Boolean(reducedMotion || failed)
+  const attemptPlayback = useCallback((video: HTMLVideoElement) => {
+    video.muted = true
+    video.defaultMuted = true
+
+    void video.play().then(
+      () => setPlaybackBlocked(false),
+      (error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError') return
+        setPlaybackBlocked(true)
+      },
+    )
+  }, [])
 
   useEffect(() => {
     const root = rootRef.current
@@ -765,7 +780,7 @@ function ResilientVideo({
 
     const observer = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
-      { root: root.closest('[role="region"]'), threshold: 0.1 },
+      { root: null, rootMargin: '96px 0px', threshold: 0.01 },
     )
     observer.observe(root)
 
@@ -773,63 +788,73 @@ function ResilientVideo({
   }, [])
 
   useEffect(() => {
-    const video = videoRef.current
-    if (video && video.readyState >= 2) setReady(true)
+    setFailed(false)
+    setPlaybackBlocked(false)
   }, [src])
 
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
 
-    if (!active || !inView || !ready || reducedMotion) {
+    if (!shouldPlay) {
       video.pause()
       setPlaying(false)
       return
     }
 
-    if (!playing) {
-      void video.play().catch(() => setPlaying(false))
-    }
-  }, [active, inView, playing, ready, reducedMotion])
+    video.preload = 'auto'
+    attemptPlayback(video)
+  }, [attemptPlayback, shouldPlay, src])
 
   return (
-    <div className={styles.videoStack} ref={rootRef}>
-      <picture
-        aria-hidden="true"
-        className={`${styles.videoPoster} ${
-          showVideo ? styles.videoPosterHidden : ''
-        }`}
-      >
-        {posterMedia.fallbackSrc ? (
-          <source srcSet={posterMedia.src} type="image/webp" />
-        ) : null}
-        <img
-          alt=""
-          decoding="async"
-          fetchPriority={eager ? 'high' : 'auto'}
-          height={posterMedia.height}
-          loading={eager ? 'eager' : 'lazy'}
-          src={fallbackSrc}
-          width={posterMedia.width}
-        />
-      </picture>
+    <div
+      className={styles.videoStack}
+      data-playback={
+        failed
+          ? 'failed'
+          : playbackBlocked
+            ? 'blocked'
+            : playing
+              ? 'playing'
+              : 'idle'
+      }
+      ref={rootRef}
+    >
+      {showFallback ? (
+        <picture aria-hidden="true" className={styles.videoPoster}>
+          {posterMedia.fallbackSrc ? (
+            <source srcSet={posterMedia.src} type="image/webp" />
+          ) : null}
+          <img
+            alt=""
+            decoding="async"
+            fetchPriority={eager ? 'high' : 'auto'}
+            height={posterMedia.height}
+            loading={eager ? 'eager' : 'lazy'}
+            src={fallbackSrc}
+            width={posterMedia.width}
+          />
+        </picture>
+      ) : null}
       <video
         aria-label={media.alt}
-        className={`${styles.videoLayer} ${
-          showVideo ? styles.videoLayerPlaying : ''
-        }`}
+        autoPlay={shouldPlay}
+        className={styles.videoLayer}
         height={media.height}
         loop
         muted
         onError={() => {
           setPlaying(false)
-          setReady(false)
+          setFailed(true)
         }}
-        onLoadedData={() => setReady(true)}
         onPause={() => setPlaying(false)}
         onPlaying={() => setPlaying(true)}
+        onCanPlay={(event) => {
+          if (shouldPlay && event.currentTarget.paused) {
+            attemptPlayback(event.currentTarget)
+          }
+        }}
         playsInline
-        poster={posterMedia.src}
         preload={eager ? 'auto' : 'metadata'}
         ref={videoRef}
         src={src}
