@@ -214,15 +214,15 @@
 
 .horizontalTrack {
   display: flex;
-  width: calc(var(--story-count) * 100%);
+  width: 100%;
   height: 100%;
 }
 
 .projectStop {
-  width: calc(100% / var(--story-count));
-  min-width: calc(100% / var(--story-count));
+  width: 100%;
+  min-width: 100%;
   height: 100%;
-  flex: 0 0 calc(100% / var(--story-count));
+  flex: 0 0 100%;
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }

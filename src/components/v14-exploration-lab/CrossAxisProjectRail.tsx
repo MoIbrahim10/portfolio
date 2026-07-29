@@ -1316,12 +1316,22 @@ export function CrossAxisProjectRail({
   const scrollbarDragOffsetRef = useRef(0)
   const frameRef = useRef<number | null>(null)
   const snapTimerRef = useRef<number | null>(null)
+  const settleFrameRef = useRef<number | null>(null)
+  const mobileHeightFrameRef = useRef<number | null>(null)
+  const horizontalScrollingRef = useRef(false)
+  const settlingHorizontalScrollRef = useRef(false)
   const reducedMotion = useReducedMotion()
 
   useEffect(
     () => () => {
       if (frameRef.current !== null) cancelAnimationFrame(frameRef.current)
       if (snapTimerRef.current !== null) window.clearTimeout(snapTimerRef.current)
+      if (settleFrameRef.current !== null) {
+        cancelAnimationFrame(settleFrameRef.current)
+      }
+      if (mobileHeightFrameRef.current !== null) {
+        cancelAnimationFrame(mobileHeightFrameRef.current)
+      }
     },
     [],
   )
@@ -1341,35 +1351,24 @@ export function CrossAxisProjectRail({
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 768px)')
     const story = storyRefs.current[activeIndex]
-    let frame: number | null = null
 
-    const syncMobileStoryHeight = () => {
-      if (frame !== null) cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(() => {
-        const root = rootRef.current
-        if (!root) return
-        if (!mediaQuery.matches) {
-          root.style.removeProperty('--mobile-story-height')
-          return
-        }
-        const activeStoryElement = storyRefs.current[activeIndex]
-        if (!activeStoryElement) return
-        root.style.setProperty(
-          '--mobile-story-height',
-          `${Math.ceil(activeStoryElement.getBoundingClientRect().height)}px`,
-        )
-      })
+    const requestHeightSync = () => {
+      if (!mediaQuery.matches) {
+        rootRef.current?.style.removeProperty('--mobile-story-height')
+        return
+      }
+      if (horizontalScrollingRef.current) return
+      syncMobileStoryHeight(activeIndexRef.current)
     }
 
-    syncMobileStoryHeight()
-    const observer = new ResizeObserver(syncMobileStoryHeight)
+    requestHeightSync()
+    const observer = new ResizeObserver(requestHeightSync)
     if (story) observer.observe(story)
-    mediaQuery.addEventListener('change', syncMobileStoryHeight)
+    mediaQuery.addEventListener('change', requestHeightSync)
 
     return () => {
-      if (frame !== null) cancelAnimationFrame(frame)
       observer.disconnect()
-      mediaQuery.removeEventListener('change', syncMobileStoryHeight)
+      mediaQuery.removeEventListener('change', requestHeightSync)
     }
   }, [activeIndex, presentation])
 
@@ -1505,6 +1504,30 @@ export function CrossAxisProjectRail({
     setActiveIndex(nextIndex)
   }
 
+  function syncMobileStoryHeight(index: number) {
+    if (mobileHeightFrameRef.current !== null) {
+      cancelAnimationFrame(mobileHeightFrameRef.current)
+    }
+
+    mobileHeightFrameRef.current = requestAnimationFrame(() => {
+      mobileHeightFrameRef.current = null
+      const root = rootRef.current
+      if (!root) return
+      if (!window.matchMedia('(max-width: 768px)').matches) {
+        root.style.removeProperty('--mobile-story-height')
+        return
+      }
+      if (horizontalScrollingRef.current) return
+
+      const story = storyRefs.current[index]
+      if (!story) return
+      root.style.setProperty(
+        '--mobile-story-height',
+        `${Math.ceil(story.getBoundingClientRect().height)}px`,
+      )
+    })
+  }
+
   function goTo(index: number, source: ChangeSource) {
     const nextIndex = Math.max(0, Math.min(STORIES.length - 1, index))
     const slide = slideRefs.current[nextIndex]
@@ -1543,16 +1566,19 @@ export function CrossAxisProjectRail({
     return nearest
   }
 
-  function snapToNearestProject(viewport: HTMLDivElement) {
+  function settleHorizontalScroll(viewport: HTMLDivElement) {
     if (snapTimerRef.current !== null) {
       window.clearTimeout(snapTimerRef.current)
       snapTimerRef.current = null
     }
+    if (settlingHorizontalScrollRef.current) return
 
     const nearest = nearestProjectIndex(viewport)
     const target = slideRefs.current[nearest]
+    if (!target) return
 
-    if (target && Math.abs(viewport.scrollLeft - target.offsetLeft) > 1) {
+    settlingHorizontalScrollRef.current = true
+    if (Math.abs(viewport.scrollLeft - target.offsetLeft) > 0.5) {
       viewport.scrollTo({
         behavior: 'auto',
         left: target.offsetLeft,
@@ -1560,24 +1586,30 @@ export function CrossAxisProjectRail({
     }
 
     updateActive(nearest, 'scroll')
+    settleFrameRef.current = requestAnimationFrame(() => {
+      settleFrameRef.current = null
+      settlingHorizontalScrollRef.current = false
+      horizontalScrollingRef.current = false
+      syncMobileStoryHeight(nearest)
+    })
   }
 
   function handleHorizontalScroll(event: UIEvent<HTMLDivElement>) {
+    if (settlingHorizontalScrollRef.current) return
     if (frameRef.current !== null) cancelAnimationFrame(frameRef.current)
     if (snapTimerRef.current !== null) window.clearTimeout(snapTimerRef.current)
     const viewport = event.currentTarget
+    horizontalScrollingRef.current = true
 
     frameRef.current = requestAnimationFrame(() => {
       updateActive(nearestProjectIndex(viewport), 'scroll')
       frameRef.current = null
     })
 
-    if (!window.matchMedia('(pointer: coarse)').matches) {
-      snapTimerRef.current = window.setTimeout(
-        () => snapToNearestProject(viewport),
-        32,
-      )
-    }
+    snapTimerRef.current = window.setTimeout(
+      () => settleHorizontalScroll(viewport),
+      120,
+    )
   }
 
   function handleHorizontalKey(
@@ -1610,6 +1642,15 @@ export function CrossAxisProjectRail({
     setViewerInstant(Boolean(reducedMotion) || keyboard)
     setMediaSelection(null)
   }
+
+  useEffect(() => {
+    const viewport = viewportRef.current
+    if (!viewport) return
+
+    const handleScrollEnd = () => settleHorizontalScroll(viewport)
+    viewport.addEventListener('scrollend', handleScrollEnd)
+    return () => viewport.removeEventListener('scrollend', handleScrollEnd)
+  }, [])
 
   return (
     <LayoutGroup id="project-media-viewer">
