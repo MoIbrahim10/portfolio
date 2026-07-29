@@ -1,28 +1,20 @@
-import {
-  motion,
-  stagger,
-  useAnimate,
-  useReducedMotion,
-} from 'motion/react'
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
+import { motion, stagger, useAnimate, useReducedMotion } from 'motion/react'
+import { useCallback, useId, useMemo, useRef } from 'react'
 
 import styles from './AnimatedLogo.module.css'
+import logoSource from '/brand/mo-mark-v3.svg?raw'
 
-const LOGO_URL = '/brand/mo-mark-v3.svg'
 const GOLD = '#d79d40'
 const GOLD_GLOW = '#f4c35a'
 const RED = '#9c1e1b'
 const RED_GLOW = '#bd2a25'
 const GOLD_FILLS = ['#d79d40', '#dfa744', '#c4862d', '#cd9235', '#e5b154']
 
-let hasPlayedEntrance = false
-
 export type MHoverEffect =
   | 'gold-sweep'
   | 'glyph-spark'
 
 interface AnimatedLogoProps {
-  animateOnMount?: boolean
   className?: string
   label?: string
   mHoverEffect?: MHoverEffect
@@ -43,7 +35,6 @@ function namespaceSvg(source: string, prefix: string) {
 }
 
 export function AnimatedLogo({
-  animateOnMount = true,
   className,
   label = 'MO portfolio mark',
   mHoverEffect = 'glyph-spark',
@@ -78,104 +69,10 @@ export function AnimatedLogo({
     },
     [prefix],
   )
-  const [markup, setMarkup] = useState<string>()
-  const [loadFailed, setLoadFailed] = useState(false)
+  const markup = useMemo(() => namespaceSvg(logoSource, prefix), [prefix])
   const [scope, animate] = useAnimate()
   const shouldReduceMotion = useReducedMotion()
   const isPulsing = useRef(false)
-
-  useEffect(() => {
-    const controller = new AbortController()
-
-    async function loadLogo() {
-      try {
-        const response = await fetch(LOGO_URL, { signal: controller.signal })
-        if (!response.ok) throw new Error(`Logo request failed: ${response.status}`)
-
-        const source = await response.text()
-        setMarkup(namespaceSvg(source, prefix))
-      } catch (error) {
-        if (error instanceof DOMException && error.name === 'AbortError') return
-        setLoadFailed(true)
-      }
-    }
-
-    void loadLogo()
-    return () => controller.abort()
-  }, [prefix])
-
-  useEffect(() => {
-    if (!markup || !scope.current) return
-
-    async function playEntrance() {
-      if (!animateOnMount || shouldReduceMotion || hasPlayedEntrance) {
-        await animate(scope.current, { opacity: 1 }, { duration: 0.18 })
-        return
-      }
-
-      hasPlayedEntrance = true
-
-      await Promise.all([
-        animate(selectors.left, { opacity: 0, x: -10 }, { duration: 0 }),
-        animate(selectors.right, { opacity: 0, x: 10 }, { duration: 0 }),
-        animate(selectors.heavyDiagonal, { opacity: 0 }, { duration: 0 }),
-        animate(
-          selectors.fineDiagonal,
-          { opacity: 0, pathLength: 0 },
-          { duration: 0 },
-        ),
-        animate(selectors.o, { opacity: 0, scale: 0.94 }, { duration: 0 }),
-        animate(selectors.rays, { opacity: 0, scale: 0.78 }, { duration: 0 }),
-        animate(`${selectors.rayTerminals} > path`, { opacity: 0 }, { duration: 0 }),
-      ])
-
-      await animate(scope.current, { opacity: 1 }, { duration: 0.12 })
-      await Promise.all([
-        animate(
-          selectors.left,
-          { opacity: 1, x: 0 },
-          { duration: 0.42, ease: [0.22, 1, 0.36, 1] },
-        ),
-        animate(
-          selectors.right,
-          { opacity: 1, x: 0 },
-          { delay: 0.08, duration: 0.42, ease: [0.22, 1, 0.36, 1] },
-        ),
-      ])
-      await Promise.all([
-        animate(selectors.heavyDiagonal, { opacity: 1 }, { duration: 0.32 }),
-        animate(
-          selectors.fineDiagonal,
-          { opacity: 1, pathLength: 1 },
-          { duration: 0.5, ease: 'easeInOut' },
-        ),
-      ])
-      await animate(
-        selectors.o,
-        { opacity: 1, scale: 1 },
-        { duration: 0.42, ease: [0.22, 1, 0.36, 1] },
-      )
-      await Promise.all([
-        animate(
-          selectors.rays,
-          { opacity: 1, scale: 1 },
-          { duration: 0.42, ease: [0.16, 1, 0.3, 1] },
-        ),
-        animate(
-          `${selectors.rayTerminals} > path`,
-          { opacity: 1 },
-          { delay: stagger(0.035), duration: 0.16 },
-        ),
-      ])
-      await animate(
-        `${selectors.inscription} > path`,
-        { fill: [GOLD, GOLD_GLOW, GOLD] },
-        { delay: stagger(0.025), duration: 0.4 },
-      )
-    }
-
-    void playEntrance()
-  }, [animate, animateOnMount, markup, scope, selectors, shouldReduceMotion])
 
   const playMHover = useCallback(async () => {
     switch (mHoverEffect) {
@@ -293,22 +190,14 @@ export function AnimatedLogo({
 
   const rootClassName = [styles.mark, className].filter(Boolean).join(' ')
 
-  if (!markup || loadFailed) {
-    return (
-      <div className={rootClassName} role="img" aria-label={label} style={{ opacity: 1 }}>
-        <img className={styles.fallback} src={LOGO_URL} alt="" />
-      </div>
-    )
-  }
-
   return (
     <motion.div
-      ref={scope}
-      className={rootClassName}
-      role="img"
       aria-label={label}
-      onHoverStart={() => void playLogoHover()}
+      className={rootClassName}
       onClick={() => void playLogoHover()}
+      onHoverStart={() => void playLogoHover()}
+      ref={scope}
+      role="img"
       dangerouslySetInnerHTML={{ __html: markup }}
     />
   )

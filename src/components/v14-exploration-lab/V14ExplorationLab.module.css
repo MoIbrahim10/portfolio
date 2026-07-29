@@ -320,7 +320,80 @@
 
 }
 
+@keyframes panelEnterLeft {
+  from {
+    opacity: 0.96;
+    transform: translateX(-10px);
+  }
+}
+
+@keyframes panelEnterRight {
+  from {
+    opacity: 0.94;
+    transform: translateX(10px);
+  }
+}
+
+@keyframes heroItemEnter {
+  from {
+    filter: blur(3px);
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes logoEnter {
+  from {
+    filter: blur(2px);
+    opacity: 0.72;
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .entrancePanel {
+    animation: panelEnterLeft 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .entranceShowcase {
+    animation: panelEnterRight 340ms cubic-bezier(0.16, 1, 0.3, 1) 70ms both;
+  }
+
+  .entranceLogo {
+    animation: logoEnter 240ms cubic-bezier(0.22, 1, 0.36, 1) 20ms both;
+  }
+
+  .entranceItem {
+    animation: heroItemEnter 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .role.entranceItem {
+    animation-delay: 80ms;
+  }
+
+  .bio.entranceItem {
+    animation-delay: 140ms;
+  }
+
+  .contactActions > .entranceItem {
+    animation-delay: 200ms;
+  }
+
+  .contactActions > .socials {
+    animation-delay: 260ms;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .entrancePanel,
+  .entranceLogo,
+  .entranceItem,
+  .entranceShowcase {
+    filter: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
   .logoDock,
   .logoDock::before,
   .socialLink {
