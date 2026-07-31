@@ -707,9 +707,9 @@ Key constraints:
 
 ## Implementation progress — ITEM-01 retire `/video-player-lab`
 
-- **Status:** `Verified locally — production verification pending` (2026-07-31). Do not mark `Complete` until this exact revision is deployed and rechecked on the public origin.
+- **Status:** `Complete — verified in production` (2026-07-31).
 - **Implemented scope:** removed the standalone route, component, and CSS module; regenerated the TanStack route tree. The Orgo walkthrough asset remains because the portfolio viewer still uses it.
 - **Objective evidence:** `bun run check` and `bun run build` pass; local SSR returns `/` as `200` with exactly one retained video and `/video-player-lab` as `404`; the new build contains no lab route/chunk/text; focused browser QA opened the retained Orgo viewer with media `readyState=4`, duration `4.534`, `error=null`, and no console errors/warnings.
 - **Regression guard:** SHA-256 hashes for `CrossAxisProjectRail.tsx`, its CSS module, `portfolio-data.ts`, the Orgo MP4, and its poster are unchanged from the pre-change baseline.
-- **Finding disposition:** `M-R04` is resolved in the local candidate. Lab-only portions of `M-C07`, `M-C08`, `M-C09`, `M-C15`, `M-C17`, and `M-R05` are retired; their homepage/site-wide portions remain open. Production drift and release-gate findings remain open.
-- **Production acceptance:** deploy the approved SHA, verify public `/video-player-lab` returns `404` or approved `410` with no redirect loop, confirm `/` still opens and plays the Orgo viewer, and attach the deployed SHA plus browser/HTTP evidence here before changing status to `Complete`.
+- **Finding disposition:** `M-R04` is complete. Lab-only portions of `M-C07`, `M-C08`, `M-C09`, `M-C15`, `M-C17`, and `M-R05` are retired in production; their homepage/site-wide portions remain open. `M-C01` release parity is established for this deployed revision, while the broader provenance/promotion controls in `M-C11` remain open.
+- **Production acceptance evidence:** GitHub merge SHA `c273f81f59b8a1d7cd01e3cedb03b948b7d6cd32`, Actions run `30657215155`, and Cloudflare version `b8c0dab8-207e-4568-87ca-289ef74ae6e6` are bound by the deployment log. Public `/` returns `200` with the new hashed assets; `/video-player-lab` returns `404` with no redirect; browser QA opened and played the retained Orgo viewer at `readyState=4`, duration `4.534`, `error=null`, with no console errors/warnings.

@@ -328,7 +328,7 @@ These are source/SSR-level passes unless noted; direct multi-browser/AT behavior
 
 ## Implementation tracking — ITEM-01
 
-- **Status:** `Verified locally — production verification pending` (2026-07-31).
-- **Disposition:** lab-only `09-C-04` and `09-O-03` are not applicable to the local candidate. The lab portion of `09-C-02` is retired; homepage contrast, semantics, heading, motion, media alternatives, keyboard/focus, and 404 findings remain open.
+- **Status:** `Complete — verified in production` (2026-07-31).
+- **Disposition:** lab-only `09-C-04` and `09-O-03` are not applicable to the deployed release. The lab portion of `09-C-02` is retired; homepage contrast, semantics, heading, motion, media alternatives, keyboard/focus, and 404 findings remain open.
 - **Verification:** the lab UI/CSS no longer exists in source or build output, the retired path returns `404`, and focused browser QA found the retained Orgo media ready with no media/console error. No claim is made that broader WCAG coverage is complete.
-- **Tracking rule:** retire the lab-only findings in production only after the same deployed SHA is verified; retain all mixed/site-wide findings until their own acceptance criteria pass.
+- **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; the lab path is `404` and retained Orgo media passed browser smoke. All mixed/site-wide findings remain open until their own acceptance criteria pass.

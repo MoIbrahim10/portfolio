@@ -135,10 +135,10 @@
 
 ## Implementation tracking — ITEM-01
 
-- **Status:** `Verified locally — production verification pending` (2026-07-31).
-- **Security-surface change:** `/video-player-lab` and its client bundle are absent from the local candidate, reducing the public route surface without adding packages, scripts, configuration, secrets, or external calls.
-- **Verification:** local SSR returns the retired path as a non-soft `404`; the build has no lab route/chunk/text. Existing site-wide transport and header findings remain open for `/` and error responses.
-- **Tracking rule:** treat historical lab route references as superseded locally; mark production complete only after the deployed response and headers are verified on the exact release SHA.
+- **Status:** `Complete — verified in production` (2026-07-31).
+- **Security-surface change:** `/video-player-lab` and its client bundle are absent from production, reducing the public route surface without adding packages, scripts, configuration, secrets, or external calls.
+- **Verification:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; the retired path is a non-soft `404`, and the deployed build uses the lab-free asset set. Existing site-wide transport and header findings remain open for `/` and error responses.
+- **Tracking result:** historical lab route references are superseded for the deployed release; no broader security finding is closed by this route removal.
 - **Malformed paths:** Traversal-like, NUL-encoded, and invalid UTF-8 paths returned `400` rather than application content or a detailed error.
 - **SSR escaping/reflection:** A unique query/path marker containing encoded angle brackets was not reflected on either valid route or the 404 response. No application query/hash/route-parameter reader exists in source.
 - **XSS source/sink trace:** No attacker-controlled source reaches HTML/URL sinks. No `eval`, `new Function`, string timer, `document.write`, `insertAdjacentHTML`, `DOMParser`, or string event-handler assignment exists in app source.

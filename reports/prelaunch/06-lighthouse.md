@@ -212,7 +212,7 @@ These warm-state/unknown-cache traces have no CrUX data, Speed Index, trace-deri
 
 ## Implementation tracking — ITEM-01
 
-- **Status:** `Verified locally — production verification pending` (2026-07-31).
-- **Disposition:** `LH-06-002` is not applicable to the local candidate because the video-lab route and footer were removed. The release Lighthouse matrix now covers `/` plus the error route; `LH-06-001`, `LH-06-003`, and all honest/stable-score evidence gaps remain open.
+- **Status:** `Complete — verified in production` (2026-07-31).
+- **Disposition:** `LH-06-002` is not applicable to the deployed release because the video-lab route and footer were removed. The release Lighthouse matrix now covers `/` plus the error route; `LH-06-001` and all honest/stable-score evidence gaps remain open. The production-drift premise of `LH-06-003` is resolved for this release, but its homepage performance concerns still require new measurements.
 - **Verification:** regenerated production artifacts contain no lab route or chunk; local route handling returns `404` for the retired URL; retained homepage media loaded in focused browser QA with no console errors/warnings.
-- **Tracking rule:** retire `LH-06-002` only after the public route is absent on the same deployed SHA; never reuse the historical lab score as current evidence.
+- **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; the public lab path is `404` and the retained homepage video passed browser smoke. Historical lab scores are not current evidence.

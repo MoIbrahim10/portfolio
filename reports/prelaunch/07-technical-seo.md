@@ -253,7 +253,7 @@ Normal and cache-disabled requests returned the same status and byte counts for 
 
 ## Implementation tracking — ITEM-01
 
-- **Status:** `Verified locally — production verification pending` (2026-07-31).
-- **Disposition:** `SEO-07-003` is resolved in the local candidate by removing the unintended public route; its orphan/indexability/sitemap decision no longer applies. Lab-specific duplicate-cluster rows in `SEO-07-001`/`SEO-07-002` are retired, but HTTP, canonical-query, 404 recovery, robots, and homepage SEO findings remain open.
+- **Status:** `Complete — verified in production` (2026-07-31).
+- **Disposition:** `SEO-07-003` is complete because the unintended public route is removed in production; its orphan/indexability/sitemap decision no longer applies. Lab-specific duplicate-cluster rows in `SEO-07-001`/`SEO-07-002` are retired, but HTTP, canonical-query, 404 recovery, robots, and homepage SEO findings remain open.
 - **Verification:** the generated route tree declares only `/`; local SSR and browser navigation return a genuine `404` for `/video-player-lab`; no lab source or build reference remains.
-- **Tracking rule:** mark `SEO-07-003` `Complete` only after the production URL returns the approved `404`/`410` and no canonical, sitemap, redirect, or crawl directive reintroduces it.
+- **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; clean and cache-bypassed requests return `404` for `/video-player-lab` with no redirect, canonical, sitemap entry, or lab document.

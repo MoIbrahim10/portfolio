@@ -160,7 +160,7 @@ No buffered `longtask` entries were emitted in these observations. This is **not
 
 ## Implementation tracking — ITEM-01
 
-- **Status:** `Verified locally — production verification pending` (2026-07-31).
-- **Disposition:** all `/video-player-lab` measurements and bundle rows above are historical and no longer part of the local launch matrix. Site-wide caching, homepage media, field CWV, and stable Lighthouse Performance evidence remain open.
+- **Status:** `Complete — verified in production` (2026-07-31).
+- **Disposition:** all `/video-player-lab` measurements and bundle rows above are historical and no longer part of the deployed launch matrix. Site-wide caching, homepage media, field CWV, and stable Lighthouse Performance evidence remain open.
 - **Verification:** the rebuilt client/server output has no lab-specific JS/CSS chunk or lab text; `/` still SSRs its retained video; the retained player/data/media hashes are unchanged and browser QA loaded the Orgo video without media or console errors.
-- **Tracking rule:** collect post-deploy root performance evidence against the approved SHA; do not mark production complete from local build evidence alone.
+- **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; production serves the new root chunks, returns `404` for the lab path, and loads the retained Orgo MP4 successfully. No new CWV or Lighthouse claim is inferred.
