@@ -249,8 +249,8 @@ Release posture: **not functionally cleared**. No source, dependency, build, con
 
 ## Implementation tracking — ITEM-01
 
-- **Status:** `Verified locally — production verification pending` (2026-07-31).
-- **Disposition:** lab-only `FQA-004` is not applicable to the local candidate. Lab rows within `R-FQA-001`, `R-FQA-004`, `O-FQA-001`, and `O-FQA-002` are retired; all homepage and error-route portions remain open.
+- **Status:** `Complete — verified in production` (2026-07-31).
+- **Disposition:** lab-only `FQA-004` is not applicable to the deployed release. Lab rows within `R-FQA-001`, `R-FQA-004`, `O-FQA-001`, and `O-FQA-002` are retired; all homepage and error-route portions remain open.
 - **Focused regression evidence:** opened the homepage Orgo full-screen viewer; one video used `/portfolio/projects/orgo/walkthrough.mp4`, reached `readyState=4`, reported duration `4.534`, had `error=null`, and produced no console errors/warnings. Retained implementation/data/media hashes are unchanged.
-- **Route evidence:** `/video-player-lab` renders `Not Found` and local SSR returns `404`; no lab source/build reference remains.
-- **Tracking rule:** ITEM-01 becomes `Complete` only after these route and retained-viewer checks pass against the deployed approved SHA.
+- **Route evidence:** production `/video-player-lab` renders `Not Found` and returns `404` without redirect; no lab source/build reference remains.
+- **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; the retained viewer check above passed on the public origin with no console errors/warnings.

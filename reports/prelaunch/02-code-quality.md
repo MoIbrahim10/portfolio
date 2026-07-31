@@ -292,8 +292,9 @@ No P0 blocker or P1 high finding was confirmed in scope 02. The deployment/sourc
 
 ## Implementation tracking — ITEM-01
 
-- **Status:** `Verified locally — production verification pending` (2026-07-31).
+- **Status:** `Complete — verified in production` (2026-07-31).
 - **Disposition:** the lab side of `CQ-07` duplication was removed with the retired route; the homepage video implementation was not refactored. The lab portion of `CQ-R02` is no longer applicable, while missing automated characterization for `CrossAxisProjectRail` remains open.
 - **Removal safety evidence:** repository import/reference search found no consumer beyond the deleted route; route generation, type checking, and production build pass; generated artifacts contain no lab chunk or identifying text.
 - **Regression evidence:** retained player source, CSS, data, MP4, and poster hashes match their pre-change baselines; focused browser QA loaded the retained viewer successfully.
-- **Tracking rule:** mark `CQ-07` only `Partially resolved`; mark ITEM-01 `Complete` after the approved SHA is deployed and the public route/player checks pass.
+- **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; public route and retained-player checks passed.
+- **Tracking result:** `CQ-07` remains only `Partially resolved` because homepage duplication concerns remain; ITEM-01 itself is complete.

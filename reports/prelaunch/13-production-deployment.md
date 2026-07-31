@@ -403,7 +403,7 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 
 ## Implementation tracking — ITEM-01
 
-- **Status:** `Verified locally — production verification pending` (2026-07-31).
-- **Candidate change:** the lab route and its normalization target no longer exist; local `/video-player-lab` is a `404`. `DEP-13-008` remains open for other URL normalization behavior, and all transport, TLS, headers, caching, observability, rollback, and artifact-provenance findings remain open.
+- **Status:** `Complete — verified in production` (2026-07-31).
+- **Deployed change:** the lab route and its normalization target no longer exist; production `/video-player-lab` is a non-redirecting `404`. `DEP-13-008` remains open for other URL normalization behavior, and all transport, TLS, headers, caching, observability, rollback, and broader artifact-provenance findings remain open.
 - **Verification:** check/build pass; generated route/build output contains no lab entry; retained homepage media loads in focused browser QA and its implementation/assets are hash-identical to baseline.
-- **Production gate:** deploy only after approval, then bind the deployed SHA/version to evidence for public `/` and `/video-player-lab`; mark this item `Complete` only when the public retired URL is `404`/approved `410` and the retained viewer passes.
+- **Production evidence:** GitHub merge SHA `c273f81f59b8a1d7cd01e3cedb03b948b7d6cd32`, Actions run `30657215155`, and Cloudflare version `b8c0dab8-207e-4568-87ca-289ef74ae6e6` are bound in the deployment log. Public route and retained-viewer acceptance checks passed.

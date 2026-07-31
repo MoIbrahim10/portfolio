@@ -230,7 +230,7 @@ Methods and evidence:
 
 ## Implementation tracking — ITEM-01
 
-- **Status:** `Verified locally — production verification pending` (2026-07-31).
-- **Disposition:** all lab-specific resilience rows and references are retired from the local candidate. Homepage media recovery, offline navigation, service-worker/PWA policy, failure boundaries, and deployment-drift risks remain open.
+- **Status:** `Complete — verified in production` (2026-07-31).
+- **Disposition:** all lab-specific resilience rows and references are retired from the deployed release. Homepage media recovery, offline navigation, service-worker/PWA policy, and failure boundaries remain open; the candidate/live drift premise is resolved for this release.
 - **Verification:** the retired path is a real local `404`, the new build has no lab route/chunk, and the retained homepage video path, source code, poster, and MP4 are unchanged; focused browser QA loaded that video without media or console errors.
-- **Tracking rule:** no offline/PWA success is inferred from route removal; mark ITEM-01 complete only after deployed route and retained-player checks pass.
+- **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; deployed route and retained-player checks passed. No offline/PWA success is inferred from this route removal.

@@ -222,7 +222,7 @@ These are implementation/artifact checks, not visual cross-browser passes:
 
 ## Implementation tracking — ITEM-01
 
-- **Status:** `Verified locally — production verification pending` (2026-07-31).
-- **Disposition:** lab-only `RESP-11-001` is not applicable to the local candidate. Lab portions of `RESP-11-006`, `RESP-11-007`, `RESP-11-010`, and the historical matrix are retired; homepage responsive, touch, keyboard, motion, and cross-browser findings remain open.
+- **Status:** `Complete — verified in production` (2026-07-31).
+- **Disposition:** lab-only `RESP-11-001` is not applicable to the deployed release. Lab portions of `RESP-11-006`, `RESP-11-007`, `RESP-11-010`, and the historical matrix are retired; homepage responsive, touch, keyboard, motion, and cross-browser findings remain open.
 - **Verification:** current build has no lab CSS/JS route chunk; the retired URL returns `404`; retained player implementation/CSS/data/media hashes are unchanged and its Orgo video loaded in desktop browser QA.
-- **Tracking rule:** this removal does not satisfy the wider device/browser matrix; production completion requires same-SHA route verification and retained-viewer smoke testing.
+- **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; same-release route verification and desktop retained-viewer smoke passed. This removal does not satisfy the wider device/browser matrix.

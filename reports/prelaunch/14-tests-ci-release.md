@@ -367,7 +367,7 @@ These are narrow evidence-backed passes, not substitutes for the absent tests:
 
 ## Implementation tracking — ITEM-01
 
-- **Status:** `Verified locally — production verification pending` (2026-07-31).
+- **Status:** `Complete — verified in production` (2026-07-31).
 - **Local gates passed:** route generation, `bun run check`, `bun run build`, SSR assertions (`/` `200`, retired path `404`), absence of lab strings/chunks, retained-file hash comparison, and focused retained-video browser smoke.
-- **Disposition:** the release route matrix is now `/` plus a required `/video-player-lab` negative assertion and generic 404 coverage. `CI14-001`, `CI14-003`, `CI14-004`, `CI14-005`, and broader CI/release-control findings remain open; manual evidence does not replace automated gates.
-- **Production gate:** verify the exact deployed SHA, public `404`/approved `410`, homepage viewer load/playback, critical assets, and console/network health before changing ITEM-01 to `Complete`.
+- **Disposition:** the release route matrix is now `/` plus a required `/video-player-lab` negative assertion and generic 404 coverage. The release-drift premise of `CI14-004` is resolved for this release; `CI14-001`, `CI14-003`, `CI14-005`, and broader CI/release-control findings remain open. Manual evidence does not replace automated gates.
+- **Production evidence:** PR #1 validation passed; merge SHA `c273f81…` passed Actions run `30657215155` and deployed as Cloudflare version `b8c0dab8…`. Public `404`, homepage assets, retained-video playback, and console health passed independent checks.

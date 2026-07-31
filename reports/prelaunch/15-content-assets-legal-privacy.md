@@ -324,8 +324,8 @@ Exact-byte duplicate pairs:
 
 ## Implementation tracking — ITEM-01
 
-- **Status:** `Verified locally — production verification pending` (2026-07-31).
-- **Disposition:** `R15-004` is resolved in the local candidate by removing the public design laboratory. Other content, link, ownership, licensing, attribution, legal, and privacy findings remain open.
+- **Status:** `Complete — verified in production` (2026-07-31).
+- **Disposition:** `R15-004` is complete for the deployed release because the public design laboratory was removed. Other content, link, ownership, licensing, attribution, legal, and privacy findings remain open.
 - **Asset safety:** the shared Orgo walkthrough MP4 and poster were retained because the homepage viewer consumes them; both hashes match the pre-change baseline. No unrelated public asset was deleted.
 - **Verification:** no lab source/build reference remains, the retired path returns `404`, and focused browser QA loaded the retained Orgo video without media or console errors.
-- **Tracking rule:** mark `R15-004` `Complete` only after the public route is absent on the exact approved deployed SHA.
+- **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; the public route is `404`, and retained shared media passed live browser verification.

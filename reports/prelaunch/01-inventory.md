@@ -268,8 +268,9 @@ The live root SSR referenced 53 unique internal URLs and the live video-lab SSR 
 
 ## Implementation tracking — ITEM-01
 
-- **Status:** `Verified locally — production verification pending` (2026-07-31).
+- **Status:** `Complete — verified in production` (2026-07-31).
 - **Current candidate inventory:** `/` is the only declared application route; `/video-player-lab` now returns `404`. `src/routes/video-player-lab.tsx` and `src/components/video-player-lab/` were removed, and `src/routeTree.gen.ts` was regenerated.
 - **Preserved dependency:** `/portfolio/projects/orgo/walkthrough.mp4` and its poster remain referenced by the homepage portfolio viewer and were not removed or modified.
 - **Verification:** check/build pass, no source/build lab reference remains, local SSR reports `/` `200` and the retired path `404`, and browser QA loaded the retained Orgo video without media or console errors.
-- **Tracking rule:** the earlier inventory remains historical audit evidence; treat its lab rows as superseded for the local candidate. Mark this item `Complete` only after same-revision production verification.
+- **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; public `/` is `200` with the retained Orgo video and the retired path is a non-redirecting `404`. Browser QA loaded and played that video without media or console errors.
+- **Tracking result:** the earlier inventory remains historical audit evidence; its lab rows are superseded for the deployed release.
