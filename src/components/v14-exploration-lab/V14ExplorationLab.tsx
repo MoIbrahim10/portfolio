@@ -15,12 +15,12 @@ const LINKS = {
 }
 
 const AVATARS = [
-  '/avatar/mo-avatar-portrait-01.png',
-  '/avatar/mo-avatar-portrait-02.png',
-  '/avatar/mo-avatar-portrait-03.png',
-  '/avatar/mo-avatar-portrait-04.png',
-  '/avatar/mo-avatar-portrait-05.png',
-  '/avatar/mo-avatar-portrait-06.png',
+  '/avatar/mo-avatar-portrait-01-640.webp',
+  '/avatar/mo-avatar-portrait-02-640.webp',
+  '/avatar/mo-avatar-portrait-03-640.webp',
+  '/avatar/mo-avatar-portrait-04-640.webp',
+  '/avatar/mo-avatar-portrait-05-640.webp',
+  '/avatar/mo-avatar-portrait-06-640.webp',
 ]
 
 interface Direction {
@@ -30,7 +30,7 @@ interface Direction {
 }
 
 const DIRECTION: Direction = {
-  avatar: '/avatar/mo-avatar-portrait-03.png',
+  avatar: '/avatar/mo-avatar-portrait-03-640.webp',
   id: 'wide-type',
   name: 'Wide Signal',
 }
@@ -107,16 +107,21 @@ function SocialLink({
 function ContactActions() {
   return (
     <div className={styles.contactActions}>
-      <CutCornerButton
-        className={styles.callButton}
-        href={LINKS.cal}
-        rel="noreferrer"
-        target="_blank"
-        variant="navy"
+      <div className={styles.entranceItem}>
+        <CutCornerButton
+          className={styles.callButton}
+          href={LINKS.cal}
+          rel="noreferrer"
+          target="_blank"
+          variant="navy"
+        >
+          Schedule a call
+        </CutCornerButton>
+      </div>
+      <nav
+        aria-label="Contact links"
+        className={`${styles.socials} ${styles.entranceItem}`}
       >
-        Schedule a call
-      </CutCornerButton>
-      <nav aria-label="Contact links" className={styles.socials}>
         <SocialLink href={LINKS.x} label="X profile" name="x" />
         <SocialLink href={LINKS.email} label="Email Mo" name="email" />
         <SocialLink href={LINKS.github} label="GitHub profile" name="github" />
@@ -222,91 +227,93 @@ function MoReveal({ direction }: { direction: Direction }) {
             />
           ))}
         </span>
-        <motion.img
-          alt=""
-          animate={{
-            opacity: nextIsPromoting ? 1 : 0.94,
-            rotate: nextIsPromoting ? -0.25 : -0.8,
-            scale: nextIsPromoting ? 1 : 0.985,
-            x: nextIsPromoting ? 0 : -2,
-            y: nextIsPromoting ? 0 : 3,
-          }}
-          aria-hidden="true"
-          className={styles.nextPortrait}
-          height="1254"
-          initial={false}
-          loading="lazy"
-          src={next}
-          transition={{
-            bounce: 0,
-            duration: reducedMotion ? 0 : 0.58,
-            type: 'spring',
-          }}
-          width="1254"
-        />
-        <motion.img
-          alt=""
-          animate={
-            dealPhase === 'out'
-              ? {
-                  opacity: 1,
-                  rotate: 3.6,
-                  scale: 1.005,
-                  x: '128%',
-                  y: -5,
-                }
-              : dealPhase === 'under'
-                ? {
-                    opacity: 1,
-                    rotate: -1.1,
-                    scale: 0.97,
-                    x: 0,
-                    y: 11,
-                  }
-                : {
-                    opacity: 1,
-                    rotate: -0.25,
-                    scale: 1,
-                    x: 0,
-                    y: 0,
-                  }
-          }
-          aria-hidden="true"
-          className={styles.topPortrait}
-          height="1254"
-          initial={false}
-          key={current}
-          loading="lazy"
-          src={current}
-          style={{ zIndex: dealPhase === 'under' ? 0 : 42 }}
-          transition={
-            dealPhase === 'out'
-              ? {
-                  duration: reducedMotion ? 0 : 0.48,
-                  ease: [0.22, 1, 0.36, 1],
-                }
-              : dealPhase === 'under'
-                ? {
-                    duration: reducedMotion ? 0 : 0.54,
-                    ease: [0.32, 0.72, 0, 1],
-                  }
-                : { duration: 0 }
-          }
-          width="1254"
-          onAnimationComplete={() => {
-            if (!visible) return
+        {visible ? (
+          <>
+            <motion.img
+              alt=""
+              animate={{
+                opacity: nextIsPromoting ? 1 : 0.94,
+                rotate: nextIsPromoting ? -0.25 : -0.8,
+                scale: nextIsPromoting ? 1 : 0.985,
+                x: nextIsPromoting ? 0 : -2,
+                y: nextIsPromoting ? 0 : 3,
+              }}
+              aria-hidden="true"
+              className={styles.nextPortrait}
+              height="640"
+              initial={false}
+              src={next}
+              transition={{
+                bounce: 0,
+                duration: reducedMotion ? 0 : 0.58,
+                type: 'spring',
+              }}
+              width="640"
+            />
+            <motion.img
+              alt=""
+              animate={
+                dealPhase === 'out'
+                  ? {
+                      opacity: 1,
+                      rotate: 3.6,
+                      scale: 1.005,
+                      x: '128%',
+                      y: -5,
+                    }
+                  : dealPhase === 'under'
+                    ? {
+                        opacity: 1,
+                        rotate: -1.1,
+                        scale: 0.97,
+                        x: 0,
+                        y: 11,
+                      }
+                    : {
+                        opacity: 1,
+                        rotate: -0.25,
+                        scale: 1,
+                        x: 0,
+                        y: 0,
+                      }
+              }
+              aria-hidden="true"
+              className={styles.topPortrait}
+              height="640"
+              initial={false}
+              key={current}
+              src={current}
+              style={{ zIndex: dealPhase === 'under' ? 0 : 42 }}
+              transition={
+                dealPhase === 'out'
+                  ? {
+                      duration: reducedMotion ? 0 : 0.48,
+                      ease: [0.22, 1, 0.36, 1],
+                    }
+                  : dealPhase === 'under'
+                    ? {
+                        duration: reducedMotion ? 0 : 0.54,
+                        ease: [0.32, 0.72, 0, 1],
+                      }
+                    : { duration: 0 }
+              }
+              width="640"
+              onAnimationComplete={() => {
+                if (!visible) return
 
-            if (dealPhase === 'out') {
-              setDealPhase('under')
-              return
-            }
+                if (dealPhase === 'out') {
+                  setDealPhase('under')
+                  return
+                }
 
-            if (dealPhase === 'under') {
-              setAvatarIndex((index) => (index + 1) % AVATARS.length)
-              setDealPhase('idle')
-            }
-          }}
-        />
+                if (dealPhase === 'under') {
+                  setAvatarIndex((index) => (index + 1) % AVATARS.length)
+                  setDealPhase('idle')
+                }
+              }}
+            />
+          </>
+        ) : null}
       </motion.span>
     </span>
   )
@@ -317,36 +324,33 @@ function HeroStage({
 }: {
   direction: Direction
 }) {
-  const reducedMotion = useReducedMotion()
-
   return (
-    <motion.article
-      animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
+    <article
       aria-label="Mo Ibrahim portfolio"
       className={styles.stage}
       data-direction={direction.id}
-      exit={{ filter: 'blur(3px)', opacity: 0, y: -8 }}
-      initial={
-        reducedMotion ? false : { filter: 'blur(4px)', opacity: 0, y: 14 }
-      }
-      transition={{
-        bounce: 0,
-        duration: reducedMotion ? 0 : 0.44,
-        type: 'spring',
-      }}
     >
-      <div className={styles.leftPanel} data-direction={direction.id}>
+      <div
+        className={`${styles.leftPanel} ${styles.entrancePanel}`}
+        data-direction={direction.id}
+      >
         <a
           aria-label="MO portfolio home"
-          className={styles.logoDock}
+          className={`${styles.logoDock} ${styles.entranceLogo}`}
           href="/"
         >
-          <AnimatedLogo animateOnMount={false} className={styles.logo} />
+          <AnimatedLogo className={styles.logo} />
         </a>
 
         <div className={styles.introduction}>
-          <p className={styles.role}>Design Engineer</p>
-          <p className={styles.bio}>
+          <p
+            className={`${styles.role} ${styles.entranceItem}`}
+          >
+            Design Engineer
+          </p>
+          <p
+            className={`${styles.bio} ${styles.entranceItem}`}
+          >
             Hey, I&apos;m <MoReveal direction={direction} />. I love building
             products where every detail matters, from the overall experience to
             the last pixel. I enjoy turning thoughtful design into clean,
@@ -355,10 +359,12 @@ function HeroStage({
           <ContactActions />
         </div>
       </div>
-      <div className={styles.showcasePanel}>
+      <div
+        className={`${styles.showcasePanel} ${styles.entranceShowcase}`}
+      >
         <CrossAxisPresentationLab />
       </div>
-    </motion.article>
+    </article>
   )
 }
 

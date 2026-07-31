@@ -15,6 +15,7 @@ import {
   AnimatePresence,
   LayoutGroup,
   motion,
+  useInView,
   useMotionTemplate,
   useMotionValue,
   useReducedMotion,
@@ -27,12 +28,14 @@ import {
   type PortfolioMedia,
   type PortfolioProject,
 } from './portfolio-data'
+import { PORTFOLIO_PLACEHOLDERS } from './portfolio-placeholders'
 import { CutCornerButton } from './CutCornerButton'
 
 import styles from './CrossAxisProjectRail.module.css'
 
 type ChangeSource = 'keyboard' | 'pointer' | 'scroll'
 type TravelDirection = -1 | 1
+type AssetStatus = 'error' | 'loading' | 'queued' | 'ready'
 export type DetailPresentation =
   | 'archive'
   | 'blueprint'
@@ -48,9 +51,9 @@ export type DetailPresentation =
 interface StoryChapter {
   caption: string
   contain?: boolean
+  label?: string
   media: PortfolioMedia
   objectPosition?: string
-  posterMedia?: PortfolioMedia
   project?: PortfolioProject
   videoSrc?: string
 }
@@ -174,7 +177,6 @@ const STORIES: ProjectStory[] = [
           src: goodInvoice.media[2].src,
           width: 1056,
         },
-        posterMedia: goodInvoice.media[1],
         project: goodInvoice,
         videoSrc: '/portfolio/projects/good-invoice/feedback-links.mp4',
       },
@@ -201,9 +203,9 @@ const STORIES: ProjectStory[] = [
         media: {
           alt: 'Lumen model selector open over the dark workspace',
           fallbackSrc: lumen.media[0].fallbackSrc,
-          height: 1032,
+          height: 1080,
           src: lumen.media[0].src,
-          width: 1920,
+          width: 1616,
         },
         project: lumen,
         videoSrc: '/portfolio/projects/lumen/model-selector.mp4',
@@ -361,6 +363,18 @@ const STORIES: ProjectStory[] = [
         project: glazed,
         videoSrc: '/portfolio/projects/glazed/pricing-scroll.mp4',
       },
+      {
+        caption: 'MO identity mark animation',
+        contain: true,
+        label: 'MO',
+        media: {
+          alt: 'Animated MO identity mark',
+          height: 1080,
+          src: '/portfolio/projects/identity/logo-animation-poster.webp',
+          width: 1456,
+        },
+        videoSrc: '/portfolio/projects/identity/logo-animation.mp4',
+      },
     ],
     description:
       'A rolling gallery of studio sites, interface systems, and interaction prototypes.',
@@ -372,6 +386,29 @@ const STORIES: ProjectStory[] = [
 ]
 
 const EASE = [0.22, 1, 0.36, 1] as const
+
+interface ConnectionHint {
+  downlink?: number
+  effectiveType?: string
+  rtt?: number
+  saveData?: boolean
+}
+
+function hasConstrainedConnection() {
+  if (typeof navigator === 'undefined') return false
+
+  const connection = (
+    navigator as Navigator & { connection?: ConnectionHint }
+  ).connection
+
+  return Boolean(
+    connection?.saveData ||
+      ['slow-2g', '2g', '3g'].includes(connection?.effectiveType ?? '') ||
+      (typeof connection?.downlink === 'number' &&
+        connection.downlink < 2) ||
+      (typeof connection?.rtt === 'number' && connection.rtt > 500),
+  )
+}
 
 function storyStyle(story: ProjectStory) {
   return {
@@ -545,6 +582,82 @@ function ProjectControls({
   )
 }
 
+function DeferredPicture({
+  alt,
+  load,
+  loading = 'lazy',
+  media,
+  objectPosition,
+  priority = 'auto',
+}: {
+  alt: string
+  load: boolean
+  loading?: 'eager' | 'lazy'
+  media: PortfolioMedia
+  objectPosition?: string
+  priority?: 'auto' | 'high' | 'low'
+}) {
+  const [status, setStatus] = useState<AssetStatus>(
+    load ? 'loading' : 'queued',
+  )
+  const fallbackSrc = media.fallbackSrc ?? media.src
+  const placeholderSrc = PORTFOLIO_PLACEHOLDERS[media.src]
+
+  useEffect(() => {
+    if (load && status === 'queued') setStatus('loading')
+  }, [load, status])
+
+  return (
+    <span
+      aria-busy={status === 'loading'}
+      className={styles.assetSurface}
+      data-status={status}
+    >
+      {placeholderSrc ? (
+        <img
+          alt=""
+          aria-hidden="true"
+          className={styles.assetPlaceholder}
+          draggable={false}
+          height={media.height}
+          src={placeholderSrc}
+          style={objectPosition ? { objectPosition } : undefined}
+          width={media.width}
+        />
+      ) : null}
+
+      {load ? (
+        <picture
+          className={styles.assetPicture}
+          data-ready={status === 'ready' || undefined}
+        >
+          {media.fallbackSrc ? (
+            <source srcSet={media.src} type="image/webp" />
+          ) : null}
+          <img
+            alt={alt}
+            decoding="async"
+            fetchPriority={priority}
+            height={media.height}
+            loading={loading}
+            onError={() => setStatus('error')}
+            onLoad={(event) => {
+              const image = event.currentTarget
+              void image
+                .decode()
+                .catch(() => undefined)
+                .then(() => setStatus('ready'))
+            }}
+            src={fallbackSrc}
+            style={objectPosition ? { objectPosition } : undefined}
+            width={media.width}
+          />
+        </picture>
+      ) : null}
+    </span>
+  )
+}
+
 function StoryMedia({
   active,
   chapter,
@@ -552,6 +665,7 @@ function StoryMedia({
   eager,
   mediaId,
   onOpen,
+  prewarm,
   story,
 }: {
   active: boolean
@@ -564,10 +678,18 @@ function StoryMedia({
     trigger: HTMLButtonElement,
     instant: boolean,
   ) => void
+  prewarm: boolean
   story: ProjectStory
 }) {
   const reducedMotion = useReducedMotion()
   const [focused, setFocused] = useState(false)
+  const [requested, setRequested] = useState(eager)
+  const mediaRef = useRef<HTMLDivElement>(null)
+  const nearViewport = useInView(mediaRef, {
+    amount: 'some',
+    margin: '720px 0px',
+    once: true,
+  })
   const pointerX = useMotionValue(0)
   const pointerY = useMotionValue(0)
   const smoothX = useSpring(pointerX, {
@@ -586,6 +708,18 @@ function StoryMedia({
   const panY = useTransform(smoothY, [-1, 1], [9, -9])
   const transformOrigin = useMotionTemplate`${originX}% ${originY}%`
 
+  useEffect(() => {
+    if (requested || !active || !nearViewport) return
+    setRequested(true)
+  }, [active, nearViewport, requested])
+
+  useEffect(() => {
+    if (requested || !prewarm || hasConstrainedConnection()) return
+
+    const timer = window.setTimeout(() => setRequested(true), 1200)
+    return () => window.clearTimeout(timer)
+  }, [prewarm, requested])
+
   const handlePointerMove = (
     event: ReactPointerEvent<HTMLButtonElement>,
   ) => {
@@ -602,12 +736,12 @@ function StoryMedia({
     setFocused(false)
   }
 
-  const fallbackSrc = chapter.media.fallbackSrc ?? chapter.media.src
   const mediaFrame = (
     <div
       className={styles.mediaFrame}
       data-fit={chapter.contain ? 'contain' : 'cover'}
       data-media-type={chapter.videoSrc ? 'video' : 'image'}
+      ref={mediaRef}
       style={
         chapter.contain
           ? {
@@ -630,30 +764,19 @@ function StoryMedia({
           <ResilientVideo
             active={active}
             eager={eager}
+            load={requested}
             media={chapter.media}
-            posterMedia={chapter.posterMedia}
             src={chapter.videoSrc}
           />
         ) : (
-          <picture>
-            {chapter.media.fallbackSrc ? (
-              <source srcSet={chapter.media.src} type="image/webp" />
-            ) : null}
-            <img
-              alt={chapter.media.alt}
-              decoding="async"
-              fetchPriority={eager ? 'high' : 'auto'}
-              height={chapter.media.height}
-              loading={eager ? 'eager' : 'lazy'}
-              src={fallbackSrc}
-              style={
-                chapter.objectPosition
-                  ? { objectPosition: chapter.objectPosition }
-                  : undefined
-              }
-              width={chapter.media.width}
-            />
-          </picture>
+          <DeferredPicture
+            alt={chapter.media.alt}
+            load={requested}
+            loading={eager ? 'eager' : 'lazy'}
+            media={chapter.media}
+            objectPosition={chapter.objectPosition}
+            priority={eager ? 'high' : active ? 'auto' : 'low'}
+          />
         )}
       </motion.div>
     </div>
@@ -699,7 +822,9 @@ function StoryMedia({
       </motion.button>
       <figcaption>
         <span>{chapter.caption}</span>
-        {chapter.project ? <span>{chapter.project.title}</span> : null}
+        {chapter.label || chapter.project ? (
+          <span>{chapter.label ?? chapter.project?.title}</span>
+        ) : null}
       </figcaption>
       {story.id === 'others'
         ? chapter.project?.collaborators.map((collaborator) => (
@@ -736,26 +861,26 @@ function StoryMedia({
 function ResilientVideo({
   active,
   eager,
+  load,
   media,
-  posterMedia = media,
   src,
 }: {
   active: boolean
   eager: boolean
+  load: boolean
   media: PortfolioMedia
-  posterMedia?: PortfolioMedia
   src: string
 }) {
   const reducedMotion = useReducedMotion()
-  const [inView, setInView] = useState(false)
+  const [inView, setInView] = useState(eager)
   const [playing, setPlaying] = useState(false)
   const [playbackBlocked, setPlaybackBlocked] = useState(false)
   const [failed, setFailed] = useState(false)
+  const [videoReady, setVideoReady] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
-  const fallbackSrc = posterMedia.fallbackSrc ?? posterMedia.src
-  const shouldPlay = active && inView && !reducedMotion
-  const showFallback = Boolean(reducedMotion || failed)
+  const posterSrc = src.replace(/\.mp4$/, '-poster.webp')
+  const shouldPlay = load && active && inView && !reducedMotion && !failed
   const attemptPlayback = useCallback((video: HTMLVideoElement) => {
     video.muted = true
     video.defaultMuted = true
@@ -790,6 +915,7 @@ function ResilientVideo({
   useEffect(() => {
     setFailed(false)
     setPlaybackBlocked(false)
+    setVideoReady(false)
   }, [src])
 
   useEffect(() => {
@@ -804,7 +930,7 @@ function ResilientVideo({
 
     video.preload = 'auto'
     attemptPlayback(video)
-  }, [attemptPlayback, shouldPlay, src])
+  }, [attemptPlayback, shouldPlay])
 
   return (
     <div
@@ -818,48 +944,51 @@ function ResilientVideo({
               ? 'playing'
               : 'idle'
       }
+      data-ready={videoReady || undefined}
       ref={rootRef}
     >
-      {showFallback ? (
-        <picture aria-hidden="true" className={styles.videoPoster}>
-          {posterMedia.fallbackSrc ? (
-            <source srcSet={posterMedia.src} type="image/webp" />
-          ) : null}
-          <img
-            alt=""
-            decoding="async"
-            fetchPriority={eager ? 'high' : 'auto'}
-            height={posterMedia.height}
-            loading={eager ? 'eager' : 'lazy'}
-            src={fallbackSrc}
-            width={posterMedia.width}
-          />
-        </picture>
-      ) : null}
-      <video
-        aria-label={media.alt}
-        autoPlay={shouldPlay}
-        className={styles.videoLayer}
+      <img
+        alt=""
+        aria-hidden="true"
+        className={styles.videoPoster}
+        decoding="async"
+        fetchPriority={eager ? 'high' : active ? 'auto' : 'low'}
         height={media.height}
-        loop
-        muted
-        onError={() => {
-          setPlaying(false)
-          setFailed(true)
-        }}
-        onPause={() => setPlaying(false)}
-        onPlaying={() => setPlaying(true)}
-        onCanPlay={(event) => {
-          if (shouldPlay && event.currentTarget.paused) {
-            attemptPlayback(event.currentTarget)
-          }
-        }}
-        playsInline
-        preload={eager ? 'auto' : 'metadata'}
-        ref={videoRef}
-        src={src}
+        loading={eager ? 'eager' : 'lazy'}
+        src={posterSrc}
         width={media.width}
       />
+
+      {load && !failed ? (
+        <video
+          aria-label={media.alt}
+          autoPlay={shouldPlay}
+          className={styles.videoLayer}
+          data-ready={videoReady || undefined}
+          height={media.height}
+          loop
+          muted
+          onCanPlay={(event) => {
+            setVideoReady(true)
+            if (shouldPlay && event.currentTarget.paused) {
+              attemptPlayback(event.currentTarget)
+            }
+          }}
+          onError={() => {
+            setPlaying(false)
+            setFailed(true)
+            setVideoReady(false)
+          }}
+          onLoadedData={() => setVideoReady(true)}
+          onPause={() => setPlaying(false)}
+          onPlaying={() => setPlaying(true)}
+          playsInline
+          preload="metadata"
+          ref={videoRef}
+          src={src}
+          width={media.width}
+        />
+      ) : null}
     </div>
   )
 }
@@ -882,7 +1011,6 @@ function ViewerVideo({
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [playing, setPlaying] = useState(false)
-  const [hasPresentedFrame, setHasPresentedFrame] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const progress = duration > 0 ? currentTime / duration : 0
 
@@ -924,23 +1052,14 @@ function ViewerVideo({
     >
       <video
         aria-label={media.alt}
-        className={`${styles.viewerVideoElement} ${
-          hasPresentedFrame ? styles.viewerVideoElementReady : ''
-        }`}
+        className={styles.viewerVideoElement}
         height={media.height}
         loop
         muted
         onDurationChange={(event) => setDuration(event.currentTarget.duration)}
-        onError={() => {
-          setPlaying(false)
-          setHasPresentedFrame(false)
-        }}
-        onLoadedData={() => setHasPresentedFrame(true)}
+        onError={() => setPlaying(false)}
         onPause={() => setPlaying(false)}
-        onPlaying={() => {
-          setHasPresentedFrame(true)
-          setPlaying(true)
-        }}
+        onPlaying={() => setPlaying(true)}
         onTimeUpdate={(event) =>
           setCurrentTime(event.currentTarget.currentTime)
         }
@@ -1000,7 +1119,6 @@ function MediaViewerContent({
 }) {
   const viewerRef = useRef<HTMLDivElement>(null)
   const { chapter } = selection
-  const fallbackSrc = chapter.media.fallbackSrc ?? chapter.media.src
   const titleId = `media-viewer-title-${selection.id}`
   const captionId = `media-viewer-caption-${selection.id}`
 
@@ -1092,7 +1210,7 @@ function MediaViewerContent({
           <div>
             <span>Selected frame</span>
             <h2 id={titleId}>
-              {chapter.project?.title ?? 'Project media'}
+              {chapter.label ?? chapter.project?.title ?? 'Project media'}
             </h2>
           </div>
           <CutCornerButton
@@ -1135,18 +1253,13 @@ function MediaViewerContent({
                 src={chapter.videoSrc}
               />
             ) : (
-              <picture>
-                {chapter.media.fallbackSrc ? (
-                  <source srcSet={chapter.media.src} type="image/webp" />
-                ) : null}
-                <img
-                  alt={chapter.media.alt}
-                  decoding="async"
-                  height={chapter.media.height}
-                  src={fallbackSrc}
-                  width={chapter.media.width}
-                />
-              </picture>
+              <DeferredPicture
+                alt={chapter.media.alt}
+                load
+                loading="eager"
+                media={chapter.media}
+                priority="high"
+              />
             )}
           </div>
         </motion.div>
@@ -1267,6 +1380,10 @@ function ProjectStorySlide({
               eager={index === 0 && chapterIndex === 0}
               mediaId={`${story.id}-${chapterIndex}`}
               onOpen={onMediaOpen}
+              prewarm={
+                chapterIndex === 0 &&
+                Math.abs(index - activeIndex) === 1
+              }
               key={`${story.id}-${chapter.media.src}-${chapterIndex}`}
               story={story}
             />

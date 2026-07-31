@@ -149,7 +149,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       {
         alt: 'Bits n Pixels selected-work carousel showing scheduling and network tools',
         fallbackSrc: '/portfolio/projects/bitsnpixels/work-carousel-poster.png',
-        height: 956,
+        height: 954,
         src: '/portfolio/projects/bitsnpixels/work-carousel-poster.webp',
         width: 1920,
       },
@@ -203,12 +203,12 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
         fallbackSrc: '/portfolio/projects/glazed/mobile-case-study-poster.png',
         height: 1080,
         src: '/portfolio/projects/glazed/mobile-case-study-poster.webp',
-        width: 664,
+        width: 660,
       },
       {
         alt: 'Glaze pricing page followed by selected product work',
         fallbackSrc: '/portfolio/projects/glazed/pricing-scroll-poster.png',
-        height: 952,
+        height: 954,
         src: '/portfolio/projects/glazed/pricing-scroll-poster.webp',
         width: 1920,
       },
@@ -272,7 +272,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       {
         alt: 'Orgo light-mode benefits grid presenting calendar, journaling, scheduling, and task features',
         fallbackSrc: '/portfolio/projects/orgo/benefits.png',
-        height: 1448,
+        height: 1432,
         src: '/portfolio/projects/orgo/benefits.webp',
         width: 2076,
       },
