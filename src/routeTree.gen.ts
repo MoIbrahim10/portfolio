@@ -10,43 +10,33 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as VideoPlayerLabRouteImport } from './routes/video-player-lab'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VideoPlayerLabRoute = VideoPlayerLabRouteImport.update({
-  id: '/video-player-lab',
-  path: '/video-player-lab',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/video-player-lab': typeof VideoPlayerLabRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/video-player-lab': typeof VideoPlayerLabRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/video-player-lab': typeof VideoPlayerLabRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/video-player-lab'
+  fullPaths: '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/video-player-lab'
-  id: '__root__' | '/' | '/video-player-lab'
+  to: '/'
+  id: '__root__' | '/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  VideoPlayerLabRoute: typeof VideoPlayerLabRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,19 +48,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/video-player-lab': {
-      id: '/video-player-lab'
-      path: '/video-player-lab'
-      fullPath: '/video-player-lab'
-      preLoaderRoute: typeof VideoPlayerLabRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  VideoPlayerLabRoute: VideoPlayerLabRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
