@@ -4,6 +4,7 @@
   --navy: #102b43;
   --red: #9f3732;
   --gold: #d79d40;
+  --focus-ring: var(--navy);
   min-height: 100svh;
   overflow-x: clip;
   color: var(--navy);
@@ -19,7 +20,7 @@
 
 .logoDock:focus-visible,
 .moTrigger:focus-visible {
-  outline: 3px solid var(--gold);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
@@ -410,5 +411,10 @@
   .stage,
   .logoDock {
     border: 2px solid CanvasText;
+  }
+
+  .logoDock:focus-visible,
+  .moTrigger:focus-visible {
+    outline-color: Highlight;
   }
 }

@@ -412,6 +412,7 @@ function hasConstrainedConnection() {
 
 function storyStyle(story: ProjectStory) {
   return {
+    '--focus-ring': story.foreground,
     '--story-count': STORIES.length,
     '--story-accent': story.accent,
     '--story-background': story.background,
@@ -571,7 +572,10 @@ function ProjectControls({
                 event.detail === 0 ? 'keyboard' : 'pointer',
               )
             }
-            style={{ '--dot-color': story.accent } as CSSProperties}
+            style={{
+              '--dot-color':
+                story.id === 'others' ? story.foreground : story.accent,
+            } as CSSProperties}
             type="button"
           >
             <span />
