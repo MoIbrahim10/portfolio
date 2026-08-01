@@ -210,14 +210,14 @@ These are implementation/artifact checks, not visual cross-browser passes:
 - Portrait/landscape screenshots, rotation interruption, short-height layouts, safe areas, virtual keyboards, browser chrome expansion/collapse, DPR variation, or pinch zoom.
 - 200% browser zoom, WCAG reflow, text-only zoom, system font scaling, or iOS Dynamic Type.
 - Real touch gestures, stylus, wheel, precision trackpad, kinetic scrolling, scroll chaining, scroll snap interruption, edge swipes, pull-to-refresh, or hybrid pointer switching.
-- Keyboard focus results for dot selection, every modal/media control, browser Back/Forward, tab wrap, interrupted animations, or page restoration.
+- Keyboard focus results for dot selection, every modal/media control, browser Back/Forward, tab wrap, interrupted animations, or page restoration beyond ITEM-10's ArrowRight, dialog autofocus, Escape, and trigger-focus-return checks.
 - Screen-reader semantics and focus announcements in VoiceOver, NVDA, JAWS, or TalkBack.
-- Reduced-motion runtime behavior, animation interruption mid-transition, background-tab suspension, or autoplay-policy differences.
+- Reduced-motion behavior beyond ITEM-10's desktop/mobile Chromium fresh-load and inline/modal paused-state checks; animation interruption, background-tab suspension, and cross-engine autoplay-policy differences remain untested.
 - Forced colors, Windows High Contrast, dark-mode overrides, contrast themes, or print.
 - Safari/WebKit, Firefox/Gecko, iOS Safari, Android Chrome, Samsung Internet, or embedded/in-app browsers.
 - JavaScript-disabled layout and navigation.
 - Fresh/repeat/cache-disabled visual comparisons, Fast/Slow 3G rendering, offline/network failure states, media stalls, or late-loading layout changes.
-- Console, hydration, network, memory, and CPU behavior in a real browser.
+- Console, hydration, and network behavior beyond ITEM-10's named critical states; memory and CPU behavior remain untested.
 - Every link, button, modal, video, image, loading state, navigation path, and error state could not be exhaustively executed because the mandated browser surface exposed no browser backend.
 
 ## Implementation tracking — ITEM-01
@@ -233,3 +233,10 @@ These are implementation/artifact checks, not visual cross-browser passes:
 - **Disposition:** homepage focus/state contrast and 200% text checks related to `M-C07` are complete. `RESP-11-010` and the wider real-device, touch, keyboard, cross-engine, orientation, and motion matrix remain open.
 - **Verification:** production Chromium passed 390×844 and 1440×1000 with no document overflow; 200% text remained within the 390 px viewport; reduced-motion rendering remained stable; forced-colors showed solid 3 px system-highlight outlines. The Orgo modal video played, paused, and closed normally with zero console/page errors.
 - **Release evidence:** merge `1db9d57008b6db30a32178fc4e83597d76074caa`, Actions run `30700858043`, Cloudflare version `a3299de6-82a2-49d7-9815-25da9fe35f8e`.
+
+## Implementation tracking — ITEM-10
+
+- **Status:** `RESP-11-010 partially resolved — blocking Chromium desktop/mobile matrix complete` (2026-08-01).
+- **Verified subset:** Desktop Chrome and Pixel 7 emulation now gate hydration, keyboard rail selection, modal/video controls, Escape/focus return, reduced motion, media failure fallback, and both 404 routes. The public-origin matrix passed 12/12.
+- **Defects fixed:** reduced-motion fresh load no longer emits mismatched SSR/client autoplay/motion attributes, and modal focus restoration no longer races inert cleanup. Normal non-reduced autoplay remains after hydration; reduced-motion media remains paused.
+- **Remaining scope:** real touch swipes/devices, WebKit, Firefox, orientation, zoom/reflow, forced colors, hybrid input, browser Back, offline/throttled states, and the full breakpoint matrix remain open. Release evidence: `ebcd8b1…`, Actions `30706793536`, Cloudflare `5c861a15…`.

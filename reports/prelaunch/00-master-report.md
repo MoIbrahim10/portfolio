@@ -5,11 +5,12 @@ Repository: `/Users/mo/Documents/porfolio`
 Audited local revision: `ae1ec7cb0b1162be7c0aa01214ed5146f2321d7a`
 Observed production revision/build: older/different; latest evidenced deployment SHA `5d80cbf0d9e818f3e5cc4b65766a947bdcd7ad7c`
 ITEM-09 implementation release evidence: `87864fe684a187c885c788d8b7dd2eda21871f94`; Actions run `30703230758`; Cloudflare version `3666f6f8-cea8-4133-9cf9-945cbc0dd3a0`
+ITEM-10 implementation release evidence: `ebcd8b1a8454bb69e37ba3ede9e5c11bb85d8ba8`; Actions run `30706793536`; Cloudflare version `5c861a15-8d73-40ce-8524-c9b46ff1f4eb`
 Production origin: `https://m0code.com`
 
 ## Executive audit status
 
-**Launch recommendation: HOLD.** No `P0 blocker` was confirmed, but unresolved `P1 high` findings and P1 unknowns remain. The product test suite, approval/preview/rollback controls, exhaustive browser/assistive-technology evidence, Lighthouse Performance evidence, and asset-rights evidence remain incomplete. Transport, TLS, browser headers, no-JavaScript visibility, homepage media overfetch, contrast, semantics/404 recovery, release identity, and action pinning were remediated or disproved and production-verified by 2026-08-01.
+**Launch recommendation: HOLD.** No `P0 blocker` was confirmed, but unresolved `P1 high` findings and P1 unknowns remain. Approval/preview/rollback controls, exhaustive cross-browser/assistive-technology evidence, Lighthouse Performance evidence, and asset-rights evidence remain incomplete. The blocking Chromium desktop/mobile product suite is complete. Transport, TLS, browser headers, no-JavaScript visibility, homepage media overfetch, contrast, semantics/404 recovery, release identity, action pinning, and the critical browser gate were remediated or disproved and production-verified by 2026-08-01.
 
 The 2026-07-29 audit baseline found an older production artifact. By 2026-08-01, production and the current build exposed identical root asset hashes, SSR counts, and the same 77 referenced public assets. ITEM-09 then made that parity durable: CI retains and verifies the exact build before deployment and records the source SHA, input/output hashes, tool versions, GitHub artifact digest, Cloudflare version, production URL, and smoke result. `M-C01` is complete and `M-C11` is partially resolved; approval, preview, observability, and rollback remain open. Historical drift evidence is preserved below.
 
@@ -32,14 +33,14 @@ Audit-boundary exception: browser tooling auto-created exactly 10 ignored `.play
 | Functional/responsive | Controls, links, modal/media flows, breakpoints, touch/keyboard/motion logic | Static/HTTP complete; exhaustive execution incomplete |
 | Offline/PWA | SW/manifest/offline inventory, failures, range/revalidation behavior | Product contract unresolved; browser offline matrix incomplete |
 | Deployment/operations | GitHub workflow, environments, Cloudflare delivery, TLS, cache, compression, rollback/observability | Repository/live evidence strong; dashboard-only settings and drills unavailable |
-| Tests/CI | Scripts, tests, gates, GitHub runs/deployments, provenance | Complete inventory; critical gates absent |
+| Tests/CI | Scripts, tests, gates, GitHub runs/deployments, provenance | Blocking Chromium desktop/mobile product gate complete; wider browser/unit/coverage and release-policy controls remain |
 | Content/legal/privacy | Visible/dormant copy and links, 117 assets, signatures/duplicates, tracking evidence, rights records | Technical inventory complete; legal/rights conclusions require owner/counsel |
 
 ## Launch blockers
 
 The following must be resolved or explicitly disproved against one immutable release candidate before launch sign-off:
 
-1. `M-C10` and the remaining portions of `M-C11`: no product test suite and incomplete approval/preview/rollback controls.
+1. Remaining portions of `M-C11`: incomplete approval/preview/rollback and production-post-deploy browser controls.
 2. `M-R01`, `M-R02`, and `M-R03`: incomplete real-browser evidence, no Lighthouse Performance score, and unverified asset/case-study rights.
 
 `M-C08` was retired with `/video-player-lab` under ITEM-01. `M-C09` is complete under ITEM-08; neither remains a launch blocker.
@@ -183,6 +184,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 ### M-C10 — No automated product test suite exists
 
 - **Severity:** `P1 high`
+- **Remediation status:** `Complete — verified in CI and against production` (2026-08-01). The baseline evidence below remains historical.
 - **Affected:** both routes, error states, all `src/components/**`; `package.json:8-33`; `.github/workflows/cloudflare.yml:32-42`.
 - **Sources:** [CQ-R02](./02-code-quality.md), [O-FQA-001](./10-functional-interaction-qa.md), [CI14-001](./14-tests-ci-release.md).
 - **Evidence:** no test script, runner dependency, product test/spec files, component/SSR/E2E coverage, accessibility/visual/browser matrix, or coverage output exists; only TypeScript/build checks exist.
@@ -192,11 +194,12 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** begin with Chromium desktop/mobile critical smoke and nightly WebKit/Firefox; faster but leaves non-blocking gaps.
 - **Effort/dependencies:** `L`, 4–8 engineering days; dependency approval, stable selectors, support matrix, specialist acceptance cases.
 - **Objective verification:** CI runs named test scripts and intentionally broken rail/modal/media/404 journeys fail the blocking gate with retained results.
+- **Current verification:** exact `@playwright/test` 1.61.0 is locked; `bun run test:e2e` executes Chromium desktop and Pixel 7 projects. Twelve cases cover SSR/hydration, keyboard project selection, Orgo modal/video controls, Escape and trigger-focus return, reduced motion, deterministic MP4 failure/poster fallback, generic `404`, and retired-lab `404`, while failing on unexpected console, page, and request errors. Local CI mode and the public origin both passed 12/12. PR #16 passed run `30706719944`; merge `ebcd8b1…` passed the blocking gate and deployed through run `30706793536` as Cloudflare version `5c861a15…`. Failure traces, screenshots, video, HTML, and JSON are retained for 14 days when the browser step fails.
 
 ### M-C11 — Production promotion, smoke verification, provenance, and rollback controls are inadequate
 
 - **Severity:** `P1 high`
-- **Remediation status:** `Partially resolved — provenance, immutable artifact deployment, and HTTP/asset/media smoke verified in production` (2026-08-01). Approval gates, production-like preview, browser CI, observability, and rollback drill remain open.
+- **Remediation status:** `Partially resolved — provenance, immutable artifact deployment, HTTP/asset/media smoke, and candidate browser CI verified` (2026-08-01). Approval gates, production-like preview, automated post-deploy browser smoke, observability, and rollback drill remain open.
 - **Affected:** `.github/workflows/cloudflare.yml:3-56`; GitHub `master` and `production`; Cloudflare versions/deployments.
 - **Sources:** [DEP-13-004, DEP-13-010, DEP-13-R01](./13-production-deployment.md), [CI14-002, CI14-003, CI14-005, CI14-006](./14-tests-ci-release.md).
 - **Evidence:** pushes and manual dispatches can deploy; branch/environment protections are absent; no production-equivalent preview; one title grep is the only post-deploy smoke; no retained artifact/checksum/version, rollback runbook/drill, or verified observability/alert contract.
@@ -206,7 +209,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** on current plan, use manual-only deploy with explicit SHA guard and out-of-band approval; less enforceable but safer than direct push deploy.
 - **Effort/dependencies:** `L`, 2–5 days; repository plan/visibility decision, CI14 tests, Cloudflare preview/version access, release/incident owners.
 - **Objective verification:** non-approved refs cannot deploy; exact artifact is promoted without rebuild; intentional broken chunk/hydration fails smoke; deployment records SHA/version/checksum; nonproduction rollback restores prior known-good within target time.
-- **Current verification:** build and deploy are separate jobs; PRs build/retain but cannot deploy; manual non-`master` dispatches cannot deploy; production consumes the retained artifact and verifies every build/input hash before Wrangler. Post-deploy checks now compare live JS/CSS/brand/video bytes, statuses, titles, H1/group structure, unknown-route recovery, and the retired route. The final manifest retains SHA/tool/artifact/Cloudflare/version/URL/smoke evidence for 90 days. No browser runs inside CI, approval rule, preview promotion, observability contract, rollback runbook, or rollback drill was added.
+- **Current verification:** build and deploy are separate jobs; PRs build/retain but cannot deploy; manual non-`master` dispatches cannot deploy; production consumes the retained artifact and verifies every build/input hash before Wrangler. The build job now blocks on desktop/mobile Chromium product tests before artifact creation. Post-deploy checks compare live JS/CSS/brand/video bytes, statuses, titles, H1/group structure, unknown-route recovery, and the retired route; the same browser suite passed manually against production 12/12. The final manifest retains SHA/tool/artifact/Cloudflare/version/URL/smoke evidence for 90 days. Automated post-deploy browser execution, approval rules, preview promotion, observability, and rollback remain open.
 
 ### M-C12 — Privileged GitHub Actions use mutable tags
 
@@ -670,7 +673,7 @@ These phases are recommendations for later authorization; this audit performs no
 Key constraints:
 
 - Do not tune or delete against live until M-C01 is resolved.
-- Do not refactor `CrossAxisProjectRail` before M-C10 characterization coverage.
+- M-C10 characterization coverage is now complete; any `CrossAxisProjectRail` refactor must keep its 12-case gate green and still needs the visual/cross-browser baselines listed under M-C13/M-R01.
 - Repeat the report-only browser/media gate before any future CSP source-policy expansion.
 - Do not add immutable caching to mutable media paths.
 - Do not expose or remove dormant links/assets before owner/rights/rollback classification.
@@ -802,4 +805,11 @@ Key constraints:
 - **Objective evidence:** PR [#12](https://github.com/MoIbrahim10/portfolio/pull/12) proved PR build/artifact creation and deploy exclusion. Final run [30703230758](https://github.com/MoIbrahim10/portfolio/actions/runs/30703230758) built and reverified 130 files (37,637,574 bytes), deployed build artifact `8819491987` with SHA-256 `5ff2c2ad96fddbd48d16e35ba6582daac48d6d9536f14fbed3c8271b6f6ca318`, and retained release artifact `8819497837` with SHA-256 `d3f946304b7abb97ed530bc78b79911b3989627afbb50f299abe502a6ab1dfe0`.
 - **Production acceptance:** release `87864fe684a187c885c788d8b7dd2eda21871f94` maps to Cloudflare version `3666f6f8-cea8-4133-9cf9-945cbc0dd3a0` and `https://m0code.com`. Attempt-1 smoke matched five generated asset hashes, brand hash, Orgo MP4 hash, homepage `200`, unknown `404`, and retired-lab `404`.
 - **Player regression:** the live Orgo modal loaded the exact retained MP4, reached `readyState=4`, duration `4.534`, `error=null`, played and looped, emitted zero console errors, and closed normally.
-- **Finding disposition:** `M-C01` and `M-C12` are complete. The provenance/immutable-artifact/smoke portions of `M-C11`, `DEP-13-010`, `CI14-003`, and `CI14-005` are complete; approval, preview, browser CI, observability, and rollback remain open. GitHub warns that pinned checkout/artifact actions still declare Node 20 while the runner forces Node 24; this is tracked as `CI14-R05`.
+- **Finding disposition:** `M-C01` and `M-C12` are complete. The provenance/immutable-artifact/smoke portions of `M-C11`, `DEP-13-010`, `CI14-003`, and `CI14-005` are complete; ITEM-10 subsequently completed candidate browser CI. Approval, preview, automated post-deploy browser execution, observability, and rollback remain open. GitHub warns that pinned checkout/artifact actions still declare Node 20 while the runner forces Node 24; this is tracked as `CI14-R05`.
+
+## Implementation progress — ITEM-10 add the blocking product test gate
+
+- **Status:** `Complete — verified in CI and against production` (2026-08-01).
+- **Implemented scope:** locked Playwright 1.61.0; added desktop Chrome and Pixel 7 projects, strict runtime monitoring, deterministic media failure, 12 release-critical cases, CI browser installation/gating, and 14-day failure evidence. No CSS, media asset, source URL, or player UI changed.
+- **Defects found and fixed:** reduced-motion SSR/client attributes could mismatch during hydration, and modal focus return could race the background `inert` cleanup. The rail now hydrates from a conservative motion-free state and restores focus only when the trigger is active.
+- **Objective evidence:** frozen install, type-check, build, Worker dry-run, local CI 12/12, public production 12/12, PR #16 run `30706719944`, merge `ebcd8b1a8454bb69e37ba3ede9e5c11bb85d8ba8`, master run `30706793536`, and Cloudflare version `5c861a15-8d73-40ce-8524-c9b46ff1f4eb` passed. `M-C10`, `CQ-R02`, `O-FQA-001`, and `CI14-001` are complete; wider browsers/devices, unit coverage, automated post-deploy execution, approval/preview, observability, and rollback remain separately open.

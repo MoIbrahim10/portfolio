@@ -359,3 +359,10 @@ These are source/SSR-level passes unless noted; direct multi-browser/AT behavior
 - **Semantics evidence:** SSR and hydrated accessibility trees expose one “Mo Ibrahim — Design Engineer” H1, four H2 project headings, and four labeled project groups with no false project-navigation landmarks. Unknown URLs expose `main`, one H1, explanatory copy, and a clearly named home link under the unique error title.
 - **Interaction/layout evidence:** keyboard focus and Enter activation pass; the focused recovery link has a 3 px outline. Checks at 320, 390, 768, and 1440 CSS px plus 200% text show no horizontal overflow; both recovery targets meet the 44 CSS px advisory size and the action is 48 px high.
 - **Audit/regression evidence:** production desktop/mobile Lighthouse snapshots score Accessibility 100 with zero failed audits. The homepage role block retains its exact pre-change rectangle and computed styling, and the existing Orgo modal/video remains operable with no console/page errors. Real NVDA/JAWS/VoiceOver and non-Chromium coverage remain open under the existing risks.
+
+## Implementation tracking — ITEM-10
+
+- **Status:** `Complete for automated Chromium reduced-motion and modal-focus regression` (2026-08-01).
+- **Disposition:** desktop/mobile tests now prove reduced-motion fresh loads keep inline and modal Orgo video paused, the dialog initially focuses Close, Escape dismisses it, and focus returns to the exact media trigger after background inertness clears. This does not close real screen-reader, Safari/Firefox, captions/media-alternatives, or exhaustive keyboard findings.
+- **Defects fixed:** hydration now begins from a conservative motion-free state before applying the client preference, eliminating the observed React mismatch; focus restoration waits until the trigger is outside an inert subtree. No visual styling or player controls changed.
+- **Evidence:** local CI and public production each passed all 12 tests with zero unexpected console/page/request failures. Release `ebcd8b1…`, Actions `30706793536`, Cloudflare `5c861a15…`.

@@ -239,13 +239,13 @@ Release posture: **not functionally cleared**. No source, dependency, build, con
 
 ## Not Tested
 
-- Actual pointer, touch, keyboard-only, and screen-reader interaction; no supported browser was available.
-- Every one of the 32 candidate media triggers; modal image/video rendering; close button, backdrop, Escape, focus trap, and focus return.
-- Project dots, horizontal wheel/swipe, arrow/Home/End changes, vertical story scroll, custom scrollbar click/drag/keys, snap settling, and scroll restoration.
+- Exhaustive pointer, touch gesture, keyboard-only, and screen-reader interaction. ITEM-10 now automates pointer modal activation, keyboard rail selection/Escape, and focus return in desktop/mobile Chromium.
+- Every one of the 32 candidate media triggers; ITEM-10 covers the retained Orgo video trigger, modal rendering/controls, Escape, and focus return, but not all image triggers, backdrop dismissal, or full Tab wrapping.
+- Project dots, horizontal wheel/swipe, Home/End, vertical story scroll, custom scrollbar click/drag/keys, snap settling, and scroll restoration. ITEM-10 covers ArrowRight project change.
 - Portrait hover/focus/tap/cycle/hide behavior and logo hover/click animation completion.
 - All 10 video-lab tab clicks, wrapping arrow navigation, autoplay, play/pause, seek, duration/time updates, end/loop, ready/error/poster transition, and browser Back/Forward.
-- Repeat-visit persistence, offline, failed/partial media, update/recovery, memory growth, and CPU behavior. ITEM-06 completed cache-disabled desktop/mobile and one Slow 3G initial-media run; ITEM-05 completed JavaScript-disabled and reduced-motion coverage.
-- Exhaustive console/network/hydration coverage across every state remains untested; focused ITEM-06 flows produced no request, console, page, or media errors.
+- Repeat-visit persistence, offline, partial/stalled media, update/recovery, memory growth, and CPU behavior. ITEM-10 deterministically covers complete inline-video failure/poster fallback and reduced-motion playback; ITEM-06 completed cache-disabled desktop/mobile and one Slow 3G initial-media run; ITEM-05 completed JavaScript-disabled coverage.
+- Exhaustive console/network/hydration coverage across every state remains untested; ITEM-10 strictly gates the named critical states with zero unexpected console, page, or request failures.
 - Cross-browser and breakpoint execution; scope 11 owns the full responsive/device matrix.
 - 500/error-boundary behavior because safe read-only requests cannot induce a server fault and no injectable test boundary exists.
 - `mailto:` launch, calendar booking UI, external social/project clicks, or any action that could change external state.
@@ -274,5 +274,13 @@ Release posture: **not functionally cleared**. No source, dependency, build, con
 ## Implementation tracking — ITEM-09
 
 - **Status:** `Complete for release parity and retained-player regression` (2026-08-01).
-- **Disposition:** the release-identity dependency behind `FQA-001` is now automated. Exhaustive 32-trigger, keyboard/touch, network-failure, and cross-browser execution plus a browser CI suite remain open.
+- **Disposition:** the release-identity dependency behind `FQA-001` is automated. ITEM-10 subsequently completed the critical browser CI suite and one deterministic network-failure path; exhaustive 32-trigger, touch-gesture, and cross-browser execution remain open.
 - **Evidence:** CI matched production homepage structure, five generated assets, brand, 404s, and Orgo MP4 bytes. Independent production browser QA opened the Orgo dialog; the exact MP4 reached `readyState=4`, duration `4.534`, `error=null`, played and looped, emitted no console errors, and closed normally.
+
+## Implementation tracking — ITEM-10
+
+- **Status:** `O-FQA-001 complete for the approved release-critical baseline` (2026-08-01).
+- **Coverage:** checked-in Playwright tests execute desktop and touch-capable mobile Chromium for homepage SSR/hydration, keyboard project navigation, Orgo dialog open/initial focus/media readiness/playback control/Escape/focus return, reduced motion, deterministic inline-video failure with poster fallback, generic `404`, and retired `/video-player-lab` `404`.
+- **Strictness:** unexpected console errors, uncaught page errors, and failed requests fail the test. Only the deliberately aborted Orgo request is scoped as expected in media-state tests; the two 404s are isolated so Cloudflare RUM navigation cancellation is not hidden. CI retains failure trace, screenshot, video, HTML, and JSON artifacts.
+- **Defects fixed:** reduced-motion hydration mismatch and modal focus-return timing. No UI, CSS, media file, source URL, or player control was removed or redesigned.
+- **Evidence:** local CI 12/12; public production 12/12; PR #16 run `30706719944`; merge/release `ebcd8b1…` / run `30706793536` / Cloudflare `5c861a15…`. Exhaustive 32-trigger, touch gesture, offline/Slow 3G, 500, external-action, and cross-engine testing remain open under their existing findings.
