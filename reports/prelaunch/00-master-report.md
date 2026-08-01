@@ -4,7 +4,7 @@ Audit date: 2026-07-29
 Repository: `/Users/mo/Documents/porfolio`
 Audited local revision: `ae1ec7cb0b1162be7c0aa01214ed5146f2321d7a`
 Observed production revision/build: older/different; latest evidenced deployment SHA `5d80cbf0d9e818f3e5cc4b65766a947bdcd7ad7c`
-Current verified production release: `87864fe684a187c885c788d8b7dd2eda21871f94`; Actions run `30703230758`; Cloudflare version `3666f6f8-cea8-4133-9cf9-945cbc0dd3a0`
+ITEM-09 implementation release evidence: `87864fe684a187c885c788d8b7dd2eda21871f94`; Actions run `30703230758`; Cloudflare version `3666f6f8-cea8-4133-9cf9-945cbc0dd3a0`
 Production origin: `https://m0code.com`
 
 ## Executive audit status
@@ -59,7 +59,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** Freeze `5d80cbf…` as the candidate and re-audit it, or keep live/candidate baselines separate; both delay newer work but avoid claiming equivalence.
 - **Effort/dependencies:** `M`, 0.5–2 days for identity/artifact plumbing plus re-audit; release owner, CI, Cloudflare preview/version access.
 - **Objective verification:** source SHA, lock hash, artifact checksum, GitHub deployment SHA, Cloudflare version, runtime build ID, SSR inventory, and live asset hashes all match.
-- **Current verification:** final master run [30703230758](https://github.com/MoIbrahim10/portfolio/actions/runs/30703230758) built 130 files from `87864fe684a187c885c788d8b7dd2eda21871f94`, retained build artifact `8819491987` with SHA-256 `5ff2c2ad96fddbd48d16e35ba6582daac48d6d9536f14fbed3c8271b6f6ca318`, downloaded and reverified it byte-for-byte, and deployed without rebuilding. Release artifact `8819497837` records Cloudflare version `3666f6f8-cea8-4133-9cf9-945cbc0dd3a0` and `https://m0code.com`. Production verification passed on attempt 1 for `/` `200`, unknown-route `404`, retired-lab `404`, five generated assets, the brand mark, and the retained Orgo MP4 hash.
+- **Current verification:** ITEM-09 code-release run [30703230758](https://github.com/MoIbrahim10/portfolio/actions/runs/30703230758) built 130 files from `87864fe684a187c885c788d8b7dd2eda21871f94`, retained build artifact `8819491987` with SHA-256 `5ff2c2ad96fddbd48d16e35ba6582daac48d6d9536f14fbed3c8271b6f6ca318`, downloaded and reverified it byte-for-byte, and deployed without rebuilding. Release artifact `8819497837` records Cloudflare version `3666f6f8-cea8-4133-9cf9-945cbc0dd3a0` and `https://m0code.com`. Production verification passed on attempt 1 for `/` `200`, unknown-route `404`, retired-lab `404`, five generated assets, the brand mark, and the retained Orgo MP4 hash. A later reports-only release (`d95ef14…`, run `30703726121`) independently produced an identical 130-file application hash list, so documentation commits do not invalidate this implementation evidence.
 
 ### M-C02 — Plaintext HTTP is fully served and HSTS is absent
 
