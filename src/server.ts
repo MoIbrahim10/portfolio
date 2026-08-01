@@ -2,8 +2,6 @@ import handler, {
   createServerEntry,
 } from '@tanstack/react-start/server-entry'
 
-const CSP_REPORT_ONLY = true
-
 function createContentSecurityPolicy(nonce: string) {
   return [
     "default-src 'self'",
@@ -46,11 +44,10 @@ export default createServerEntry({
     }
 
     const headers = new Headers(response.headers)
-    const headerName = CSP_REPORT_ONLY
-      ? 'Content-Security-Policy-Report-Only'
-      : 'Content-Security-Policy'
-
-    headers.set(headerName, createContentSecurityPolicy(nonce))
+    headers.set(
+      'Content-Security-Policy',
+      createContentSecurityPolicy(nonce),
+    )
 
     return new Response(response.body, {
       headers,
