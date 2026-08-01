@@ -226,3 +226,10 @@ These are implementation/artifact checks, not visual cross-browser passes:
 - **Disposition:** lab-only `RESP-11-001` is not applicable to the deployed release. Lab portions of `RESP-11-006`, `RESP-11-007`, `RESP-11-010`, and the historical matrix are retired; homepage responsive, touch, keyboard, motion, and cross-browser findings remain open.
 - **Verification:** current build has no lab CSS/JS route chunk; the retired URL returns `404`; retained player implementation/CSS/data/media hashes are unchanged and its Orgo video loaded in desktop browser QA.
 - **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; same-release route verification and desktop retained-viewer smoke passed. This removal does not satisfy the wider device/browser matrix.
+
+## Implementation tracking — ITEM-07
+
+- **Status:** `Complete — verified in production` (2026-08-01) for the contrast/focus subset only.
+- **Disposition:** homepage focus/state contrast and 200% text checks related to `M-C07` are complete. `RESP-11-010` and the wider real-device, touch, keyboard, cross-engine, orientation, and motion matrix remain open.
+- **Verification:** production Chromium passed 390×844 and 1440×1000 with no document overflow; 200% text remained within the 390 px viewport; reduced-motion rendering remained stable; forced-colors showed solid 3 px system-highlight outlines. The Orgo modal video played, paused, and closed normally with zero console/page errors.
+- **Release evidence:** merge `1db9d57008b6db30a32178fc4e83597d76074caa`, Actions run `30700858043`, Cloudflare version `a3299de6-82a2-49d7-9815-25da9fe35f8e`.
