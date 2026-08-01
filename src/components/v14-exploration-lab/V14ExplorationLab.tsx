@@ -343,11 +343,12 @@ function HeroStage({
         </a>
 
         <div className={styles.introduction}>
-          <p
+          <h1
             className={`${styles.role} ${styles.entranceItem}`}
           >
+            <span className={styles.visuallyHidden}>Mo Ibrahim — </span>
             Design Engineer
-          </p>
+          </h1>
           <p
             className={`${styles.bio} ${styles.entranceItem}`}
           >

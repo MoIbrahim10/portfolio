@@ -559,8 +559,8 @@ function ProjectControls({
   onSelect: (index: number, source: ChangeSource) => void
 }) {
   return (
-    <nav aria-label="Project controls" className={styles.controls}>
-      <div aria-label="Choose a project" className={styles.projectDots}>
+    <div aria-label="Choose a project" className={styles.controls} role="group">
+      <div className={styles.projectDots}>
         {STORIES.map((story, index) => (
           <button
             aria-label={`Show ${story.title}`}
@@ -582,7 +582,7 @@ function ProjectControls({
           </button>
         ))}
       </div>
-    </nav>
+    </div>
   )
 }
 

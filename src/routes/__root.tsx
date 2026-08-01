@@ -5,10 +5,12 @@ import {
 } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 
+import { NotFoundPage } from '#/components/not-found/NotFoundPage'
+
 import appCss from '../styles.css?url'
 
 export const Route = createRootRoute({
-  head: () => ({
+  head: ({ match }) => ({
     meta: [
       { charSet: 'utf-8' },
       {
@@ -17,15 +19,22 @@ export const Route = createRootRoute({
       },
       {
         name: 'description',
-        content: 'Personal portfolio of MO.',
+        content: match.globalNotFound
+          ? 'The requested page could not be found. Return to the MO portfolio.'
+          : 'Personal portfolio of MO.',
       },
-      { title: 'MO — Portfolio' },
+      {
+        title: match.globalNotFound
+          ? 'Page Not Found — MO'
+          : 'MO — Portfolio',
+      },
     ],
     links: [
       { rel: 'stylesheet', href: appCss },
       { rel: 'icon', href: '/brand/mo-mark-v3.svg', type: 'image/svg+xml' },
     ],
   }),
+  notFoundComponent: NotFoundPage,
   shellComponent: RootDocument,
 })
 
