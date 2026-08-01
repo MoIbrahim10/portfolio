@@ -146,6 +146,7 @@ Normal and cache-disabled requests returned the same status and byte counts for 
 
 - **ID:** SEO-07-R02
 - **Severity:** P2 medium
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original 2026-07-29 risk.
 - **Affected route/component/file and line:** Live `/`; deployed historical `V14ExplorationLab.tsx` equivalent around `58ed5af:323-361`; current replacement at `src/components/v14-exploration-lab/V14ExplorationLab.tsx:327-367`
 - **Evidence:** Live raw SSR emits `<article ... style="filter:blur(4px);opacity:0;transform:translateY(14px)">` around all primary content. No `<noscript>` fallback is present. The current audited source/`dist` no longer emits this inline hidden state. Raw text and anchors are present, so crawler parsing is possible; a real disabled-JavaScript browser session could not be started in this audit environment.
 - **Reproduction steps:** Fetch live `/`, format tags onto separate lines, and inspect the first portfolio article. Disable JavaScript in a browser and reload to complete the visual confirmation.
@@ -156,6 +157,7 @@ Normal and cache-disabled requests returned the same status and byte counts for 
 - **Estimated effort:** S if current artifact already resolves it; M if motion behavior must be redesigned.
 - **Dependencies:** Deployment provenance (SEO-07-R01); interaction/motion scope 11.
 - **Objective verification method:** With JavaScript disabled and with the main JS bundle blocked, the home’s identity copy, project headings, and crawlable anchors are visibly present; normal JavaScript mode retains approved motion.
+- **Current verification:** production passed desktop (1440×1000) and mobile (390×844) Chromium runs with JavaScript disabled and with `/assets/index-DWNzLafz.js` blocked. The bio, Orgo heading, and contact action remained visible; the portfolio article computed to `opacity: 1`, `visibility: visible`, `filter: none`, and `transform: none`. Current SSR contains no inline hidden article state, and normal JavaScript mode hydrated without page errors.
 
 ### SEO-07-R03 — Most next-build portfolio media URLs are absent from raw SSR
 
@@ -247,7 +249,7 @@ Normal and cache-disabled requests returned the same status and byte counts for 
 ## Not Tested
 
 - Google Search Console, Bing Webmaster Tools, crawl logs, index coverage, selected canonicals, manual actions, removals, and URL Inspection were unavailable. No statement in this report claims a URL is currently indexed or deindexed.
-- A disabled-JavaScript browser visual run could not be completed because no browser backend was available. Raw SSR and inline styles were inspected directly; SEO-07-R02 remains explicitly a rendering risk.
+- JavaScript-disabled and blocked-main-module rendering was completed in Chromium desktop/mobile under ITEM-05. Equivalent non-Chromium crawler/rendering-engine behavior remains untested.
 - Slow 3G, offline, and cache-state browser rendering were not duplicated here because they do not change server crawl directives and belong to scopes 05, 06, and 12. Cache-disabled HTTP responses were tested.
 - No intentional server exception was triggered against production, so `500` rendering, status, retry semantics, and error-document directives remain unverified. Source inspection found no custom error component.
 - No robots/sitemap submission, recrawl request, DNS change, edge redirect, or external-system write was performed.
@@ -265,3 +267,9 @@ Normal and cache-disabled requests returned the same status and byte counts for 
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Disposition:** `SEO-07-001` is closed because the HTTP protocol duplicate no longer serves content. `SEO-07-002` remains open for HTTPS query/case/slash canonicalization, and sitemap/robots/404 UX findings are unchanged.
 - **Verification:** path/query preservation passed for the homepage, retired path, fingerprinted JS, POST, and retained MP4; each HTTP request receives one permanent `308`. HTTPS targets retain their expected `200` or `404` status.
+
+## Implementation tracking — ITEM-05
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `SEO-07-R02` is complete. Current SSR is visible by default, and desktop/mobile Chromium renders preserved primary identity, project, and contact content with JavaScript disabled or the main module blocked.
+- **Verification:** four failure-mode runs showed visible geometry and computed `opacity: 1`, `visibility: visible`, `filter: none`, and `transform: none`; normal hydration retained the approved experience without page errors. No source or deployment change was required.

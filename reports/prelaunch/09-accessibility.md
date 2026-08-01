@@ -162,6 +162,7 @@ Important build observation: production asset hashes (`routes-BvKEGjiQ.css`, `st
 ### 09-C-07 — Production homepage is visually blank when JavaScript is unavailable
 
 - **Severity:** P1 high
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original 2026-07-29 finding.
 - **Affected:** Live `/`; deployed SSR/CSS, especially the production article and animated-logo wrapper. The checked-in source/local dist no longer emits the same page-level initial style.
 - **WCAG:** No independent AA failure if JavaScript is an accessibility-supported required technology; however, loss of the entire perceivable/operable page defeats WCAG principles when scripts are blocked or fail and is a required audit state.
 - **Evidence:** Live SSR emits the primary `<article>` with inline `filter:blur(4px);opacity:0;transform:translateY(14px)`. The deployed logo wrapper also starts with `opacity:0`. With JavaScript disabled or failing before hydration, the inline article opacity is not advanced to visible. Production hashes differ from local dist, confirming deployment drift.
@@ -173,6 +174,7 @@ Important build observation: production asset hashes (`routes-BvKEGjiQ.css`, `st
 - **Estimated effort:** S–M, 0.5–1 day plus deployment verification.
 - **Dependencies:** Animation strategy and synchronized production artifact.
 - **Objective verification:** Fresh load with JavaScript disabled shows all core content/links; simulated script failure still leaves readable content; normal JS/reduced-motion loads do not flash or double-animate.
+- **Current verification:** production passed desktop (1440×1000) and mobile (390×844) Chromium runs with JavaScript disabled and with `/assets/index-DWNzLafz.js` blocked. The bio, Orgo heading, and contact action retained visible geometry; the portfolio article computed to `opacity: 1`, `visibility: visible`, `filter: none`, and `transform: none`. Normal hydration and reduced-motion runs produced no page errors; reduced motion kept the initial video paused. The retained Orgo viewer remained healthy at `readyState=4`, duration `4.534`, `error=null`.
 
 ## Risks / Unverified
 
@@ -321,7 +323,7 @@ These are source/SSR-level passes unless noted; direct multi-browser/AT behavior
 - Modal backdrop focus visibility, focus obscuration, focus return, and inert support in Safari/older assistive-technology combinations.
 - Contrast of text over moving video/image frames; only deterministic CSS color pairs were calculated.
 - MP4 duration, audible content, flashes, captions, transcripts, and audio-description sufficiency; the environment lacked media-probe/playback tooling.
-- JavaScript-disabled visual screenshot and interaction; the production blank-state finding is based on deterministic live SSR inline opacity and deployed CSS.
+- JavaScript-disabled and blocked-main-module visual rendering was completed in Chromium desktop/mobile under ITEM-05. Full interaction is intentionally unavailable without JavaScript, and equivalent non-Chromium/assistive-technology behavior remains untested.
 - Cache-disabled/repeat-visit/Slow 3G/offline accessibility interaction, which overlaps resilience/performance scopes and requires a browser.
 - A fresh Lighthouse or axe run. No applicable report artifact was found; automated tools would be supplemental only.
 - Execution of the local `dist/server` handler. Existing generated artifacts were inspected read-only, and no rebuild was authorized.
@@ -332,3 +334,9 @@ These are source/SSR-level passes unless noted; direct multi-browser/AT behavior
 - **Disposition:** lab-only `09-C-04` and `09-O-03` are not applicable to the deployed release. The lab portion of `09-C-02` is retired; homepage contrast, semantics, heading, motion, media alternatives, keyboard/focus, and 404 findings remain open.
 - **Verification:** the lab UI/CSS no longer exists in source or build output, the retired path returns `404`, and focused browser QA found the retained Orgo media ready with no media/console error. No claim is made that broader WCAG coverage is complete.
 - **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; the lab path is `404` and retained Orgo media passed browser smoke. All mixed/site-wide findings remain open until their own acceptance criteria pass.
+
+## Implementation tracking — ITEM-05
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `09-C-07` is complete. Primary homepage content remains perceivable when JavaScript is disabled or the main bundle fails; other WCAG findings and the broader assistive-technology matrix remain open.
+- **Verification:** four desktop/mobile failure-mode runs showed the bio, project, and contact content with visible geometry and safe computed styles. Normal and reduced-motion regressions passed without page errors, and the retained Orgo player remained functional. No runtime source change was required.
