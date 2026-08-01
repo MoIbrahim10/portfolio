@@ -8,9 +8,9 @@ Production origin: `https://m0code.com`
 
 ## Executive audit status
 
-**Launch recommendation: HOLD.** No `P0 blocker` was confirmed, but the evidence contains multiple unresolved `P1 high` findings and P1 unknowns. In particular, the reviewed local HEAD, existing `dist`, and live production are not one release; production can render the home page blank without hydration; material WCAG failures are confirmed; production release controls and behavioral tests are inadequate; and asset-rights evidence is unavailable. Approval would therefore be approval of an unverified release, not of a single tested launch candidate. The plaintext-HTTP/HSTS blocker `M-C02` and legacy-TLS blocker `M-C03` were remediated and production-verified on 2026-08-01.
+**Launch recommendation: HOLD.** No `P0 blocker` was confirmed, but multiple unresolved `P1 high` findings and P1 unknowns remain. Material WCAG failures are confirmed; production release controls and behavioral tests are inadequate; and asset-rights evidence is unavailable. Transport, TLS, browser headers, no-JavaScript visibility, and homepage media overfetch findings `M-C02` through `M-C06` were remediated or disproved and production-verified by 2026-08-01.
 
-The live production site is older/different than both local HEAD and the existing `dist`. Findings that apply only to live or only to the candidate are labeled accordingly; missing candidate assets on the older live deployment are not treated as current broken-media requests.
+The 2026-07-29 audit baseline found an older production artifact. By 2026-08-01, production and the current build exposed identical root asset hashes, SSR counts, and the same 77 referenced public assets. Durable build provenance/promotion controls remain open under `M-C01`/`M-C11`; historical drift evidence is preserved in the findings.
 
 Browser availability varied by specialist. Some Chromium/Lighthouse/Performance evidence was collected, while the configured browser-control backend was unavailable to many specialists. Manual, responsive, assistive-technology, touch, and cross-browser coverage is incomplete. Lighthouse Performance was excluded by the available audit tool, so **no Lighthouse Performance score exists** and no Performance 100 is claimed.
 
@@ -39,10 +39,9 @@ Audit-boundary exception: browser tooling auto-created exactly 10 ignored `.play
 The following must be resolved or explicitly disproved against one immutable release candidate before launch sign-off:
 
 1. `M-C01`: source/build/live identity mismatch.
-2. `M-C06`: production extreme media overfetch. `M-C02` through `M-C05` are complete.
-3. `M-C07`, `M-C08`, and `M-C09`: confirmed WCAG contrast, reflow, semantic, and error-page failures.
-4. `M-C10` and `M-C11`: no product test suite and uncontrolled/unverifiable release promotion.
-5. `M-R01`, `M-R02`, and `M-R03`: incomplete real-browser evidence, no Lighthouse Performance score, and unverified asset/case-study rights.
+2. `M-C07`, `M-C08`, and `M-C09`: confirmed WCAG contrast, reflow, semantic, and error-page failures.
+3. `M-C10` and `M-C11`: no product test suite and uncontrolled/unverifiable release promotion.
+4. `M-R01`, `M-R02`, and `M-R03`: incomplete real-browser evidence, no Lighthouse Performance score, and unverified asset/case-study rights.
 
 ## Deduplicated prioritized confirmed findings
 
@@ -122,6 +121,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 ### M-C06 — Live home overfetches all inactive videos and multi-megabyte portraits
 
 - **Severity:** `P1 high`
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original 2026-07-29 finding.
 - **Affected:** live `/`; candidate loading code at `CrossAxisProjectRail.tsx:686-720,861-990`; portrait sources at `V14ExplorationLab.tsx:17-24`.
 - **Sources:** [PERF-05-001](./05-performance.md), [LH-06-003](./06-lighthouse.md), [FQA-001](./10-functional-interaction-qa.md).
 - **Evidence:** live SSR has 16 videos; repeat capture requested all 16 for 10,190,739 bytes, with two initial portraits adding 3,871,799 bytes and later portraits about 2 MB each. Candidate uses one initial video/poster and 31–39 KB WebPs.
@@ -131,6 +131,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** ship a narrow eager-video/portrait patch to current live, but that prolongs release drift.
 - **Effort/dependencies:** `S–M`, 0.5–1 day; M-C01, deployment approval, functional/mobile validation.
 - **Objective verification:** cold desktop/mobile traces show ≤1 initial MP4, no inactive-slide bodies, no portrait before reveal, each revealed portrait ≤40 KB, and an approved initial-media byte budget.
+- **Current verification:** passed. Production SSR and the current build match exactly at 1 `<video>`, 32 `<img>` elements, 32 full-screen media triggers, the sole initial `/portfolio/projects/orgo/walkthrough.mp4`, and root asset hashes `index-DWNzLafz.js`, `routes-Ba3vXpwj.js`, and `routes-DKGiQ1HX.css`. Cold cache-disabled desktop/mobile and Slow 3G mobile runs each requested only that one MP4 and zero portraits before interaction; all requested initial images were WebP. Observed initial media files total 401,726 B on desktop and 490,906 B on mobile. Portrait reveal fetched only `-640.webp`; direct production GETs verified all six portraits at 31,426–39,254 B. All 77 referenced public assets returned `200` with the expected MIME type. Desktop/mobile traces measured LCP 492/311 ms and CLS 0 under unthrottled lab conditions. The Orgo viewer remained healthy at `readyState=4`, duration `4.534`, `error=null`, with zero console/page errors. No runtime change was required.
 
 ### M-C07 — Text, focus, and state contrast fail WCAG 2.2 AA
 
@@ -350,7 +351,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Evidence:** available Lighthouse reports omitted `categories.performance`; one run per route/profile does not establish stability; desktop reports retained a mobile UA; no CrUX/RUM p75 dataset exists.
 - **Reproduction:** inspect saved Lighthouse JSON and field-data availability.
 - **Impact/root cause:** any Performance 100 or stable all-100 claim is unsupported; tooling/profile limitations and no release performance gate.
-- **Recommendation:** after M-C01/M-C06, run five cold unmodified Performance audits per route/profile with pinned Lighthouse/Chrome, plus mobile/desktop field CWV where available.
+- **Recommendation:** after M-C01, run five cold unmodified Performance audits per route/profile with pinned Lighthouse/Chrome, plus mobile/desktop field CWV where available. ITEM-06's focused traces and request matrix do not replace this gate.
 - **Alternatives/tradeoffs:** PageSpeed corroboration adds external variability; Lighthouse CI is reproducible but requires approved tooling.
 - **Effort/dependencies:** `M`, 0.5–1 day measurement plus remediation; isolated runner and approved preview.
 - **Objective verification:** every retained report includes Performance score and raw metrics; all five runs meet declared gate; field p75 LCP/INP/CLS are good or explicitly unavailable.
@@ -549,7 +550,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Impact/root cause:** regressions can ship without a score or traffic-specific signal; no performance contract.
 - **Recommendation:** privacy-review route/device CWV collection and gate compressed JS/CSS plus initial media request/byte counts.
 - **Alternatives/tradeoffs:** scheduled synthetic monitoring avoids client telemetry but provides less real-user evidence.
-- **Effort/dependencies:** `M`, 1–2 days; privacy decision, M-C06, observability owner.
+- **Effort/dependencies:** `M`, 1–2 days; privacy decision and observability owner.
 - **Objective verification:** dashboard shows route/device p75 LCP/INP/CLS and CI fails approved budget fixtures.
 
 ### M-O06 — Add security disclosure and controlled DNS/hostname hardening
@@ -643,7 +644,7 @@ These phases are recommendations for later authorization; this audit performs no
 1. **Decision freeze:** choose the release SHA; decide lab publication, supported hostnames/browsers, offline/PWA contract, rights status, privacy posture, and launch score thresholds.
 2. **Release foundation:** build once, retain manifest/artifact, add preview/promotion/approval, strengthen smoke/observability, and rehearse rollback.
 3. **Transport and security:** enforce HTTPS, raise TLS minimum, stage headers/CSP, pin actions, and add supply-chain gates.
-4. **User-facing blockers:** fix live no-JS visibility/media overfetch, WCAG contrast/reflow/semantics, 404, reduced motion/touch/focus, and media recovery.
+4. **User-facing blockers:** fix WCAG contrast/reflow/semantics, 404, reduced motion/touch/focus, and media recovery. The live no-JS and media-overfetch blockers are complete.
 5. **Discovery/delivery:** canonicalize URLs, decide sitemap/robots/lab indexing, add route/social metadata, correct caching/ranges, and validate content destinations.
 6. **Evidence gate:** add layered tests, full browser/AT/device matrix, five-run Lighthouse Performance, field/synthetic budgets, failure injection, and production parity verification.
 7. **Maintainability/content follow-up:** characterize then modularize the rail; archive approved dead assets/styles; complete rights/role records and optional JSON-LD/PWA work.
@@ -754,3 +755,11 @@ Key constraints:
 - **Objective evidence:** a 6/6 production Chromium matrix passed. Desktop (1440×1000) and mobile (390×844) passed with JavaScript disabled and with `/assets/index-DWNzLafz.js` blocked; the article computed to `opacity: 1`, `visibility: visible`, `filter: none`, and `transform: none`, while the bio, Orgo heading, and contact action retained visible geometry.
 - **Regression evidence:** normal hydration and reduced-motion loads had no page errors. Reduced motion kept the initial video paused; the normal-flow Orgo viewer played with `readyState=4`, duration `4.534`, `error=null`.
 - **Finding disposition:** `M-C05`, `SEO-07-R02`, `09-C-07`, and `OFF-12-001` are complete. Offline navigation, other resource-failure modes, non-Chromium engines, and assistive-technology coverage remain separately open. No rollback is applicable because runtime behavior was not changed.
+
+## Implementation progress — ITEM-06 verify homepage media budget
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Implemented scope:** evidence and tracking only. The deployed current artifact already contains deferred inactive media and optimized `-640.webp` portraits; no application, dependency, configuration, lockfile, deployment, or player change was necessary.
+- **Objective evidence:** Chrome traces plus a 5/5 cache-disabled browser matrix covered desktop, mobile, Slow 3G mobile, portrait reveal, and the Orgo modal. Every initial load requested exactly one MP4, no pre-reveal portrait, and WebP-only images; observed initial media files totaled 401,726 B desktop and 490,906 B mobile. Direct production GETs verified all six portraits at 31,426–39,254 B, below the 40 KB gate.
+- **Parity evidence:** production and the current build match at 1 video, 32 images, 32 full-screen triggers, three root asset hashes, and the sole initial MP4. All 77 referenced assets returned `200` with correct MIME; deployment SHA `370419837bea1232dfb61348d46e1be7a315be6a` maps to Cloudflare version `c290c6be-291c-439d-94a6-119743aa2801`.
+- **Regression evidence:** Orgo played at `readyState=4`, duration `4.534`, `paused=false`, `error=null`; the matrix recorded zero request, console, or page failures. `M-C06`, `PERF-05-001`, `LH-06-003`, and `FQA-001` are complete. Lighthouse Performance distributions, field CWV, caching, and broader interaction coverage remain separately open. No rollback applies because runtime behavior was not changed.

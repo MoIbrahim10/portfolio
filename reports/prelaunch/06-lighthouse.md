@@ -75,6 +75,7 @@ These warm-state/unknown-cache traces have no CrUX data, Speed Index, trace-deri
 
 ### LH-06-003 — P1 high — Live `/` is not the reviewed production candidate and still overfetches media
 
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original 2026-07-29 finding.
 - **Affected:** Live `/`; existing `dist/client`; current loading logic at `src/components/v14-exploration-lab/CrossAxisProjectRail.tsx:686-721`, `:861-990`, `:1375-1387`; avatar sources at `src/components/v14-exploration-lab/V14ExplorationLab.tsx:17-24`.
 - **Evidence / audit IDs:** Live SSR contains 16 `<video>` and 18 `<img>` elements; the existing `dist` preview contains 1 `<video>` on `/`. Live asset hashes differ from `dist`. The performance specialist's browser capture confirmed all 16 live videos transferred 10,190,739 bytes; see [05-performance.md](./05-performance.md#perf-05-001--p1-high--live--deploy-overfetches-inactive-video-and-multi-megabyte-portrait-assets). Lighthouse Performance was excluded, so no score effect is invented.
 - **Reproduction:** Download live `/` and count `<video>` tags; compare with the existing `dist` preview. In a clean browser, record initial Network requests and count MP4 bodies before interaction.
@@ -85,6 +86,7 @@ These warm-state/unknown-cache traces have no CrUX data, Speed Index, trace-deri
 - **Estimated effort:** 0.5–1 day including release verification and rollback preparation.
 - **Dependencies:** Release/deployment authorization, scope 05 performance fixes, scope 13 rollback plan, and functional QA.
 - **Objective verification:** Live build hashes match the approved artifact; fresh `/` navigation makes at most one initial MP4 request and no portrait request before reveal; transferred initial media is within an approved budget; five cold mobile Lighthouse Performance runs meet the acceptance gate below.
+- **Current verification:** the drift and media-overfetch portions are complete. Production/current build match at 1 video, 32 images, 32 full-screen triggers, the sole initial Orgo MP4, and three root asset hashes; all 77 referenced assets return `200` with expected MIME. Cache-disabled desktop/mobile and Slow 3G mobile each made one MP4 request and no portrait request before reveal; direct production GETs verified all six portraits at 31,426–39,254 bytes. Desktop/mobile traces measured LCP 492/311 ms and CLS 0. The separate five-run Lighthouse Performance gate remains open and is tracked by `LH-06-R01`; no Performance score is inferred here.
 
 ## Risks / unverified
 
@@ -193,7 +195,7 @@ These warm-state/unknown-cache traces have no CrUX data, Speed Index, trace-deri
 
 - Lighthouse Performance scores, FCP/Speed Index/LCP/TBT/CLS sub-scores, diagnostics, and opportunities for either route/profile.
 - Local `dist` Lighthouse scores and hydration behavior. Static SSR and artifacts were inspected, but the shared Chrome DevTools profile collision prevented local navigation audits.
-- Five-run variability, fully cache-disabled traces, Slow 3G, 4× CPU performance traces, true mobile UA/touch traces, and field CrUX/RUM p75 LCP/INP/CLS.
+- Five-run Lighthouse variability, 4× CPU performance traces, true mobile UA/touch traces, and field CrUX/RUM p75 LCP/INP/CLS. Cache-disabled media-budget coverage and one Slow 3G mobile request-count run were completed under ITEM-06 but are not Lighthouse scores.
 - Dynamic-state Lighthouse snapshots after every project, modal, tab, playback state, error state, reduced-motion state, or JavaScript-disabled state. These belong to functional/accessibility/responsive specialists and are not implied by navigation scores.
 - Manual Accessibility audits, screen-reader behavior, zoom/reflow, high contrast, and complete keyboard order.
 - Manual structured-data validation, canonical correctness, sitemap coverage, security-header strength, or privacy/consent behavior.
@@ -213,6 +215,12 @@ These warm-state/unknown-cache traces have no CrUX data, Speed Index, trace-deri
 ## Implementation tracking — ITEM-01
 
 - **Status:** `Complete — verified in production` (2026-07-31).
-- **Disposition:** `LH-06-002` is not applicable to the deployed release because the video-lab route and footer were removed. The release Lighthouse matrix now covers `/` plus the error route; `LH-06-001` and all honest/stable-score evidence gaps remain open. The production-drift premise of `LH-06-003` is resolved for this release, but its homepage performance concerns still require new measurements.
+- **Disposition:** `LH-06-002` is not applicable to the deployed release because the video-lab route and footer were removed. The release Lighthouse matrix now covers `/` plus the error route; `LH-06-001` and all honest/stable-score evidence gaps remain open. ITEM-06 subsequently completed the production-drift and homepage-overfetch portions of `LH-06-003`.
 - **Verification:** regenerated production artifacts contain no lab route or chunk; local route handling returns `404` for the retired URL; retained homepage media loaded in focused browser QA with no console errors/warnings.
 - **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; the public lab path is `404` and the retained homepage video passed browser smoke. Historical lab scores are not current evidence.
+
+## Implementation tracking — ITEM-06
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `LH-06-003` is complete for artifact parity and media overfetch. `LH-06-R01` and the honest five-run Performance-score gate remain open; ITEM-06 does not claim a Lighthouse Performance score.
+- **Verification:** production/build SSR signatures and hashes match; all 77 assets pass status/MIME; cache-disabled desktop/mobile and Slow 3G mobile request exactly one initial MP4 and zero portraits. The Orgo viewer regression passed with no console/page errors. No runtime source change was required.
