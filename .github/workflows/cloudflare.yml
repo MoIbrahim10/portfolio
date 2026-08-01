@@ -12,20 +12,26 @@ on:
 permissions:
   contents: read
 
+env:
+  BUILD_ARTIFACT_NAME: portfolio-build-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+
 concurrency:
   group: cloudflare-production
   cancel-in-progress: false
 
 jobs:
-  validate-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    environment: production
+    outputs:
+      artifact_digest: ${{ steps.upload.outputs.artifact-digest }}
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+      artifact_url: ${{ steps.upload.outputs.artifact-url }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Set up Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version-file: .bun-version
 
@@ -41,9 +47,50 @@ jobs:
       - name: Validate Worker bundle
         run: bunx wrangler@4.114.0 deploy --dry-run
 
+      - name: Create build manifest
+        run: bun scripts/release-manifest.mjs create
+
+      - name: Retain immutable build artifact
+        id: upload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ${{ env.BUILD_ARTIFACT_NAME }}
+          path: |
+            dist
+            release/build-manifest.json
+          if-no-files-found: error
+          include-hidden-files: true
+          compression-level: 0
+          retention-days: 30
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://m0code.com
+    steps:
+      - name: Check out deployment configuration
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Download retained build artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ env.BUILD_ARTIFACT_NAME }}
+          path: .
+
+      - name: Verify retained build artifact
+        run: bun scripts/release-manifest.mjs verify
+
       - name: Deploy production Worker
-        if: github.event_name != 'pull_request'
-        uses: cloudflare/wrangler-action@v4
+        id: deploy
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 263ad8907dc3ed688838c72e2e9f994f
@@ -52,5 +99,29 @@ jobs:
           command: deploy
 
       - name: Verify production
-        if: github.event_name != 'pull_request'
-        run: curl --fail --silent --show-error --retry 12 --retry-delay 5 --retry-all-errors https://m0code.com | grep -aFq '<title>MO — Portfolio</title>'
+        id: production_verify
+        run: bun scripts/verify-production-release.mjs
+
+      - name: Finalize release manifest
+        if: always() && steps.deploy.outcome == 'success'
+        run: bun scripts/release-manifest.mjs finalize
+        env:
+          BUILD_ARTIFACT_DIGEST: ${{ needs.build.outputs.artifact_digest }}
+          BUILD_ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
+          BUILD_ARTIFACT_URL: ${{ needs.build.outputs.artifact_url }}
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+          PRODUCTION_VERIFIED: ${{ steps.production_verify.outcome == 'success' }}
+          WRANGLER_COMMAND_OUTPUT: ${{ steps.deploy.outputs.command-output }}
+
+      - name: Retain release manifest
+        if: always() && steps.deploy.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: portfolio-release-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            release/build-manifest.json
+            release/production-verification.json
+            release/release-manifest.json
+          if-no-files-found: error
+          compression-level: 9
+          retention-days: 90
