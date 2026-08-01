@@ -92,7 +92,8 @@ The following must be resolved or explicitly disproved against one immutable rel
 ### M-C04 — Browser security/privacy headers are absent
 
 - **Severity:** `P2 medium`
-- **Affected:** both HTML routes, 404s, and static delivery; `src/routes/__root.tsx:32-40`; `wrangler.jsonc:1-17`.
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original finding.
+- **Affected:** `/`, HTML `404`, controlled JSON `500`, and static delivery; `src/server.ts:5-56`; `src/router.tsx:7-19`; Cloudflare rule `fad9352426bf49b0b7f2916ed66a5d5d`. The removed `/video-player-lab` route is no longer applicable.
 - **Sources:** [SEC-002, SEC-O01](./03-application-security.md), [DEP-13-003](./13-production-deployment.md).
 - **Evidence:** no CSP/report-only policy, `frame-ancestors`/X-Frame-Options, `nosniff`, Referrer-Policy, or Permissions-Policy. Scope 13 rated the aggregate P1; the master uses P2 because no attacker-controlled injection path or sensitive state-changing action was found, while retaining launch significance.
 - **Reproduction:** inspect headers for `/`, `/video-player-lab`, a 404, and representative static assets.
@@ -101,6 +102,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** deploy non-CSP headers first; never use broad `unsafe-inline` solely to silence violations.
 - **Effort/dependencies:** `M`, 1–2 days plus observation; framework CSP support, Cloudflare header control, browser regression, reporting endpoint.
 - **Objective verification:** all relevant responses carry exact approved policies; zero unexplained CSP violations after every route/interaction; external framing is refused.
+- **Current verification:** passed. Report-only run [30696115179](https://github.com/MoIbrahim10/portfolio/actions/runs/30696115179) preceded enforcement run [30696408648](https://github.com/MoIbrahim10/portfolio/actions/runs/30696408648). Production HTML `200`/`404` responses have rotating nonce CSP with strict script, object, base, frame, and first-party resource controls; every SSR script matches its response nonce. The active Cloudflare rule sets exact `nosniff`, `DENY`, referrer, and minimal permissions policies on HTML, controlled JSON `500`, JS, CSS, SVG, and the retained Orgo MP4. Browser hydration, modal interaction, Orgo playback, and 404 produced zero warning/error logs under enforcement. The Cloudflare-managed `text/plain` `/robots.txt` bypasses Response Header Transforms; synthetic external-frame rendering was unavailable, while enforced `frame-ancestors 'none'` and `X-Frame-Options: DENY` independently provide frame refusal.
 
 ### M-C05 — Live home is visually blank when JavaScript/hydration fails
 
@@ -652,7 +654,7 @@ Key constraints:
 
 - Do not tune or delete against live until M-C01 is resolved.
 - Do not refactor `CrossAxisProjectRail` before M-C10 characterization coverage.
-- Do not enforce CSP before report-only browser coverage proves framework/media compatibility.
+- Repeat the report-only browser/media gate before any future CSP source-policy expansion.
 - Do not add immutable caching to mutable media paths.
 - Do not expose or remove dormant links/assets before owner/rights/rollback classification.
 - Do not add a service worker before the offline/update/cache-budget contract and release IDs exist.
@@ -661,7 +663,7 @@ Key constraints:
 
 1. Zero unresolved `P0 blocker` or `P1 high` confirmed findings; every P1 risk is either objectively closed or explicitly accepted by the accountable owner with evidence.
 2. One full SHA, lock hash, retained artifact checksum, GitHub deployment SHA, Cloudflare version, runtime build ID, and live asset manifest match.
-3. HTTP redirects once to HTTPS with path/query preserved; TLS 1.0/1.1 fail; TLS 1.2/1.3 pass; approved HSTS and security headers cover 200/redirect/404/staged 500 responses.
+3. HTTP redirects once to HTTPS with path/query preserved; TLS 1.0/1.1 fail; TLS 1.2/1.3 pass; approved HSTS and security headers cover applicable HTTPS 200/404/controlled 500 responses and representative static media.
 4. No-JS and blocked-main-module loads visibly retain identity, work, and contact content.
 5. Cold mobile/desktop `/` requests meet the approved media budget: ≤1 initial MP4, zero portrait before reveal, no inactive video bodies, optimized portraits only.
 6. WCAG 2.2 AA acceptance matrix passes: text/focus contrast, 320 CSS px reflow, H1/landmarks/tabs, keyboard/touch/modal focus, reduced motion, target size, media alternatives, zoom, forced colors, and accessible 404.
@@ -733,3 +735,12 @@ Key constraints:
 - **Independent evidence:** SSL Labs engine 2.4.2 completed against all four advertised IPv4/IPv6 endpoints; every endpoint received grade `A`, reported no warnings, and exposed only TLS 1.2 and TLS 1.3.
 - **Regression evidence:** production `/` remains `200`, the retired `/video-player-lab?tls=1.2` remains `404`, the current JS asset is `200`, and the retained Orgo MP4 is `200 video/mp4`. Browser QA opened the retained Orgo viewer at `readyState=4`, duration `4.534`, `currentTime=0.721`, `paused=false`, `error=null`, with no console errors.
 - **Finding disposition:** `M-C03` and `DEP-13-002` are complete. Rollback is restoring the prior Cloudflare minimum only if an approved legacy-client requirement is discovered.
+
+## Implementation progress — ITEM-04 enforce browser security headers
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Implemented scope:** added per-response nonce CSP in `src/server.ts:5-56`, TanStack SSR nonce propagation in `src/router.tsx:7-19`, and Cloudflare Response Header Transform `fad9352426bf49b0b7f2916ed66a5d5d` for exact `nosniff`, `DENY`, referrer, and minimal permissions policies. The retained Orgo player/source was not changed.
+- **Staged evidence:** report-only production run [30696115179](https://github.com/MoIbrahim10/portfolio/actions/runs/30696115179) completed before enforced run [30696408648](https://github.com/MoIbrahim10/portfolio/actions/runs/30696408648). Both passed frozen install, type-check, build, Worker dry-run, deploy, and smoke verification.
+- **Objective evidence:** rotating 32-character nonces match every SSR script on HTML `200` and `404`; no report-only header remains. Exact edge headers pass on HTML, controlled JSON `500`, JS, CSS, SVG, and Orgo MP4. Browser home/hydration, modal, active Orgo playback (`readyState=4`, `duration=4.534`, `paused=false`, `error=null`), and 404 checks emit zero warning/error logs.
+- **Documented boundaries:** the Cloudflare-managed `text/plain` `/robots.txt` bypasses Response Header Transforms. The audit browser blocks synthetic test/data iframe harnesses; frame refusal is verified from enforced `frame-ancestors 'none'` plus `X-Frame-Options: DENY` rather than a rendered harness.
+- **Finding disposition:** `M-C04`, `SEC-002`, `SEC-O01`, and `DEP-13-003` are complete. Rollback is redeploying the last approved application version and disabling Cloudflare rule `fad9352426bf49b0b7f2916ed66a5d5d` if a verified regression appears.

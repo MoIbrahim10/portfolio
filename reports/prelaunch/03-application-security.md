@@ -3,7 +3,7 @@
 **Audit date:** 2026-07-29
 **Repository:** `/Users/mo/Documents/porfolio` at `ae1ec7cb0b1162be7c0aa01214ed5146f2321d7a`
 **Production target:** `https://m0code.com`
-**Overall status:** The confirmed P1 plaintext-HTTP finding is remediated and production-verified as of 2026-08-01. The P2 CSP/clickjacking finding and broader header hardening remain open. No exposed secret, attacker-controlled injection path, authentication surface, state-changing API, public source map, or detailed error disclosure was confirmed.
+**Overall status:** The confirmed plaintext-HTTP, CSP/clickjacking, and browser-header findings are remediated and production-verified as of 2026-08-01. No exposed secret, attacker-controlled injection path, authentication surface, state-changing API, public source map, or detailed error disclosure was confirmed.
 
 ## Scope, Method, and Threat Boundaries
 
@@ -56,7 +56,8 @@
 
 - **ID:** SEC-002
 - **Severity:** `P2 medium`
-- **Affected route/component/file:** `/`, `/video-player-lab`, and unknown-route HTML; document shell at `src/routes/__root.tsx:32-40`; no header policy is present in `wrangler.jsonc:1-16`.
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original 2026-07-29 finding.
+- **Affected route/component/file:** `/` and unknown-route HTML; CSP response wrapper at `src/server.ts:5-56`; TanStack nonce propagation at `src/router.tsx:7-19`; Cloudflare rule `fad9352426bf49b0b7f2916ed66a5d5d`. The removed `/video-player-lab` route is no longer applicable.
 - **Evidence:** Live responses for both valid routes and the tested 404 contained neither `Content-Security-Policy`, `Content-Security-Policy-Report-Only`, `X-Frame-Options`, nor a CSP `frame-ancestors` directive. The app can therefore be framed, and there is no browser-enforced allowlist limiting script, object, base, media, or frame sources. The SSR output contains one TanStack inline stream-barrier script and one same-origin module script, so a strict CSP needs an explicit nonce/hash strategy rather than a blanket policy copied from another app.
 - **Reproduction steps:**
   1. Run `curl -sS -o /dev/null -D - https://m0code.com/`.
@@ -70,6 +71,7 @@
 - **Estimated effort:** Medium, 1–2 engineering days plus report-only observation.
 - **Dependencies:** TanStack Start SSR nonce/hash support; Cloudflare response-header control; route/interaction regression run; reporting endpoint or provider; deployment scope 13.
 - **Objective verification method:** A CSP evaluator must report no high-severity policy weakness. Production responses must include enforced CSP and frame protection. Automated browser tests across both routes must emit zero CSP violations after exercising logo motion, project navigation, media modals, video controls, and error routes; external framing must be refused.
+- **Remediation evidence:** Production HTML `200` and `404` responses now carry an enforced, per-response nonce CSP with `default-src 'self'`, `base-uri 'none'`, `object-src 'none'`, `frame-ancestors 'none'`, `frame-src 'none'`, `script-src 'self' 'nonce-…' 'strict-dynamic'`, `script-src-attr 'none'`, and first-party-only connect/font/media/worker policies. `src/server.ts` overwrites any inbound `x-csp-nonce`, and `src/router.tsx` passes the request nonce through TanStack SSR; two production requests returned different 32-character nonces and every SSR script matched its response nonce. Report-only deployment run [30696115179](https://github.com/MoIbrahim10/portfolio/actions/runs/30696115179) completed before enforcement run [30696408648](https://github.com/MoIbrahim10/portfolio/actions/runs/30696408648). Browser reload, hydration, Orgo modal open/close, actively playing Orgo video (`readyState=4`, `duration=4.534`, no media error), and the SSR 404 emitted zero warning/error console entries. Cloudflare also emits `X-Frame-Options: DENY`. The browser automation URL policy prevented loading a synthetic external iframe harness; refusal is therefore verified from both enforced response directives, not a rendered third-party harness.
 
 ## Risks / Unverified
 
@@ -97,7 +99,8 @@
 
 - **ID:** SEC-O01
 - **Severity:** `P3 low`
-- **Affected route/component/file:** All HTML routes; no policy is visible in `wrangler.jsonc:1-16` or production headers.
+- **Remediation status:** `Complete — verified in production` (2026-08-01).
+- **Affected route/component/file:** HTTPS apex responses; Cloudflare Response Header Transform rule `fad9352426bf49b0b7f2916ed66a5d5d` (`Browser security headers`).
 - **Evidence:** Valid-route and 404 responses omit `X-Content-Type-Options`, `Referrer-Policy`, and `Permissions-Policy`. Current same-origin scripts and media use correct MIME types, and all audited external `_blank` links use `rel="noreferrer"`, so no direct exploit was demonstrated.
 - **Reproduction steps:** Request each HTML route with `curl -sS -o /dev/null -D - https://m0code.com/<route>` and inspect the response headers.
 - **User/business impact:** The site relies on browser defaults rather than an explicit origin-wide policy. That leaves more room for future MIME confusion, unintended referrer disclosure, or unnecessary access to browser capabilities after new code or third-party content is added.
@@ -107,6 +110,7 @@
 - **Estimated effort:** Small, 1–3 hours plus route verification.
 - **Dependencies:** Cloudflare response-header control; feature inventory; deployment scope 13.
 - **Objective verification method:** All HTML responses, including 404s, expose the approved exact header values; MIME-type tests and all current external links/media continue to work.
+- **Remediation evidence:** The active rule matches `(http.host eq "m0code.com" and ssl)` and sets `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, and `Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), browsing-topics=()`. Exact values were verified on HTML `200`, HTML `404`, controlled JSON `500`, JavaScript, both CSS bundles, SVG, and the retained Orgo MP4. The Cloudflare-managed `/robots.txt` response bypasses zone Response Header Transforms and remains an explicit `text/plain` exception; it is neither an app document nor executable content.
 
 ### SEC-O02 — Publish a coordinated disclosure contact
 
@@ -158,9 +162,9 @@
 
 ## Not Tested
 
-- Interactive browser runtime was unavailable after the documented connection check; therefore DevTools-observed console events, live DOM mutation, actual storage values, framing in a browser, and CSP report collection could not be independently exercised. Passive HTTP and repository/bundle evidence was used instead.
-- No deterministic safe `/500` route exists. A 500 was not induced through fault injection; only normal 404 and malformed-request 400 behavior were tested.
-- During the original audit, Cloudflare dashboard configuration, WAF/bot rules, zone TLS minimum, “Always Use HTTPS,” certificate renewal alerts, DNSSEC, access logs, account roles, and remote Worker variables/secrets were not accessible. ITEM-02 later inspected only the Redirect Rules, Response Header Transform Rules, and managed-HSTS controls needed for its approved scope.
+- Interactive browser runtime was unavailable during the original audit. ITEM-04 later exercised hydration, the Orgo modal/player, 404 behavior, and console output under report-only and enforced CSP; a synthetic external iframe harness remained unavailable because the browser blocks test/data URLs.
+- No deterministic exception route exists. ITEM-04 exercised the framework's safe unsupported-`Accept` JSON `500`; actual thrown-exception handling and HTML `500` behavior remain untested.
+- During the original audit, Cloudflare dashboard configuration was inaccessible. ITEM-02 later inspected redirect/HSTS controls, ITEM-03 inspected the minimum TLS setting, and ITEM-04 inspected only Response Header Transform Rules; WAF/bot rules, certificate renewal alerts, DNSSEC, access logs, account roles, and remote Worker variables/secrets remain unverified.
 - Dependency advisories, package provenance, transitive supply chain, and licensing are intentionally owned by specialist scope 04; no networked package audit or install was run here.
 - Authenticated attacks, CSRF, IDOR, broken access control, file upload, SSRF, command injection, SQL/NoSQL injection, and rate limiting are not applicable to the repository surface found; no backend/API endpoints were discovered.
 - Active penetration testing, broad fuzzing, denial-of-service/load testing, WAF evasion, third-party target testing, and state-changing external interactions were excluded by the safe read-only boundary.
@@ -171,4 +175,12 @@
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Security result:** `SEC-001` is closed. Every sampled HTTP surface redirects once with `308` and preserves path/query/method semantics; the approved HTTPS-only apex HSTS canary is `max-age=300` with no subdomain or preload commitment.
 - **Regression result:** HTTPS `/` remains `200`, the removed lab remains a true `404`, the current JS and Orgo MP4 remain `200`, TLS 1.2/1.3 negotiate, and the retained video plays at `readyState=4`, duration `4.534`, `error=null`, with no browser console errors/warnings.
-- **Open follow-ups:** increase HSTS duration only after an observation window and explicit approval; CSP, clickjacking, `nosniff`, referrer/permissions policy, and the separate zone minimum-TLS finding remain open.
+- **Open follow-ups:** increase HSTS duration only after an observation window and explicit approval. CSP/clickjacking and browser-header controls are closed under ITEM-04; the zone minimum-TLS finding is closed under ITEM-03.
+
+## Implementation tracking — ITEM-04
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Application control:** `src/server.ts:5-56` generates an unpredictable per-response nonce and emits enforced CSP only for HTML; `src/router.tsx:7-19` passes that nonce into TanStack SSR. No script `unsafe-inline`, `unsafe-eval`, wildcard origin, or third-party source allowlist was added; existing React style attributes require the narrowly scoped `style-src-attr 'unsafe-inline'` tradeoff.
+- **Edge control:** active Cloudflare rule `fad9352426bf49b0b7f2916ed66a5d5d` sets exact `nosniff`, `DENY`, `strict-origin-when-cross-origin`, and minimal capability policies for HTTPS apex responses. The Cloudflare-managed `text/plain` robots response is the documented bypass.
+- **Acceptance evidence:** report-only and enforcement Actions runs `30696115179` and `30696408648` passed. Nonces rotate and match all SSR scripts; exact headers pass on HTML `200`/`404`, controlled JSON `500`, JS, CSS, SVG, and Orgo MP4. Browser hydration, modal interaction, active Orgo playback, and 404 produced zero warning/error logs under enforcement.
+- **Finding disposition:** `SEC-002` and `SEC-O01` are complete. Actual synthetic external-frame rendering was unavailable, but enforced `frame-ancestors 'none'` and `X-Frame-Options: DENY` provide standards-based refusal.

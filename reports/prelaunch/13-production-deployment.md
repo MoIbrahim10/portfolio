@@ -79,7 +79,8 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 ### DEP-13-003 — Browser hardening and privacy-control headers are absent
 
 - **Severity:** `P1 high`
-- **Affected route/component/file and line:** `/`, `/video-player-lab`, unknown-route `404`, sampled static assets; `src/routes/__root.tsx:32-43`; no `public/_headers`; `wrangler.jsonc:1-17`
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original 2026-07-29 finding.
+- **Affected route/component/file and line:** `/`, unknown-route `404`, controlled JSON `500`, and static assets; `src/server.ts:5-56`; `src/router.tsx:7-19`; Cloudflare Response Header Transform rule `fad9352426bf49b0b7f2916ed66a5d5d`. The removed `/video-player-lab` route is no longer applicable.
 - **Evidence:** Live responses omitted `Content-Security-Policy`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options`/CSP `frame-ancestors`, and cross-origin isolation policies. The repository contains no `_headers` file and no SSR response-header middleware.
 - **Reproduction steps:** Run `curl -sS -D - -o /dev/null https://m0code.com/` and repeat for `/video-player-lab`, an unknown route, and a static asset; search the response headers for the names above.
 - **User/business impact:** The browser receives no site-specific restraint on framing, MIME sniffing, referrer disclosure, powerful features, or script/resource origins. This weakens defense in depth and makes future third-party additions riskier.
@@ -89,6 +90,7 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 - **Estimated effort:** M (1–2 days including route/error/media validation).
 - **Dependencies:** Application-security scope 03; metadata/third-party inventory; error-path tests; any approved analytics provider.
 - **Objective verification method:** An automated header test covers `200`, redirect, `404`, static JS/CSS/SVG/media, and a controlled staging `500`; CSP report-only produces no unexplained violations before enforcement; clickjacking and MIME-sniff checks pass.
+- **Remediation evidence:** A report-only production rollout completed in GitHub Actions run [30696115179](https://github.com/MoIbrahim10/portfolio/actions/runs/30696115179) with zero browser CSP warnings/errors across fresh/repeat home loads, hydration, the Orgo modal/player, and 404. Enforced rollout run [30696408648](https://github.com/MoIbrahim10/portfolio/actions/runs/30696408648) passed install, type-check, build, Worker dry-run, deployment, and live-title verification. HTML `200`/`404` now receive a rotating 32-character nonce CSP and every SSR script matches it; non-HTML JavaScript, CSS, SVG, MP4, and controlled JSON `500` receive exact `nosniff`, `DENY`, referrer, and permissions values from the active Cloudflare rule. HTTP still performs the existing single query-preserving `308`; HTTPS-only headers are intentionally not added to plaintext redirects. Cloudflare-managed `/robots.txt` bypasses Response Header Transforms and is recorded as a non-executable `text/plain` exception. A synthetic external iframe harness was blocked by the audit browser's URL policy, so frame refusal is evidenced by enforced `frame-ancestors 'none'` plus `X-Frame-Options: DENY` rather than a rendered harness.
 
 ### DEP-13-004 — Production deploys have no approval gate or production-like preview
 
@@ -393,8 +395,8 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 
 ## Not Tested / Inaccessible
 
-- No deliberate production `500` was induced. Actual exception status/body, server/client boundary behavior, retry semantics, and alert delivery remain unverified.
-- During the original audit, Cloudflare dashboard/API settings were inaccessible. ITEM-02 later inspected Redirect Rules, Response Header Transform Rules, and managed-HSTS duration choices; ITEM-03 inspected and changed the zone minimum TLS setting only. SSL mode, certificate notifications, WAF/bot/rate-limit rules, Cache/Compression Rules, Cache Reserve, tiered cache, DNSSEC workflow, logging, alerts, analytics, NEL control, and account audit logs remain unverified.
+- ITEM-04 safely induced the framework's unsupported-`Accept` JSON `500` and verified its edge headers. Actual thrown-exception status/body, server/client boundary behavior, retry semantics, HTML `500`, and alert delivery remain unverified.
+- During the original audit, Cloudflare dashboard/API settings were inaccessible. ITEM-02 later inspected Redirect Rules, Response Header Transform Rules, and managed-HSTS duration choices; ITEM-03 changed only the zone minimum TLS; ITEM-04 added one Response Header Transform. SSL mode, certificate notifications, WAF/bot/rate-limit rules, Cache/Compression Rules, Cache Reserve, tiered cache, DNSSEC workflow, logging, alerts, analytics, NEL control, and account audit logs remain unverified.
 - The Cloudflare API token’s scopes, resource restrictions, age, rotation, and secret value were not inspected. Least privilege is unverified.
 - GitHub branch protection/rulesets could not be enabled on the current private-repository plan according to the read-only API response; no write was attempted.
 - No rollback, version override, canary, cache purge, DNS change, certificate change, alert test, or incident drill was performed.
@@ -426,3 +428,11 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 - **Protocol acceptance:** forced TLS 1.0/1.1 probes fail before HTTP with `curl` exit 35 and `tlsv1 alert protocol version`; forced TLS 1.2 returns `200` with certificate verification; OpenSSL negotiates TLS 1.3 with verification `OK`.
 - **Independent verification:** SSL Labs engine 2.4.2 completed across `172.67.142.115`, `104.21.95.2`, `2606:4700:3037::6815:5f02`, and `2606:4700:3032::ac43:8e73`; all four received grade `A`, no warnings, and reported only TLS 1.2/1.3.
 - **Regression evidence:** `/` is `200`, the retired lab path is `404`, the current JS asset is `200`, and the retained Orgo MP4 is `200 video/mp4`. Browser QA played that MP4 at `readyState=4`, duration `4.534`, `paused=false`, `error=null`, with no console errors. `DEP-13-002` is closed.
+
+## Implementation tracking — ITEM-04
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Deployment scope:** added the nonce-aware HTML CSP wrapper in `src/server.ts`, request-to-router nonce propagation in `src/router.tsx`, and active Cloudflare rule `fad9352426bf49b0b7f2916ed66a5d5d`. No dependency, lockfile, DNS, certificate, TLS, redirect, HSTS, cache, analytics, or secret setting changed.
+- **Staged rollout:** report-only workflow run `30696115179` passed before enforcement workflow run `30696408648`; both ran frozen install, type-check, build, Wrangler dry-run, deployment, and live smoke verification.
+- **Acceptance evidence:** enforced CSP covers HTML `200` and `404` with rotating, matching 32-character script/style nonces. Exact edge headers cover HTML, controlled JSON `500`, JavaScript, CSS, SVG, and Orgo MP4. HTTP retains one query-preserving `308`; the managed `text/plain` robots response is the explicit transform bypass.
+- **Regression evidence:** browser hydration, Orgo modal open/close, active retained-player playback (`readyState=4`, `duration=4.534`, `paused=false`, `error=null`), and the SSR 404 produce zero warning/error logs. `DEP-13-003` is complete.
