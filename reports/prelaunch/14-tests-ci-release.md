@@ -371,3 +371,9 @@ These are narrow evidence-backed passes, not substitutes for the absent tests:
 - **Local gates passed:** route generation, `bun run check`, `bun run build`, SSR assertions (`/` `200`, retired path `404`), absence of lab strings/chunks, retained-file hash comparison, and focused retained-video browser smoke.
 - **Disposition:** the release route matrix is now `/` plus a required `/video-player-lab` negative assertion and generic 404 coverage. The release-drift premise of `CI14-004` is resolved for this release; `CI14-001`, `CI14-003`, `CI14-005`, and broader CI/release-control findings remain open. Manual evidence does not replace automated gates.
 - **Production evidence:** PR #1 validation passed; merge SHA `c273f81…` passed Actions run `30657215155` and deployed as Cloudflare version `b8c0dab8…`. Public `404`, homepage assets, retained-video playback, and console health passed independent checks.
+
+## Implementation tracking — ITEM-02
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Focused gates passed:** active-rule inspection; one-hop `308` assertions for HTML, missing-path/query, fingerprinted JS, POST, and MP4; exact HTTPS `Strict-Transport-Security: max-age=300` assertions on `200`, `404`, JS, and MP4; cache-busted HTTP header-negative checks; TLS 1.2/1.3 handshakes; homepage and retained-video browser smoke; removed-route browser smoke; zero observed console warnings/errors.
+- **Tracking limit:** these are manual production acceptance checks and do not close `CI14-001`, `CI14-003`, `CI14-005`, or replace automated transport/header regression gates. No source build was required because ITEM-02 changed only Cloudflare edge rules and Markdown tracking reports.

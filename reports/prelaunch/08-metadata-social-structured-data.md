@@ -49,6 +49,7 @@ The title is 14 characters and the description is 25 characters. Length alone is
 
 - **ID:** `08-META-001`
 - **Severity:** `P1 high`
+- **Remediation status:** `Partially complete` (2026-08-01): the protocol-duplicate portion is production-verified complete; missing self-canonicals and HTTPS query canonicalization remain open. Historical evidence below describes the 2026-07-29 baseline.
 - **Affected route/component/file:** `/`, `/video-player-lab`, query variants, and the HTTP origin; `src/routes/__root.tsx:10-28`; `dist/server/assets/router-lIzKAfwM.js:7-29`.
 - **Evidence:** No `rel="canonical"` element or canonical HTTP `Link` header exists in source, existing `dist`, or live HTML. `https://m0code.com/?utm_source=audit` returns the same 200 content as `/`. More importantly, `http://m0code.com/` also returns 200 with the same title, description, and content instead of redirecting to HTTPS. Google explicitly treats protocol and parameter variants as canonicalization inputs.
 - **Reproduction:** Run `curl -sS https://m0code.com/`, `curl -sS 'https://m0code.com/?utm_source=audit'`, and `curl -sS http://m0code.com/`; inspect each `<head>` for `rel="canonical"` and compare status/content. All three documents omit it; all three return 200.
@@ -59,6 +60,7 @@ The title is 14 characters and the description is 25 characters. Length alone is
 - **Estimated effort:** Small, approximately 0.5 day including variant tests.
 - **Dependencies:** Approved public URL policy; deployment/redirect owner; sitemap policy from the technical-SEO scope.
 - **Objective verification:** Each indexable HTTPS page returns exactly one absolute self-canonical in raw SSR HTML; parameter variants canonicalize to the clean URL; every HTTP path returns one 301/308 hop to the equivalent HTTPS path; Search Console later reports the intended selected canonical.
+- **Current evidence:** the HTTP portion now passes for HTML, missing-path/query, JS, POST, and retained MP4 samples via one path/query-preserving `308`. No canonical tag was added, so this aggregate finding is not closed.
 
 ### 08-META-002 — Distinct 200 routes share generic title and description
 
@@ -207,3 +209,9 @@ The title is 14 characters and the description is 25 characters. Length alone is
 - **Disposition:** `08-RISK-001` is complete for the deployed release. The lab-specific portions of `08-META-002` and `08-META-003` are retired; homepage canonical, title/description, social card, icon, and structured-data work remains open.
 - **Verification:** only `/` remains in the generated route tree, `/video-player-lab` returns local `404`, and no lab head or chunk is emitted by the new build.
 - **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; `/video-player-lab` returns `404` and emits no lab-specific document/head contract.
+
+## Implementation tracking — ITEM-02
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** the protocol-canonicalization requirement in `08-META-001` is complete through active Cloudflare rule `68b2d9da04134d4e9aef99e85002e36c`; every sampled HTTP URL redirects once to the identical HTTPS path/query. The finding remains partially open because raw SSR still lacks an absolute self-canonical and tracking-query targets are not canonicalized to a clean HTTPS URL.
+- **Non-impact:** no title, description, Open Graph, Twitter/X, favicon, manifest, or JSON-LD behavior changed.

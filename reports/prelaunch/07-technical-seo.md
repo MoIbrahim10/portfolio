@@ -52,6 +52,7 @@ Normal and cache-disabled requests returned the same status and byte counts for 
 
 - **ID:** SEO-07-001
 - **Severity:** P1 high
+- **Remediation status:** `Complete — verified in production` (2026-08-01). Historical evidence below describes the 2026-07-29 baseline.
 - **Affected route/component/file and line:** `http://m0code.com/`; `http://m0code.com/video-player-lab`; `wrangler.jsonc:11-16`
 - **Evidence:** Both HTTP URLs return `200 text/html` and the same normalized SHA-256 as their HTTPS equivalents. Neither HTML response contains `rel="canonical"`, and the HTTP response does not redirect. Google documents permanent redirects as a strong canonical signal and explicitly recommends choosing one preferred protocol/host.
 - **Reproduction steps:** Run `curl -I http://m0code.com/` and `curl -I http://m0code.com/video-player-lab`; observe `200 OK`. Compare with the HTTPS URLs. Fetch both bodies, replace the dynamic `u:<timestamp>` value, and hash them; each HTTP/HTTPS pair is identical.
@@ -62,6 +63,7 @@ Normal and cache-disabled requests returned the same status and byte counts for 
 - **Estimated effort:** S (under half a day, including validation).
 - **Dependencies:** Cloudflare zone/custom-domain authority; coordination with deployment/configuration scope 13.
 - **Objective verification method:** `curl -I http://m0code.com/<each-public-route>` returns one permanent redirect to `https://m0code.com/<same-path-and-query>`; the target returns `200`; a crawler confirms no redirect chain.
+- **Remediation evidence:** Cloudflare rule `68b2d9da04134d4e9aef99e85002e36c` is active. HTTP `/`, `/video-player-lab?audit=1`, a fingerprinted JS asset, a POST path, and the retained Orgo MP4 return one `308` to the identical HTTPS path/query. `curl -L` reports exactly one redirect; the retired route then returns its intended HTTPS `404`.
 
 ### SEO-07-002 — Canonical duplicate clusters remain for case, query, and slash variants
 
@@ -257,3 +259,9 @@ Normal and cache-disabled requests returned the same status and byte counts for 
 - **Disposition:** `SEO-07-003` is complete because the unintended public route is removed in production; its orphan/indexability/sitemap decision no longer applies. Lab-specific duplicate-cluster rows in `SEO-07-001`/`SEO-07-002` are retired, but HTTP, canonical-query, 404 recovery, robots, and homepage SEO findings remain open.
 - **Verification:** the generated route tree declares only `/`; local SSR and browser navigation return a genuine `404` for `/video-player-lab`; no lab source or build reference remains.
 - **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; clean and cache-bypassed requests return `404` for `/video-player-lab` with no redirect, canonical, sitemap entry, or lab document.
+
+## Implementation tracking — ITEM-02
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `SEO-07-001` is closed because the HTTP protocol duplicate no longer serves content. `SEO-07-002` remains open for HTTPS query/case/slash canonicalization, and sitemap/robots/404 UX findings are unchanged.
+- **Verification:** path/query preservation passed for the homepage, retired path, fingerprinted JS, POST, and retained MP4; each HTTP request receives one permanent `308`. HTTPS targets retain their expected `200` or `404` status.

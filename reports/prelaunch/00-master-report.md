@@ -8,7 +8,7 @@ Production origin: `https://m0code.com`
 
 ## Executive audit status
 
-**Launch recommendation: HOLD.** No `P0 blocker` was confirmed, but the evidence contains multiple unresolved `P1 high` findings and P1 unknowns. In particular, the reviewed local HEAD, existing `dist`, and live production are not one release; HTTP remains directly served; TLS 1.0/1.1 are accepted; production can render the home page blank without hydration; material WCAG failures are confirmed; production release controls and behavioral tests are inadequate; and asset-rights evidence is unavailable. Approval would therefore be approval of an unverified release, not of a single tested launch candidate.
+**Launch recommendation: HOLD.** No `P0 blocker` was confirmed, but the evidence contains multiple unresolved `P1 high` findings and P1 unknowns. In particular, the reviewed local HEAD, existing `dist`, and live production are not one release; TLS 1.0/1.1 are accepted; production can render the home page blank without hydration; material WCAG failures are confirmed; production release controls and behavioral tests are inadequate; and asset-rights evidence is unavailable. Approval would therefore be approval of an unverified release, not of a single tested launch candidate. The plaintext-HTTP/HSTS blocker `M-C02` was remediated and production-verified on 2026-08-01.
 
 The live production site is older/different than both local HEAD and the existing `dist`. Findings that apply only to live or only to the candidate are labeled accordingly; missing candidate assets on the older live deployment are not treated as current broken-media requests.
 
@@ -39,7 +39,7 @@ Audit-boundary exception: browser tooling auto-created exactly 10 ignored `.play
 The following must be resolved or explicitly disproved against one immutable release candidate before launch sign-off:
 
 1. `M-C01`: source/build/live identity mismatch.
-2. `M-C02` and `M-C03`: plaintext HTTP/HSTS and legacy TLS.
+2. `M-C03`: legacy TLS. `M-C02` plaintext HTTP/HSTS is complete.
 3. `M-C05` and `M-C06`: production no-JavaScript blank page and extreme media overfetch.
 4. `M-C07`, `M-C08`, and `M-C09`: confirmed WCAG contrast, reflow, semantic, and error-page failures.
 5. `M-C10` and `M-C11`: no product test suite and uncontrolled/unverifiable release promotion.
@@ -63,6 +63,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 ### M-C02 — Plaintext HTTP is fully served and HSTS is absent
 
 - **Severity:** `P1 high`
+- **Remediation status:** `Complete — verified in production` (2026-08-01). This heading and the next evidence line preserve the 2026-07-29 audit baseline.
 - **Affected:** `http://m0code.com/*`, `https://m0code.com/*`; `wrangler.jsonc:11-16`.
 - **Sources:** [SEC-001](./03-application-security.md), [SEO-07-001](./07-technical-seo.md), [08-META-001](./08-metadata-social-structured-data.md), [DEP-13-001](./13-production-deployment.md).
 - **Evidence:** HTTP `/` and `/video-player-lab` return full `200` HTML with no redirect; HTTPS omits `Strict-Transport-Security`.
@@ -72,6 +73,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** Redirect first with short/no HSTS; avoid `includeSubDomains`/preload until domain-wide readiness because those controls are sticky.
 - **Effort/dependencies:** `S`, 1–3 hours plus observation; Cloudflare zone access, hostname inventory, rollback owner.
 - **Objective verification:** every HTTP route/variant redirects once to identical HTTPS path/query; no HTTP `200`; approved HSTS appears after staged rollout.
+- **Current verification:** passed for `/`, a removed-route/query variant, a fingerprinted JS asset, a POST request, and the retained Orgo MP4. HTTPS `200`, `404`, JS, and MP4 responses emit `Strict-Transport-Security: max-age=300`; HTTP responses do not. The approved canary excludes subdomains and preload. A deliberate duration increase remains an operational follow-up, not part of ITEM-02 acceptance.
 
 ### M-C03 — Production accepts TLS 1.0 and TLS 1.1
 
@@ -713,3 +715,11 @@ Key constraints:
 - **Regression guard:** SHA-256 hashes for `CrossAxisProjectRail.tsx`, its CSS module, `portfolio-data.ts`, the Orgo MP4, and its poster are unchanged from the pre-change baseline.
 - **Finding disposition:** `M-R04` is complete. Lab-only portions of `M-C07`, `M-C08`, `M-C09`, `M-C15`, `M-C17`, and `M-R05` are retired in production; their homepage/site-wide portions remain open. `M-C01` release parity is established for this deployed revision, while the broader provenance/promotion controls in `M-C11` remain open.
 - **Production acceptance evidence:** GitHub merge SHA `c273f81f59b8a1d7cd01e3cedb03b948b7d6cd32`, Actions run `30657215155`, and Cloudflare version `b8c0dab8-207e-4568-87ca-289ef74ae6e6` are bound by the deployment log. Public `/` returns `200` with the new hashed assets; `/video-player-lab` returns `404` with no redirect; browser QA opened and played the retained Orgo viewer at `readyState=4`, duration `4.534`, `error=null`, with no console errors/warnings.
+
+## Implementation progress — ITEM-02 enforce HTTPS transport
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Implemented scope:** Cloudflare Single Redirect rule `68b2d9da04134d4e9aef99e85002e36c` (`Enforce HTTPS (308)`) redirects `http://*` to `https://${1}` with status `308` and query preservation. Response Header Transform rule `1bf3a525052b4554b7060662c14b2f8d` (`Staged HSTS (300 seconds)`) sets `Strict-Transport-Security: max-age=300` only when `http.host eq "m0code.com" and ssl`. Cloudflare managed HSTS, `includeSubDomains`, and preload remain disabled.
+- **Objective evidence:** HTTP `/`, `/video-player-lab?audit=1`, `/assets/index-CtbOey3K.js?audit=1`, POST `/contact?from=audit`, and the Orgo MP4 each return one `308` to the identical HTTPS path/query. Following the retired-path URL produces exactly one redirect and the expected final `404`. HTTPS `/` is `200`, the retired path is `404`, JS and MP4 are `200`, and all carry exactly `max-age=300`; cache-busted HTTP responses omit HSTS.
+- **Regression evidence:** TLS 1.2 and TLS 1.3 still negotiate. Browser QA loaded the portfolio without console warnings/errors and played the retained Orgo viewer from `https://m0code.com/portfolio/projects/orgo/walkthrough.mp4` at `readyState=4`, duration `4.534`, `error=null`. No repository source, dependency, lockfile, or deployment configuration changed.
+- **Finding disposition:** `M-C02`, `SEC-001`, `SEO-07-001`, and `DEP-13-001` are complete. The protocol portion of `08-META-001` is complete; missing canonical/query policy remains open. `M-C03` legacy TLS and the deliberate post-canary HSTS duration decision remain separate follow-ups.

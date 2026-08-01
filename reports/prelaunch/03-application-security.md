@@ -3,7 +3,7 @@
 **Audit date:** 2026-07-29
 **Repository:** `/Users/mo/Documents/porfolio` at `ae1ec7cb0b1162be7c0aa01214ed5146f2321d7a`
 **Production target:** `https://m0code.com`
-**Overall status:** **Not launch-ready for transport security.** One P1 and one P2 issue are confirmed. No exposed secret, attacker-controlled injection path, authentication surface, state-changing API, public source map, or detailed error disclosure was confirmed.
+**Overall status:** The confirmed P1 plaintext-HTTP finding is remediated and production-verified as of 2026-08-01. The P2 CSP/clickjacking finding and broader header hardening remain open. No exposed secret, attacker-controlled injection path, authentication surface, state-changing API, public source map, or detailed error disclosure was confirmed.
 
 ## Scope, Method, and Threat Boundaries
 
@@ -35,6 +35,7 @@
 
 - **ID:** SEC-001
 - **Severity:** `P1 high`
+- **Remediation status:** `Complete — verified in production` (2026-08-01). Historical evidence below describes the 2026-07-29 baseline.
 - **Affected route/component/file:** `http://m0code.com/`, `http://m0code.com/video-player-lab`; custom-domain declaration at `wrangler.jsonc:11-16`.
 - **Evidence:** On 2026-07-29, both HTTP routes returned `200 OK`, HTML, zero redirects, and an `http://` final URL. The equivalent HTTPS routes returned `200`, but HTTPS responses did not include `Strict-Transport-Security`.
 - **Reproduction steps:**
@@ -49,6 +50,7 @@
 - **Estimated effort:** Small, 1–3 hours plus staged observation time.
 - **Dependencies:** Cloudflare zone access; inventory and HTTPS validation of `*.m0code.com`; coordination with deployment scope 13.
 - **Objective verification method:** `curl -IL http://m0code.com/<each-route>` must show exactly one permanent redirect to the same HTTPS path/query and no HTTP `200`. HTTPS responses must remain valid. After staged rollout, `curl -sSI https://m0code.com/` must show the approved HSTS value, and every included subdomain must pass HTTPS monitoring.
+- **Remediation evidence:** Active Cloudflare rule `68b2d9da04134d4e9aef99e85002e36c` returns a query-preserving `308` for HTML, missing paths, POST, JS, and MP4 requests. Active rule `1bf3a525052b4554b7060662c14b2f8d` sets HTTPS-only, apex-only `Strict-Transport-Security: max-age=300`; `includeSubDomains` and preload are not enabled. HTTPS `200`, `404`, JS, and MP4 probes carry the approved header, while cache-busted HTTP redirects omit it.
 
 ### SEC-002 — No CSP or clickjacking protection on HTML responses
 
@@ -158,8 +160,15 @@
 
 - Interactive browser runtime was unavailable after the documented connection check; therefore DevTools-observed console events, live DOM mutation, actual storage values, framing in a browser, and CSP report collection could not be independently exercised. Passive HTTP and repository/bundle evidence was used instead.
 - No deterministic safe `/500` route exists. A 500 was not induced through fault injection; only normal 404 and malformed-request 400 behavior were tested.
-- Cloudflare dashboard configuration, WAF/bot rules, zone TLS minimum, “Always Use HTTPS,” certificate renewal alerts, DNSSEC, access logs, account roles, and remote Worker variables/secrets were not accessible.
+- During the original audit, Cloudflare dashboard configuration, WAF/bot rules, zone TLS minimum, “Always Use HTTPS,” certificate renewal alerts, DNSSEC, access logs, account roles, and remote Worker variables/secrets were not accessible. ITEM-02 later inspected only the Redirect Rules, Response Header Transform Rules, and managed-HSTS controls needed for its approved scope.
 - Dependency advisories, package provenance, transitive supply chain, and licensing are intentionally owned by specialist scope 04; no networked package audit or install was run here.
 - Authenticated attacks, CSRF, IDOR, broken access control, file upload, SSRF, command injection, SQL/NoSQL injection, and rate limiting are not applicable to the repository surface found; no backend/API endpoints were discovered.
 - Active penetration testing, broad fuzzing, denial-of-service/load testing, WAF evasion, third-party target testing, and state-changing external interactions were excluded by the safe read-only boundary.
 - Production-to-commit provenance could not be established from passive evidence because live asset hashes and the live logo implementation differ from the current workspace/`dist`; deployment and release attestation belong to scopes 13 and 14.
+
+## Implementation tracking — ITEM-02
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Security result:** `SEC-001` is closed. Every sampled HTTP surface redirects once with `308` and preserves path/query/method semantics; the approved HTTPS-only apex HSTS canary is `max-age=300` with no subdomain or preload commitment.
+- **Regression result:** HTTPS `/` remains `200`, the removed lab remains a true `404`, the current JS and Orgo MP4 remain `200`, TLS 1.2/1.3 negotiate, and the retained video plays at `readyState=4`, duration `4.534`, `error=null`, with no browser console errors/warnings.
+- **Open follow-ups:** increase HSTS duration only after an observation window and explicit approval; CSP, clickjacking, `nosniff`, referrer/permissions policy, and the separate zone minimum-TLS finding remain open.

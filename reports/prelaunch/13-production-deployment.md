@@ -47,6 +47,7 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 ### DEP-13-001 — HTTP serves the complete site and HSTS is absent
 
 - **Severity:** `P1 high`
+- **Remediation status:** `Complete — verified in production` (2026-08-01). Historical evidence below describes the 2026-07-29 baseline.
 - **Affected route/component/file and line:** `http://m0code.com/*`; `https://m0code.com/*`; `wrangler.jsonc:11-16`
 - **Evidence:** `curl -D - http://m0code.com/` and the same probe for `/video-player-lab` returned `200 OK` with the full HTML instead of a redirect. HTTPS responses did not contain `Strict-Transport-Security`. Cloudflare recommends edge-level Always Use HTTPS and documents HSTS as a separate repeat-visit control.
 - **Reproduction steps:** Run `curl -I http://m0code.com/`, `curl -I http://m0code.com/video-player-lab`, and `curl -I https://m0code.com/`; observe HTTP `200` and no HTTPS HSTS header.
@@ -57,6 +58,7 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 - **Estimated effort:** S (1–3 hours including verification); preload decision is M because it requires domain-wide review.
 - **Dependencies:** Cloudflare zone access; hostname/subdomain inventory; SEO canonical decision; rollback contact.
 - **Objective verification method:** Every `http://m0code.com/<path>?<query>` returns exactly one permanent redirect to the identical HTTPS path/query; HTTPS returns `200`; HSTS appears only after staged enablement; SSL Labs or equivalent confirms no downgrade path.
+- **Remediation evidence:** Single Redirect `68b2d9da04134d4e9aef99e85002e36c` (`Enforce HTTPS (308)`) and Response Header Transform `1bf3a525052b4554b7060662c14b2f8d` (`Staged HSTS (300 seconds)`) are active. The former covers HTML, errors, assets, media, and non-GET methods; the latter matches `http.host eq "m0code.com" and ssl` and sets exactly `max-age=300`. Cloudflare managed HSTS, `includeSubDomains`, and preload remain disabled.
 
 ### DEP-13-002 — The production edge accepts TLS 1.0 and TLS 1.1
 
@@ -390,7 +392,7 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 ## Not Tested / Inaccessible
 
 - No deliberate production `500` was induced. Actual exception status/body, server/client boundary behavior, retry semantics, and alert delivery remain unverified.
-- Cloudflare dashboard/API settings were inaccessible: SSL mode, Always Use HTTPS toggle, HSTS/preload setting, TLS 1.3 toggle, certificate notifications, WAF/bot/rate-limit rules, Redirect/Transform/Cache/Compression Rules, Cache Reserve, tiered-cache options, DNSSEC state workflow, log retention/sampling, alert policies, Web Analytics, RUM, NEL control, and account audit logs.
+- During the original audit, Cloudflare dashboard/API settings were inaccessible. ITEM-02 later inspected and changed only Redirect Rules and Response Header Transform Rules, and inspected the managed-HSTS duration choices. SSL mode, minimum TLS, certificate notifications, WAF/bot/rate-limit rules, Cache/Compression Rules, Cache Reserve, tiered cache, DNSSEC workflow, logging, alerts, analytics, NEL control, and account audit logs remain unverified.
 - The Cloudflare API token’s scopes, resource restrictions, age, rotation, and secret value were not inspected. Least privilege is unverified.
 - GitHub branch protection/rulesets could not be enabled on the current private-repository plan according to the read-only API response; no write was attempted.
 - No rollback, version override, canary, cache purge, DNS change, certificate change, alert test, or incident drill was performed.
@@ -407,3 +409,10 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 - **Deployed change:** the lab route and its normalization target no longer exist; production `/video-player-lab` is a non-redirecting `404`. `DEP-13-008` remains open for other URL normalization behavior, and all transport, TLS, headers, caching, observability, rollback, and broader artifact-provenance findings remain open.
 - **Verification:** check/build pass; generated route/build output contains no lab entry; retained homepage media loads in focused browser QA and its implementation/assets are hash-identical to baseline.
 - **Production evidence:** GitHub merge SHA `c273f81f59b8a1d7cd01e3cedb03b948b7d6cd32`, Actions run `30657215155`, and Cloudflare version `b8c0dab8-207e-4568-87ca-289ef74ae6e6` are bound in the deployment log. Public route and retained-viewer acceptance checks passed.
+
+## Implementation tracking — ITEM-02
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Edge configuration:** active rule IDs `68b2d9da04134d4e9aef99e85002e36c` (HTTP wildcard → HTTPS wildcard, `308`, preserve query) and `1bf3a525052b4554b7060662c14b2f8d` (HTTPS apex only, set `Strict-Transport-Security: max-age=300`). No Worker source, repository deployment configuration, DNS, certificate, cache, package, secret, or lockfile was changed.
+- **Acceptance evidence:** `/`, `/video-player-lab?audit=1`, `/assets/index-CtbOey3K.js?audit=1`, POST `/contact?from=audit`, and `/portfolio/projects/orgo/walkthrough.mp4?audit=2` redirect once with identical path/query. HTTPS `/`, 404, JS, and MP4 responses return expected statuses and HSTS; cache-busted HTTP responses omit HSTS. TLS 1.2 and TLS 1.3 remain healthy.
+- **Regression evidence:** browser QA loaded the current homepage and played the retained Orgo MP4 at `readyState=4`, duration `4.534`, `error=null`, with no console errors/warnings. `DEP-13-001` is closed; `DEP-13-002` and the intentional HSTS-duration ramp remain open.
