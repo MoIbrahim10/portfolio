@@ -145,6 +145,7 @@ The live root SSR referenced 53 unique internal URLs and the live video-lab SSR 
 ### INV-C01 — Production does not match HEAD or the inspected build
 
 - **Severity:** P1 high
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The original evidence below is retained as the audit baseline.
 - **Affected:** all routes; `src/components/v14-exploration-lab/V14ExplorationLab.tsx:17-24`; `src/components/v14-exploration-lab/CrossAxisProjectRail.tsx:367-376`; existing `dist/client/assets/`; live `https://m0code.com/`.
 - **Evidence:** HEAD is `ae1ec7c`. Existing artifact `/` SSR contains 32 figures, 1 eagerly emitted video, and the MO identity chapter; live SSR contains 31 figures, 16 eagerly emitted videos, and no identity chapter. Existing root assets are `index-COTNhO9J.js`, `routes-BXeiZRtJ.js`, `routes-DKGiQ1HX.css`, and `styles-DDBD8rJB.css`; live references different hashes (`index-BTo1nZ1V.js`, `routes-DAvGpumd.js`, `routes-BvKEGjiQ.css`, `styles-B9P8SFFr.css`). Live uses full PNG portraits matching the parent revision, while HEAD uses `-640.webp`. Fourteen unique HEAD asset URLs are absent live.
 - **Reproduction:** (1) Record `git rev-parse HEAD`. (2) Import `dist/server/server.js` and call its default `fetch` handler for `/`; count `<figure`, `<video`, and `logo-animation`. (3) fetch `https://m0code.com/` and repeat. (4) compare internal asset filenames from both HTML responses. (5) request the six HEAD avatar WebPs and new identity assets on live.
@@ -155,6 +156,7 @@ The live root SSR referenced 53 unique internal URLs and the live video-lab SSR 
 - **Estimated effort:** Small–medium, 0.5 day for provenance/preview alignment; full re-audit effort is separate.
 - **Dependencies:** Deployment owner, CI/release specialist, final choice of launch-candidate commit, immutable preview access.
 - **Objective verification:** Source commit, CI artifact manifest, preview response metadata, and deployed asset hashes all identify the same revision; `/` then emits the same 32-figure inventory and identity chapter as the approved artifact, with every referenced asset returning `200`.
+- **Current verification:** Actions run `30703230758` binds master `87864fe…`, the 130-file build manifest, build artifact `8819491987`/SHA-256 `5ff2c2ad…`, Cloudflare version `3666f6f8…`, the production URL, and live hash checks for five generated assets, the brand mark, and the Orgo MP4. Production `/` is `200`; unknown and retired-lab paths are `404`.
 
 ### INV-C02 — Unknown routes render a generic navigation dead end
 
@@ -281,3 +283,9 @@ The live root SSR referenced 53 unique internal URLs and the live video-lab SSR 
 - **Disposition:** `INV-C02` is complete. Unknown routes now use the root not-found component and remain genuine HTTP `404` responses.
 - **Verification:** cache-bypassed SSR and hydrated browser checks show a unique error title/description, one `main`, one H1, approved recovery copy, and one working home link. Desktop/mobile accessibility snapshots expose the intended main/region/heading/link structure with no console or page errors.
 - **Regression evidence:** production `/` remains `200`; its retained Orgo viewer loads the same MP4, reaches `readyState=4`, plays, and closes normally. PR [#10](https://github.com/MoIbrahim10/portfolio/pull/10) deployed as merge `f5bf8335…`, Actions run `30701980701`, Cloudflare version `3ba23d32…`.
+
+## Implementation tracking — ITEM-09
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `INV-C01` is complete. The approved master SHA, retained 130-file artifact, deployment version, live generated assets, brand mark, and Orgo MP4 are now bound by one release receipt rather than inferred from filenames.
+- **Evidence:** Actions run `30703230758`; build artifact `8819491987`/SHA-256 `5ff2c2ad…`; release artifact `8819497837`; Cloudflare version `3666f6f8…`; production smoke passed on attempt 1. Asset ownership/removal decisions in `INV-R02` remain open.

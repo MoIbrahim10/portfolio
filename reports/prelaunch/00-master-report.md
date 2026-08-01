@@ -4,13 +4,14 @@ Audit date: 2026-07-29
 Repository: `/Users/mo/Documents/porfolio`
 Audited local revision: `ae1ec7cb0b1162be7c0aa01214ed5146f2321d7a`
 Observed production revision/build: older/different; latest evidenced deployment SHA `5d80cbf0d9e818f3e5cc4b65766a947bdcd7ad7c`
+Current verified production release: `87864fe684a187c885c788d8b7dd2eda21871f94`; Actions run `30703230758`; Cloudflare version `3666f6f8-cea8-4133-9cf9-945cbc0dd3a0`
 Production origin: `https://m0code.com`
 
 ## Executive audit status
 
-**Launch recommendation: HOLD.** No `P0 blocker` was confirmed, but multiple unresolved `P1 high` findings and P1 unknowns remain. Material WCAG semantic/error-page failures remain; production release controls and behavioral tests are inadequate; and asset-rights evidence is unavailable. Transport, TLS, browser headers, no-JavaScript visibility, homepage media overfetch, and contrast findings `M-C02` through `M-C07` were remediated or disproved and production-verified by 2026-08-01.
+**Launch recommendation: HOLD.** No `P0 blocker` was confirmed, but unresolved `P1 high` findings and P1 unknowns remain. The product test suite, approval/preview/rollback controls, exhaustive browser/assistive-technology evidence, Lighthouse Performance evidence, and asset-rights evidence remain incomplete. Transport, TLS, browser headers, no-JavaScript visibility, homepage media overfetch, contrast, semantics/404 recovery, release identity, and action pinning were remediated or disproved and production-verified by 2026-08-01.
 
-The 2026-07-29 audit baseline found an older production artifact. By 2026-08-01, production and the current build exposed identical root asset hashes, SSR counts, and the same 77 referenced public assets. Durable build provenance/promotion controls remain open under `M-C01`/`M-C11`; historical drift evidence is preserved in the findings.
+The 2026-07-29 audit baseline found an older production artifact. By 2026-08-01, production and the current build exposed identical root asset hashes, SSR counts, and the same 77 referenced public assets. ITEM-09 then made that parity durable: CI retains and verifies the exact build before deployment and records the source SHA, input/output hashes, tool versions, GitHub artifact digest, Cloudflare version, production URL, and smoke result. `M-C01` is complete and `M-C11` is partially resolved; approval, preview, observability, and rollback remain open. Historical drift evidence is preserved below.
 
 Browser availability varied by specialist. Some Chromium/Lighthouse/Performance evidence was collected, while the configured browser-control backend was unavailable to many specialists. Manual, responsive, assistive-technology, touch, and cross-browser coverage is incomplete. Lighthouse Performance was excluded by the available audit tool, so **no Lighthouse Performance score exists** and no Performance 100 is claimed.
 
@@ -22,7 +23,7 @@ Audit-boundary exception: browser tooling auto-created exactly 10 ignored `.play
 |---|---|---|
 | Routes | `/`, `/video-player-lab`, unknown routes, slash/case/query/protocol variants | Complete HTTP/SSR inventory; interactive coverage incomplete |
 | Components/states | Hero, portrait/logo, four-story rail, 32 candidate media chapters, viewer, custom scrollbar, ten video-lab variants | Source-complete; browser state execution incomplete |
-| Assets | 119 `public/` files including two `.DS_Store`; 117 content assets; current references, derived posters, `dist`, live URLs | Repository/build complete; live differs |
+| Assets | 119 `public/` files including two `.DS_Store`; 117 content assets; current references, derived posters, `dist`, live URLs | Repository/build complete; current release parity verified |
 | Security | Transport, TLS, headers, XSS sinks, framing, secrets, source maps, CORS, third parties | Passive/application review complete; dashboard controls unavailable |
 | Dependencies | 15 direct packages, 204 locked records, vendored skills, advisories, licenses, action refs | Snapshot complete; continuous policy/provenance incomplete |
 | Performance | SSR, bundle/media sizes, caching, compression, CWV samples, overfetch, range behavior | Useful lab evidence; cold throttled traces/field data/Performance score absent |
@@ -38,9 +39,8 @@ Audit-boundary exception: browser tooling auto-created exactly 10 ignored `.play
 
 The following must be resolved or explicitly disproved against one immutable release candidate before launch sign-off:
 
-1. `M-C01`: source/build/live identity mismatch.
-2. `M-C10` and `M-C11`: no product test suite and uncontrolled/unverifiable release promotion.
-3. `M-R01`, `M-R02`, and `M-R03`: incomplete real-browser evidence, no Lighthouse Performance score, and unverified asset/case-study rights.
+1. `M-C10` and the remaining portions of `M-C11`: no product test suite and incomplete approval/preview/rollback controls.
+2. `M-R01`, `M-R02`, and `M-R03`: incomplete real-browser evidence, no Lighthouse Performance score, and unverified asset/case-study rights.
 
 `M-C08` was retired with `/video-player-lab` under ITEM-01. `M-C09` is complete under ITEM-08; neither remains a launch blocker.
 
@@ -49,6 +49,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 ### M-C01 — Release candidate, build, and production identity do not match
 
 - **Severity:** `P1 high`
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The baseline title/evidence below remains historical audit evidence.
 - **Affected:** all routes/assets; local HEAD `ae1ec7c`; existing `dist/client/assets/*`; live deployment `5d80cbf…`; `.github/workflows/cloudflare.yml:3-10,44-56`.
 - **Sources:** [INV-C01](./01-inventory.md), [CQ-01](./02-code-quality.md), [PERF-05-001](./05-performance.md), [LH-06-003](./06-lighthouse.md), [SEO-07-R01](./07-technical-seo.md), [FQA-001](./10-functional-interaction-qa.md), [RISK-12-002](./12-offline-pwa-resilience.md), [DEP-13-005](./13-production-deployment.md), [CI14-004](./14-tests-ci-release.md), [C15-001](./15-content-assets-legal-privacy.md).
 - **Evidence:** HEAD is one commit ahead of `origin/master`; local and live JS/CSS hashes differ; local SSR has 32 media chapters and one initial video while live has 31 and 16 videos; live uses legacy PNG portraits; candidate-only assets return live 404. Scope 02 rated this P2, but the master uses P1 because the mismatch invalidates release-wide evidence and can produce mixed server/client assets.
@@ -58,6 +59,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** Freeze `5d80cbf…` as the candidate and re-audit it, or keep live/candidate baselines separate; both delay newer work but avoid claiming equivalence.
 - **Effort/dependencies:** `M`, 0.5–2 days for identity/artifact plumbing plus re-audit; release owner, CI, Cloudflare preview/version access.
 - **Objective verification:** source SHA, lock hash, artifact checksum, GitHub deployment SHA, Cloudflare version, runtime build ID, SSR inventory, and live asset hashes all match.
+- **Current verification:** final master run [30703230758](https://github.com/MoIbrahim10/portfolio/actions/runs/30703230758) built 130 files from `87864fe684a187c885c788d8b7dd2eda21871f94`, retained build artifact `8819491987` with SHA-256 `5ff2c2ad96fddbd48d16e35ba6582daac48d6d9536f14fbed3c8271b6f6ca318`, downloaded and reverified it byte-for-byte, and deployed without rebuilding. Release artifact `8819497837` records Cloudflare version `3666f6f8-cea8-4133-9cf9-945cbc0dd3a0` and `https://m0code.com`. Production verification passed on attempt 1 for `/` `200`, unknown-route `404`, retired-lab `404`, five generated assets, the brand mark, and the retained Orgo MP4 hash.
 
 ### M-C02 — Plaintext HTTP is fully served and HSTS is absent
 
@@ -194,6 +196,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 ### M-C11 — Production promotion, smoke verification, provenance, and rollback controls are inadequate
 
 - **Severity:** `P1 high`
+- **Remediation status:** `Partially resolved — provenance, immutable artifact deployment, and HTTP/asset/media smoke verified in production` (2026-08-01). Approval gates, production-like preview, browser CI, observability, and rollback drill remain open.
 - **Affected:** `.github/workflows/cloudflare.yml:3-56`; GitHub `master` and `production`; Cloudflare versions/deployments.
 - **Sources:** [DEP-13-004, DEP-13-010, DEP-13-R01](./13-production-deployment.md), [CI14-002, CI14-003, CI14-005, CI14-006](./14-tests-ci-release.md).
 - **Evidence:** pushes and manual dispatches can deploy; branch/environment protections are absent; no production-equivalent preview; one title grep is the only post-deploy smoke; no retained artifact/checksum/version, rollback runbook/drill, or verified observability/alert contract.
@@ -203,10 +206,12 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** on current plan, use manual-only deploy with explicit SHA guard and out-of-band approval; less enforceable but safer than direct push deploy.
 - **Effort/dependencies:** `L`, 2–5 days; repository plan/visibility decision, CI14 tests, Cloudflare preview/version access, release/incident owners.
 - **Objective verification:** non-approved refs cannot deploy; exact artifact is promoted without rebuild; intentional broken chunk/hydration fails smoke; deployment records SHA/version/checksum; nonproduction rollback restores prior known-good within target time.
+- **Current verification:** build and deploy are separate jobs; PRs build/retain but cannot deploy; manual non-`master` dispatches cannot deploy; production consumes the retained artifact and verifies every build/input hash before Wrangler. Post-deploy checks now compare live JS/CSS/brand/video bytes, statuses, titles, H1/group structure, unknown-route recovery, and the retired route. The final manifest retains SHA/tool/artifact/Cloudflare/version/URL/smoke evidence for 90 days. No browser runs inside CI, approval rule, preview promotion, observability contract, rollback runbook, or rollback drill was added.
 
 ### M-C12 — Privileged GitHub Actions use mutable tags
 
 - **Severity:** `P1 high`
+- **Remediation status:** `Complete — verified in pull-request and production workflows` (2026-08-01).
 - **Affected:** `.github/workflows/cloudflare.yml:25,28,46-52`.
 - **Sources:** [DEP-001](./04-dependencies-supply-chain.md), [CI14-R01](./14-tests-ci-release.md).
 - **Evidence:** checkout, setup-bun, and wrangler-action use moving major tags; the deploy action receives production credentials. Scope 14 labeled this a P2 risk; the master retains P1 because tag movement can execute privileged production code with no repository diff.
@@ -216,6 +221,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** prioritize the privileged Cloudflare action first; leaving GitHub-owned actions on documented major tags reduces maintenance but retains mutable code.
 - **Effort/dependencies:** `S`, 2–4 hours plus maintenance; vetted SHAs and policy access.
 - **Objective verification:** all `uses:` values are reviewed 40-character SHAs and a policy/test rejects mutable refs.
+- **Current verification:** all checkout, Bun setup, Cloudflare deploy, artifact upload, and artifact download actions use exact 40-character official SHAs with adjacent major-version comments. PRs [#12](https://github.com/MoIbrahim10/portfolio/pull/12) and [#13](https://github.com/MoIbrahim10/portfolio/pull/13) passed the pinned workflow; final production run `30703230758` used those exact SHAs. Repository policy still does not enforce pinning, so controlled update ownership remains operational follow-up.
 
 ### M-C13 — Browser cache policy and MP4 range delivery are inefficient
 
@@ -727,7 +733,7 @@ Key constraints:
 - **Implemented scope:** removed the standalone route, component, and CSS module; regenerated the TanStack route tree. The Orgo walkthrough asset remains because the portfolio viewer still uses it.
 - **Objective evidence:** `bun run check` and `bun run build` pass; local SSR returns `/` as `200` with exactly one retained video and `/video-player-lab` as `404`; the new build contains no lab route/chunk/text; focused browser QA opened the retained Orgo viewer with media `readyState=4`, duration `4.534`, `error=null`, and no console errors/warnings.
 - **Regression guard:** SHA-256 hashes for `CrossAxisProjectRail.tsx`, its CSS module, `portfolio-data.ts`, the Orgo MP4, and its poster are unchanged from the pre-change baseline.
-- **Finding disposition:** `M-R04` is complete. Lab-only portions of `M-C07`, `M-C08`, `M-C09`, `M-C15`, `M-C17`, and `M-R05` are retired in production. `M-C07` subsequently completed under ITEM-07; the other homepage/site-wide portions remain open. `M-C01` release parity is established for this deployed revision, while the broader provenance/promotion controls in `M-C11` remain open.
+- **Finding disposition:** `M-R04` is complete. Lab-only portions of `M-C07`, `M-C08`, `M-C09`, `M-C15`, `M-C17`, and `M-R05` are retired in production. `M-C07` subsequently completed under ITEM-07; the other homepage/site-wide portions remain open. `M-C01` parity was established for that deployed revision and made durable under ITEM-09; ITEM-09 also completed the provenance/immutable-artifact portions of `M-C11` while approval, preview, observability, and rollback remain open.
 - **Production acceptance evidence:** GitHub merge SHA `c273f81f59b8a1d7cd01e3cedb03b948b7d6cd32`, Actions run `30657215155`, and Cloudflare version `b8c0dab8-207e-4568-87ca-289ef74ae6e6` are bound by the deployment log. Public `/` returns `200` with the new hashed assets; `/video-player-lab` returns `404` with no redirect; browser QA opened and played the retained Orgo viewer at `readyState=4`, duration `4.534`, `error=null`, with no console errors/warnings.
 
 ## Implementation progress — ITEM-02 enforce HTTPS transport
@@ -788,3 +794,12 @@ Key constraints:
 - **Accessibility/responsive evidence:** 320, 390, 768, and 1440 CSS-pixel checks plus 200% text showed no horizontal overflow; recovery targets are at least 48 CSS px high. Keyboard focus/activation passed. Production desktop/mobile Lighthouse snapshots scored 100 in all four reported categories with zero failures; navigation-mode scoring is explicitly unavailable for a correct non-200 document.
 - **Regression/release evidence:** the homepage role block kept the exact pre-change 914×788 rectangle and computed font/margin/color. The retained Orgo modal played the unchanged `/portfolio/projects/orgo/walkthrough.mp4` at `readyState=4` and closed with no console/page errors. PR [#10](https://github.com/MoIbrahim10/portfolio/pull/10), merge `f5bf8335aade35e68f9c5f1981ce6343e5386560`, Actions run `30701980701`, and Cloudflare version `3ba23d32-e67d-4e21-8a78-e92fe81dcaf6` identify the deployed release.
 - **Finding disposition:** `M-C09`, `INV-C02`, `SEO-07-004`, `SEO-07-005`, `08-META-004`, `09-C-03`, `09-C-05`, `09-C-06`, `FQA-005`, and `C15-003` are complete. The 404 portion of `DEP-13-009` is complete; application `500` boundaries, observability, and correlation remain open. `M-C08` is confirmed retired under ITEM-01.
+
+## Implementation progress — ITEM-09 establish immutable release provenance
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Implemented scope:** split CI into build and deploy jobs; retain the exact `dist` plus build manifest; hash all build files and release inputs; reject tampering before deployment; pin every action to a full SHA; block non-`master` production dispatches; retain the source/tool/artifact/Cloudflare/verification receipt. No UI, player, media, dependency, package manifest, or lockfile changed.
+- **Objective evidence:** PR [#12](https://github.com/MoIbrahim10/portfolio/pull/12) proved PR build/artifact creation and deploy exclusion. Final run [30703230758](https://github.com/MoIbrahim10/portfolio/actions/runs/30703230758) built and reverified 130 files (37,637,574 bytes), deployed build artifact `8819491987` with SHA-256 `5ff2c2ad96fddbd48d16e35ba6582daac48d6d9536f14fbed3c8271b6f6ca318`, and retained release artifact `8819497837` with SHA-256 `d3f946304b7abb97ed530bc78b79911b3989627afbb50f299abe502a6ab1dfe0`.
+- **Production acceptance:** release `87864fe684a187c885c788d8b7dd2eda21871f94` maps to Cloudflare version `3666f6f8-cea8-4133-9cf9-945cbc0dd3a0` and `https://m0code.com`. Attempt-1 smoke matched five generated asset hashes, brand hash, Orgo MP4 hash, homepage `200`, unknown `404`, and retired-lab `404`.
+- **Player regression:** the live Orgo modal loaded the exact retained MP4, reached `readyState=4`, duration `4.534`, `error=null`, played and looped, emitted zero console errors, and closed normally.
+- **Finding disposition:** `M-C01` and `M-C12` are complete. The provenance/immutable-artifact/smoke portions of `M-C11`, `DEP-13-010`, `CI14-003`, and `CI14-005` are complete; approval, preview, browser CI, observability, and rollback remain open. GitHub warns that pinned checkout/artifact actions still declare Node 20 while the runner forces Node 24; this is tracked as `CI14-R05`.

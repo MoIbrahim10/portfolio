@@ -234,3 +234,9 @@ These warm-state/unknown-cache traces have no CrUX data, Speed Index, trace-deri
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Disposition:** `LH-06-001` is complete. Historical `/video-player-lab` contrast evidence remains retired under ITEM-01; `LH-06-R01` and the honest five-run Lighthouse Performance gate remain open.
 - **Verification:** the deployed `routes-BRnAUAbE.css` produces a minimum **5.07:1** across every rendered caption pair. Lighthouse 13.4.0 navigation runs scored Accessibility 100 on mobile and desktop with zero failed audits. Merge SHA `1db9d57008b6db30a32178fc4e83597d76074caa`, Actions run `30700858043`, and Cloudflare version `a3299de6-82a2-49d7-9815-25da9fe35f8e` identify the production artifact.
+
+## Implementation tracking — ITEM-09
+
+- **Status:** `Complete — release parity made durable` (2026-08-01).
+- **Disposition:** `LH-06-003` remains complete and now has automated source/build/live identity evidence. `LH-06-R01` and the honest five-consecutive-run Lighthouse Performance gate remain open; no Performance 100 is claimed.
+- **Evidence:** Actions run `30703230758` retained and redeployed one verified artifact, recorded Cloudflare version `3666f6f8…`, and matched five live JS/CSS assets plus retained media to the manifest on attempt 1.

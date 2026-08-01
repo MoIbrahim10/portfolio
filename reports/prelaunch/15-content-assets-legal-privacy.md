@@ -91,6 +91,7 @@ Exact-byte duplicate pairs:
 ### C15-001 — Production asset set is out of sync with the current repository/build
 
 - **Severity:** P1 high
+- **Remediation status:** `Complete — production generated assets/brand/media match the retained approved artifact` (2026-08-01).
 - **Affected:** `/`; current `V14ExplorationLab.tsx:17-24`; `CrossAxisProjectRail.tsx:861-990`; `public/avatar/*-640.webp`; six current video posters; MO identity poster/video
 - **Evidence:** All 117 public files exist byte-identically in `dist/client`, but production `HEAD` returned 404 for 14: six `*-640.webp` avatars; Good Invoice `editor-workflow-poster.webp` and `feedback-links-poster.webp`; Lumen `composer-controls-poster.webp`, `model-selector-poster.webp`, `prompt-shortcuts-poster.webp`; Orgo `walkthrough-poster.webp`; identity poster and video. Production SSR still references old 1254px PNG portraits, while current source/build references 640px WebP portraits.
 - **Reproduction:** Compare `find public -type f` with `dist/client`; `HEAD https://m0code.com/avatar/mo-avatar-portrait-01-640.webp`; fetch `/` and inspect portrait sources.
@@ -336,3 +337,9 @@ Exact-byte duplicate pairs:
 - **Disposition:** `C15-003` is complete. The approved branded 404 explains the missing address and exposes one clearly labeled route home while preserving the hard `404`; it does not hide broken URLs behind a redirect.
 - **Verification:** SSR, hydrated desktop/mobile, keyboard, and 200% text checks pass. The page introduces no form, tracking, third-party script, new external destination, legal claim, cookie, or personal-data flow.
 - **Regression evidence:** homepage presentation and the retained Orgo video source remain unchanged in behavior; production playback reaches `readyState=4` and closes with no console/page errors.
+
+## Implementation tracking — ITEM-09
+
+- **Status:** `Complete for production asset-set parity` (2026-08-01).
+- **Disposition:** `C15-001` is complete. CI now proves the deployed generated assets, brand, and retained Orgo media match the approved artifact. Rights, releases, attributions, legal policy, dormant-link decisions, and content-specific CI policy remain open.
+- **Evidence:** release `87864fe…`/Cloudflare `3666f6f8…` passed exact live hashes for five generated assets, the brand mark, and Orgo MP4. The production modal played the unchanged MP4 without media or console errors.

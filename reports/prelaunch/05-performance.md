@@ -172,3 +172,9 @@ No buffered `longtask` entries were emitted in these observations. This is **not
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Disposition:** `PERF-05-001` is complete. Initial media is limited to one Orgo MP4, portraits do not load before reveal, and revealed portraits stay below 40 KB WebP. `PERF-05-002`, performance-score/field-CWV evidence, CPU/bundle analysis, and responsive-image opportunities remain open.
 - **Verification:** 5/5 cache-disabled browser scenarios passed across desktop, mobile, Slow 3G, portrait reveal, and Orgo playback; two DevTools traces reported LCP 492/311 ms and CLS 0. SSR/build/live hashes and counts match, and all 77 referenced assets pass status/MIME checks. No runtime source change was required.
+
+## Implementation tracking — ITEM-09
+
+- **Status:** `Complete — release parity made durable` (2026-08-01).
+- **Disposition:** the artifact-drift dependency attached to `PERF-05-001` is now closed by automated exact-artifact deployment and live asset/media hashing. Caching, Lighthouse Performance distributions, field CWV, CPU/memory, and remaining bundle/media opportunities stay open.
+- **Evidence:** final smoke compared five live generated assets plus the retained Orgo MP4 byte-for-byte with build artifact `8819491987`; the MP4 also played and looped in the production modal without media or console errors.

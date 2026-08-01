@@ -36,6 +36,7 @@ No P0 blocker or P1 high finding was confirmed in scope 02. The deployment/sourc
 
 - **ID:** CQ-01
 - **Severity:** `P2 medium`
+- **Remediation status:** `Complete — verified in production and enforced by release provenance` (2026-08-01).
 - **Affected:** `/`; likely all build output; `.github/workflows/cloudflare.yml:3-10,35-56`; local `dist/client/assets/*`; `src/components/v14-exploration-lab/V14ExplorationLab.tsx:17-24,230-316`; `src/components/brand/AnimatedLogo.tsx:5,72,193-202`
 - **Evidence:** `git status -sb` reported `master...origin/master [ahead 1]`. The local existing build references `routes-BXeiZRtJ.js` and `routes-DKGiQ1HX.css`, while live HTML references `routes-DAvGpumd.js` and `routes-BvKEGjiQ.css`. Current source uses six `-640.webp` portraits and only mounts portrait images when `visible`; live SSR emits `mo-avatar-portrait-03.png` and `-04.png` while the reveal is hidden. Current `AnimatedLogo` imports raw SVG markup; live SSR emits the older fallback `<img>`. The one local-only commit is a 48-file media/loading/motion change.
 - **Reproduction:** Run `git status -sb`; list `dist/client/assets`; fetch `https://m0code.com/` and extract `/assets/(routes|styles)-*`; compare the live avatar URLs with `V14ExplorationLab.tsx:17-24`.
@@ -298,3 +299,9 @@ No P0 blocker or P1 high finding was confirmed in scope 02. The deployment/sourc
 - **Regression evidence:** retained player source, CSS, data, MP4, and poster hashes match their pre-change baselines; focused browser QA loaded the retained viewer successfully.
 - **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; public route and retained-player checks passed.
 - **Tracking result:** `CQ-07` remains only `Partially resolved` because homepage duplication concerns remain; ITEM-01 itself is complete.
+
+## Implementation tracking — ITEM-09
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** the release-drift premise of `CQ-01` is complete. CI now builds once, retains and verifies the exact output before deploy, and records source/input/output/tool/artifact/Cloudflare identity. Architecture, duplication, dead-code, and automated characterization findings remain independently open.
+- **Evidence:** master `87864fe…`, Actions run `30703230758`, build artifact `8819491987`/SHA-256 `5ff2c2ad…`, and Cloudflare version `3666f6f8…` agree; live generated assets and Orgo media match the manifest.
