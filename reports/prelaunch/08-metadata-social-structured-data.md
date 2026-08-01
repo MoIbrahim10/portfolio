@@ -215,3 +215,10 @@ The title is 14 characters and the description is 25 characters. Length alone is
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Disposition:** the protocol-canonicalization requirement in `08-META-001` is complete through active Cloudflare rule `68b2d9da04134d4e9aef99e85002e36c`; every sampled HTTP URL redirects once to the identical HTTPS path/query. The finding remains partially open because raw SSR still lacks an absolute self-canonical and tracking-query targets are not canonicalized to a clean HTTPS URL.
 - **Non-impact:** no title, description, Open Graph, Twitter/X, favicon, manifest, or JSON-LD behavior changed.
+
+## Implementation tracking — ITEM-08
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `08-META-004` is complete. Every tested unknown URL remains a hard `404` and now emits exactly one `Page Not Found — MO` title plus one error-specific description; it does not canonicalize to `/`.
+- **Verification:** local build/SSR and cache-bypassed production HTML agree; hydrated browser metadata matches the raw head with no duplicate title or description. Homepage metadata remains `MO — Portfolio` / `Personal portfolio of MO.`.
+- **Still open:** canonical, Open Graph/Twitter, social image, broader favicon/platform, manifest decision, and JSON-LD items are unchanged.

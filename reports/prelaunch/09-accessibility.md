@@ -28,7 +28,7 @@ Important build observation: production asset hashes (`routes-BvKEGjiQ.css`, `st
 |---|---|---|
 | 1.1.1 Text Alternatives | Source pass; runtime partly unverified | Meaningful portfolio images have descriptive `alt`; decorative posters/icons use empty `alt`/`aria-hidden`. Video equivalence remains `09-R-02`. |
 | 1.2.1–1.2.5 Time-based Media | Risk | No `<track>` or transcript is present; media content/audio relevance is unverified (`09-R-02`). |
-| 1.3.1 Info and Relationships | Fail | Homepage starts at `h2`; tab/panel and navigation semantics are incomplete/misleading (`09-C-03`, `09-C-05`). |
+| 1.3.1 Info and Relationships | Pass for retained routes; manual AT matrix remains open | Homepage has one H1 followed by project H2s; project selectors are labeled groups. Lab-only tab semantics were retired (`09-C-03`, `09-C-05`, ITEM-08). |
 | 1.3.2 Meaningful Sequence | Source pass; manual AT unverified | DOM order is coherent; inactive stories use `inert` in source and live SSR. |
 | 1.3.3 Sensory Characteristics | Source pass | Project changes expose named buttons in addition to swipe/scroll instructions. |
 | 1.3.4 Orientation | Source pass; runtime unverified | No orientation lock found. |
@@ -351,3 +351,11 @@ These are source/SSR-level passes unless noted; direct multi-browser/AT behavior
 - **Disposition:** `09-C-01` and `09-C-02` are complete for the retained site. This does not close semantics, media alternatives, screen-reader, full keyboard traversal, or non-Chromium findings.
 - **Verification:** computed production matrices covered every story and all 32 captions at 100% plus homepage reflow at 200% text; selected/focus state contrast and forced colors passed. Production Lighthouse mobile/desktop scored Accessibility 100. Orgo modal playback reached `readyState=4`, played, paused, and closed with zero console/page errors.
 - **Release evidence:** PR [#8](https://github.com/MoIbrahim10/portfolio/pull/8), merge `1db9d57008b6db30a32178fc4e83597d76074caa`, Actions run `30700858043`, Cloudflare version `a3299de6-82a2-49d7-9815-25da9fe35f8e`.
+
+## Implementation tracking — ITEM-08
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `09-C-03`, `09-C-05`, and `09-C-06` are complete for the retained site. The lab portion of `09-C-05` was retired under ITEM-01; homepage control semantics and all listed 404 requirements are now satisfied.
+- **Semantics evidence:** SSR and hydrated accessibility trees expose one “Mo Ibrahim — Design Engineer” H1, four H2 project headings, and four labeled project groups with no false project-navigation landmarks. Unknown URLs expose `main`, one H1, explanatory copy, and a clearly named home link under the unique error title.
+- **Interaction/layout evidence:** keyboard focus and Enter activation pass; the focused recovery link has a 3 px outline. Checks at 320, 390, 768, and 1440 CSS px plus 200% text show no horizontal overflow; both recovery targets meet the 44 CSS px advisory size and the action is 48 px high.
+- **Audit/regression evidence:** production desktop/mobile Lighthouse snapshots score Accessibility 100 with zero failed audits. The homepage role block retains its exact pre-change rectangle and computed styling, and the existing Orgo modal/video remains operable with no console/page errors. Real NVDA/JAWS/VoiceOver and non-Chromium coverage remain open under the existing risks.

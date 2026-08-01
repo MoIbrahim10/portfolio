@@ -39,9 +39,10 @@ Audit-boundary exception: browser tooling auto-created exactly 10 ignored `.play
 The following must be resolved or explicitly disproved against one immutable release candidate before launch sign-off:
 
 1. `M-C01`: source/build/live identity mismatch.
-2. `M-C08` and `M-C09`: confirmed WCAG reflow, semantic, and error-page failures. `M-C07` contrast is complete under ITEM-07.
-3. `M-C10` and `M-C11`: no product test suite and uncontrolled/unverifiable release promotion.
-4. `M-R01`, `M-R02`, and `M-R03`: incomplete real-browser evidence, no Lighthouse Performance score, and unverified asset/case-study rights.
+2. `M-C10` and `M-C11`: no product test suite and uncontrolled/unverifiable release promotion.
+3. `M-R01`, `M-R02`, and `M-R03`: incomplete real-browser evidence, no Lighthouse Performance score, and unverified asset/case-study rights.
+
+`M-C08` was retired with `/video-player-lab` under ITEM-01. `M-C09` is complete under ITEM-08; neither remains a launch blocker.
 
 ## Deduplicated prioritized confirmed findings
 
@@ -151,6 +152,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 ### M-C08 — Video-lab selector fails 320 CSS px reflow
 
 - **Severity:** `P1 high`
+- **Remediation status:** `Complete — retired in production` (2026-07-31). The only affected route was removed under ITEM-01 and now returns a genuine `404`.
 - **Affected:** `/video-player-lab`; `VideoPlayerLab.module.css:86-100`.
 - **Sources:** [09-C-04](./09-accessibility.md).
 - **Evidence:** selector content retains `min-width:68rem` in a horizontal scroller; at 320 CSS px/400% zoom it requires two-dimensional panning.
@@ -164,6 +166,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 ### M-C09 — Semantic hierarchy, control relationships, and 404 accessibility are incomplete
 
 - **Severity:** `P1 high`
+- **Remediation status:** `Complete — verified in production` (2026-08-01). Lab-only semantics were retired under ITEM-01; retained homepage and unknown-route requirements were completed under ITEM-08.
 - **Affected:** `/`, `/video-player-lab`, unknown routes; `V14ExplorationLab.tsx:327-378`; `CrossAxisProjectRail.tsx:495-583`; `VideoPlayerLab.tsx:218-262`; root/router not-found defaults.
 - **Sources:** [INV-C02](./01-inventory.md), [SEO-07-004, SEO-07-005](./07-technical-seo.md), [08-META-004](./08-metadata-social-structured-data.md), [09-C-03, 09-C-05, 09-C-06](./09-accessibility.md), [FQA-005](./10-functional-interaction-qa.md), [DEP-13-009](./13-production-deployment.md), [C15-003](./15-content-assets-legal-privacy.md).
 - **Evidence:** home has no H1; lab tabs have no complete tabpanel relationship; button groups are mislabeled as navigation landmarks; 404 body is only `<p>Not Found</p>` with homepage title, no `main`, heading, or recovery link. Other scopes rated the 404 P2/P3, but master retains P1 because WCAG page-title/structure/recovery failures affect every bad URL.
@@ -173,6 +176,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** radio/button group semantics are simpler than full tabs; a minimal error page is sufficient.
 - **Effort/dependencies:** `M`, 1–2 days; copy/design, AT tests, route metadata.
 - **Objective verification:** SSR has one logical H1; accessibility tree exposes valid roles/relations; unknown URLs return 404 with error-specific title, `main`, H1, and keyboard-accessible home link.
+- **Current verification:** production `/` contains exactly one H1, “Mo Ibrahim — Design Engineer,” followed by four H2 project headings; its four project selectors are labeled groups and no longer navigation landmarks. A cache-bypassed unknown URL returns HTTP `404` with unique title/description, one `main`, one H1, and a working keyboard-accessible home link. Desktop/mobile Lighthouse snapshots score 100 in Accessibility, Best Practices, SEO, and Agentic Browsing with zero failed audits. The approved homepage heading replacement preserved exact 914×788 position, dimensions, font, margin, and color.
 
 ### M-C10 — No automated product test suite exists
 
@@ -251,6 +255,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** one site-wide image is simpler but less relevant; if lab is non-public, noindex/protect it instead of creating promotional metadata.
 - **Effort/dependencies:** `M`, 0.5–1 day plus image production; copy, route intent, canonical policy.
 - **Objective verification:** every indexable route has one unique title/description/canonical/OG object; social image returns correct MIME/dimensions; platform debuggers report no critical warnings.
+- **Current disposition:** the 404 metadata portion (`08-META-004`) is complete under ITEM-08. Homepage canonical, Open Graph/Twitter, social-image, favicon-platform, and structured-data work remains open, so `M-C15` is not closed.
 
 ### M-C16 — Media failure recovery is incomplete
 
@@ -502,6 +507,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** keep each as an independent patch for easier rollback; more release overhead.
 - **Effort/dependencies:** `S`, hours to one day; design/copy and test approval.
 - **Objective verification:** no `undefined` class; correct gesture cue; reduced-motion video paused; accessible 404 passes.
+- **Current disposition:** the bare-404 sub-item is complete under ITEM-08. The other listed quick-win defects remain separately open.
 
 ### M-O02 — Add a versioned release/surface manifest
 
@@ -773,3 +779,12 @@ Key constraints:
 - **Objective evidence:** all story text is ≥4.68:1, all 32 caption pairs ≥5.07:1, selected indicators ≥3.95:1, story focus ≥6.07:1, and gallery focus 12.01:1. Production Chromium passed 390×844, 1440×1000, 200% text, reduced motion, forced colors, and Good Invoice hover. Lighthouse mobile/desktop scored Accessibility 100 with zero failed audits.
 - **Regression evidence:** the public Orgo modal loaded the unchanged walkthrough at `readyState=4`, played to `currentTime=0.414`, paused, and closed with zero media, console, or page errors. Production serves `routes-BRnAUAbE.css` from merge `1db9d57008b6db30a32178fc4e83597d76074caa`, Actions run `30700858043`, Cloudflare version `a3299de6-82a2-49d7-9815-25da9fe35f8e`.
 - **Finding disposition:** `M-C07`, `LH-06-001`, `09-C-01`, and `09-C-02` are complete. Lighthouse Performance, semantics, assistive-technology, full keyboard traversal, and non-Chromium coverage remain separate open items.
+
+## Implementation progress — ITEM-08 complete semantic hierarchy and 404 recovery
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Implemented scope:** added a branded root-level not-found surface and root not-found routing, error-specific SSR metadata, one logical homepage H1, and labeled project-control groups. The only approved visible change is the new 404; homepage geometry and styling are unchanged.
+- **Objective evidence:** local and production unknown URLs return HTTP `404` with title `Page Not Found — MO`, one description, `main`, H1, explanatory copy, and a working home link. Production `/` returns `200`, exposes one “Mo Ibrahim — Design Engineer” H1 and four labeled project groups, and contains no `Project controls` navigation landmarks.
+- **Accessibility/responsive evidence:** 320, 390, 768, and 1440 CSS-pixel checks plus 200% text showed no horizontal overflow; recovery targets are at least 48 CSS px high. Keyboard focus/activation passed. Production desktop/mobile Lighthouse snapshots scored 100 in all four reported categories with zero failures; navigation-mode scoring is explicitly unavailable for a correct non-200 document.
+- **Regression/release evidence:** the homepage role block kept the exact pre-change 914×788 rectangle and computed font/margin/color. The retained Orgo modal played the unchanged `/portfolio/projects/orgo/walkthrough.mp4` at `readyState=4` and closed with no console/page errors. PR [#10](https://github.com/MoIbrahim10/portfolio/pull/10), merge `f5bf8335aade35e68f9c5f1981ce6343e5386560`, Actions run `30701980701`, and Cloudflare version `3ba23d32-e67d-4e21-8a78-e92fe81dcaf6` identify the deployed release.
+- **Finding disposition:** `M-C09`, `INV-C02`, `SEO-07-004`, `SEO-07-005`, `08-META-004`, `09-C-03`, `09-C-05`, `09-C-06`, `FQA-005`, and `C15-003` are complete. The 404 portion of `DEP-13-009` is complete; application `500` boundaries, observability, and correlation remain open. `M-C08` is confirmed retired under ITEM-01.
