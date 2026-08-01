@@ -63,6 +63,7 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 ### DEP-13-002 — The production edge accepts TLS 1.0 and TLS 1.1
 
 - **Severity:** `P1 high`
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original 2026-07-29 finding.
 - **Affected route/component/file and line:** TLS listener for `m0code.com:443`; Cloudflare zone setting (not represented in repository)
 - **Evidence:** Forced handshakes completed and returned `200` with `curl --tlsv1.0 --tls-max 1.0` and `curl --tlsv1.1 --tls-max 1.1`. Verbose output identified `TLSv1 / ECDHE-RSA-AES128-SHA` and `TLSv1.1 / ECDHE-RSA-AES128-SHA`. Cloudflare states TLS 1.0/1.1 are insufficient and documents setting the minimum to TLS 1.2.
 - **Reproduction steps:** Run `curl -sv --tlsv1.0 --tls-max 1.0 -o /dev/null https://m0code.com/` and repeat for TLS 1.1; observe successful handshakes and `HTTP/2 200`.
@@ -73,6 +74,7 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 - **Estimated effort:** S (<1 hour plus monitoring).
 - **Dependencies:** Cloudflare SSL/TLS setting access; traffic analytics to quantify legacy clients.
 - **Objective verification method:** TLS 1.0/1.1 forced probes fail before HTTP; TLS 1.2 and 1.3 probes succeed; a public TLS scanner reports a minimum of TLS 1.2.
+- **Remediation evidence:** Cloudflare Edge Certificates persists `Minimum TLS Version: TLS 1.2` after reload, with TLS 1.3 still enabled. Forced TLS 1.0/1.1 requests now fail before HTTP with `curl` exit 35 and a protocol-version alert; forced TLS 1.2 and OpenSSL TLS 1.3 succeed with certificate verification. SSL Labs engine 2.4.2 graded every advertised IPv4/IPv6 endpoint `A`, with no warnings and only TLS 1.2/1.3.
 
 ### DEP-13-003 — Browser hardening and privacy-control headers are absent
 
@@ -392,7 +394,7 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 ## Not Tested / Inaccessible
 
 - No deliberate production `500` was induced. Actual exception status/body, server/client boundary behavior, retry semantics, and alert delivery remain unverified.
-- During the original audit, Cloudflare dashboard/API settings were inaccessible. ITEM-02 later inspected and changed only Redirect Rules and Response Header Transform Rules, and inspected the managed-HSTS duration choices. SSL mode, minimum TLS, certificate notifications, WAF/bot/rate-limit rules, Cache/Compression Rules, Cache Reserve, tiered cache, DNSSEC workflow, logging, alerts, analytics, NEL control, and account audit logs remain unverified.
+- During the original audit, Cloudflare dashboard/API settings were inaccessible. ITEM-02 later inspected Redirect Rules, Response Header Transform Rules, and managed-HSTS duration choices; ITEM-03 inspected and changed the zone minimum TLS setting only. SSL mode, certificate notifications, WAF/bot/rate-limit rules, Cache/Compression Rules, Cache Reserve, tiered cache, DNSSEC workflow, logging, alerts, analytics, NEL control, and account audit logs remain unverified.
 - The Cloudflare API token’s scopes, resource restrictions, age, rotation, and secret value were not inspected. Least privilege is unverified.
 - GitHub branch protection/rulesets could not be enabled on the current private-repository plan according to the read-only API response; no write was attempted.
 - No rollback, version override, canary, cache purge, DNS change, certificate change, alert test, or incident drill was performed.
@@ -415,4 +417,12 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Edge configuration:** active rule IDs `68b2d9da04134d4e9aef99e85002e36c` (HTTP wildcard → HTTPS wildcard, `308`, preserve query) and `1bf3a525052b4554b7060662c14b2f8d` (HTTPS apex only, set `Strict-Transport-Security: max-age=300`). No Worker source, repository deployment configuration, DNS, certificate, cache, package, secret, or lockfile was changed.
 - **Acceptance evidence:** `/`, `/video-player-lab?audit=1`, `/assets/index-CtbOey3K.js?audit=1`, POST `/contact?from=audit`, and `/portfolio/projects/orgo/walkthrough.mp4?audit=2` redirect once with identical path/query. HTTPS `/`, 404, JS, and MP4 responses return expected statuses and HSTS; cache-busted HTTP responses omit HSTS. TLS 1.2 and TLS 1.3 remain healthy.
-- **Regression evidence:** browser QA loaded the current homepage and played the retained Orgo MP4 at `readyState=4`, duration `4.534`, `error=null`, with no console errors/warnings. `DEP-13-001` is closed; `DEP-13-002` and the intentional HSTS-duration ramp remain open.
+- **Regression evidence:** browser QA loaded the current homepage and played the retained Orgo MP4 at `readyState=4`, duration `4.534`, `error=null`, with no console errors/warnings. `DEP-13-001` is closed; `DEP-13-002` is now closed under ITEM-03, while the intentional HSTS-duration ramp remains open.
+
+## Implementation tracking — ITEM-03
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Edge configuration:** the Cloudflare zone-level Edge Certificates minimum changed from `TLS 1.0 (default)` to `TLS 1.2`; dashboard reload confirms it persists, and TLS 1.3 remains enabled. No repository source, dependencies, lockfile, Worker, DNS, certificate, redirect, HSTS, cache, or deployment configuration changed.
+- **Protocol acceptance:** forced TLS 1.0/1.1 probes fail before HTTP with `curl` exit 35 and `tlsv1 alert protocol version`; forced TLS 1.2 returns `200` with certificate verification; OpenSSL negotiates TLS 1.3 with verification `OK`.
+- **Independent verification:** SSL Labs engine 2.4.2 completed across `172.67.142.115`, `104.21.95.2`, `2606:4700:3037::6815:5f02`, and `2606:4700:3032::ac43:8e73`; all four received grade `A`, no warnings, and reported only TLS 1.2/1.3.
+- **Regression evidence:** `/` is `200`, the retired lab path is `404`, the current JS asset is `200`, and the retained Orgo MP4 is `200 video/mp4`. Browser QA played that MP4 at `readyState=4`, duration `4.534`, `paused=false`, `error=null`, with no console errors. `DEP-13-002` is closed.
