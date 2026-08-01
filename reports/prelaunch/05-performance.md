@@ -3,7 +3,7 @@
 Audit date: 2026-07-29
 Repository: `/Users/mo/Documents/porfolio` at `ae1ec7cb0b1162be7c0aa01214ed5146f2321d7a`
 Production: `https://m0code.com`
-Verdict: **not launch-ready until the production artifact is reconciled with the reviewed build and the live `/` media overfetch is removed.**
+Verdict: **the historical live `/` media-overfetch blocker is complete; launch readiness remains held by separate performance evidence, caching, accessibility, release-control, and rights findings.**
 
 ## Environment and method
 
@@ -47,6 +47,7 @@ No buffered `longtask` entries were emitted in these observations. This is **not
 
 ### PERF-05-001 — P1 high — Live `/` deploy overfetches inactive video and multi-megabyte portrait assets
 
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original 2026-07-29 finding.
 - **Affected:** `https://m0code.com/`; live SSR/client artifact; current replacement logic at `src/components/v14-exploration-lab/CrossAxisProjectRail.tsx:686-720`, `:950-990`, and `src/components/v14-exploration-lab/V14ExplorationLab.tsx:17-24`, `:230-316`.
 - **Evidence:** Live SSR contains 16 `<video>` elements and 17 `<img>` elements. A repeat network capture requested all 16 videos; response `Content-Length` values totaled 10,190,739 bytes (9.72 MiB). Two initially rendered portrait PNGs added 3,871,799 bytes. Activating the portrait subsequently downloaded `mo-avatar-portrait-05.png` (2,076,391 B), `-06.png` (1,950,214 B), and `-01.png` (2,020,360 B). The live response therefore exposes roughly 13.45 MiB across video plus the two initial portraits before JS/CSS/HTML and continued portrait cycling. In contrast, programmatic SSR of the checked-in `dist/` emits one `<video>` on `/`, preloads a 16,890-byte WebP poster, and current source uses 31–39 KB `*-640.webp` portraits. Live asset hashes also differ from `dist/`; live `/` CSS is 98,266 B raw versus 52,061 B in `dist/`.
 - **Reproduction:** Open `/` with Network logging; count `video` requests. Inspect response headers for requests 9–24 and sum `Content-Length`. Click “Mo — reveal portrait,” wait for the cycle, and inspect the newly loaded avatar files. Compare with `node --input-type=module` importing `dist/server/server.js` and calling `default.fetch(new Request("https://local.test/"))`.
@@ -57,6 +58,7 @@ No buffered `longtask` entries were emitted in these observations. This is **not
 - **Estimated effort:** 0.5–1 day including preview validation and rollback preparation.
 - **Dependencies:** Deployment approval, release owner, current build verification, and coordination with functional/responsive audits.
 - **Objective verification:** Fresh cache-disabled desktop and emulated-mobile Network traces show one or fewer MP4 requests before interaction, zero portrait requests before reveal, every revealed portrait ≤40 KB WebP, no inactive-slide MP4 bodies, and live HTML/assets match the approved build hashes.
+- **Current verification:** production and the current build match at 1 video, 32 images, 32 full-screen triggers, the sole initial Orgo MP4, and the three root route asset hashes. Cache-disabled Chromium desktop/mobile plus Slow 3G mobile each requested exactly one MP4, no pre-reveal portraits, and WebP-only initial images; observed initial media files total 401,726 B desktop and 490,906 B mobile. Portrait reveal loaded only optimized `-640.webp` files; direct production GETs verified all six at 31,426–39,254 B. All 77 referenced production assets returned `200` with expected MIME. Unthrottled desktop/mobile traces measured LCP 492/311 ms and CLS 0. The five-test matrix produced no request, console, or page failures; the retained Orgo viewer remained healthy.
 
 ### PERF-05-002 — P2 medium — Static delivery forces revalidation on every repeat visit
 
@@ -151,8 +153,8 @@ No buffered `longtask` entries were emitted in these observations. This is **not
 
 ## Not tested / blocked
 
-- DevTools cold traces, cache-disabled traces, filmstrips, LCP breakdown, render-blocking insight, dependency graph, Speed Index, trace-derived TBT, CPU profile, heap snapshot, and memory-leak loops: blocked by the Chrome DevTools MCP fixed-profile collision.
-- Slow 3G/Fast 3G/4G, 4× CPU throttling, true mobile UA/touch emulation, packet loss, and offline: unavailable in the fallback browser tooling used here.
+- Cold desktop/mobile DevTools traces, LCP breakdown, render-blocking, dependency graph, cache-disabled Chromium media-budget runs, and one Slow 3G mobile media-budget run were completed under ITEM-06. Filmstrips, Speed Index, trace-derived TBT, CPU profile, heap snapshot, and memory-leak loops remain untested.
+- Fast 3G/4G, 4× CPU throttling, true mobile UA/touch emulation, packet loss, and offline remain untested.
 - Field CrUX/RUM p75 LCP, INP, and CLS: no dataset/dashboard access. No field INP claim is made.
 - A browser-served current `dist/` preview: not started to avoid any repository/runtime write. Its SSR output and artifacts were inspected directly, but browser hydration/network behavior still requires preview verification.
 - Video codec/profile/bitrate and decode-power analysis: `ffprobe` was unavailable. MP4 fast-start ordering was tested independently.
@@ -164,3 +166,9 @@ No buffered `longtask` entries were emitted in these observations. This is **not
 - **Disposition:** all `/video-player-lab` measurements and bundle rows above are historical and no longer part of the deployed launch matrix. Site-wide caching, homepage media, field CWV, and stable Lighthouse Performance evidence remain open.
 - **Verification:** the rebuilt client/server output has no lab-specific JS/CSS chunk or lab text; `/` still SSRs its retained video; the retained player/data/media hashes are unchanged and browser QA loaded the Orgo video without media or console errors.
 - **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; production serves the new root chunks, returns `404` for the lab path, and loads the retained Orgo MP4 successfully. No new CWV or Lighthouse claim is inferred.
+
+## Implementation tracking — ITEM-06
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `PERF-05-001` is complete. Initial media is limited to one Orgo MP4, portraits do not load before reveal, and revealed portraits stay below 40 KB WebP. `PERF-05-002`, performance-score/field-CWV evidence, CPU/bundle analysis, and responsive-image opportunities remain open.
+- **Verification:** 5/5 cache-disabled browser scenarios passed across desktop, mobile, Slow 3G, portrait reveal, and Orgo playback; two DevTools traces reported LCP 492/311 ms and CLS 0. SSR/build/live hashes and counts match, and all 77 referenced assets pass status/MIME checks. No runtime source change was required.

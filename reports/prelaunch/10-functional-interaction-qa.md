@@ -42,6 +42,7 @@ Release posture: **not functionally cleared**. No source, dependency, build, con
 ### FQA-001 — Production is behind the candidate and lacks eight candidate assets
 
 - **Severity:** P1 high
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original 2026-07-29 finding.
 - **Affected:** `/`; `src/components/v14-exploration-lab/V14ExplorationLab.tsx:17`; `src/components/v14-exploration-lab/CrossAxisProjectRail.tsx:370`; production asset namespace
 - **Evidence:** Candidate SSR contains 32 full-screen triggers; production contains 31. The candidate-only trigger is `View MO identity mark animation full screen`. Production asset hashes differ from `dist` (`index-BTo1nZ1V.js` vs. `index-COTNhO9J.js`; `routes-DAvGpumd.js` vs. `routes-BXeiZRtJ.js`). Production returns `404` for all six `/avatar/mo-avatar-portrait-0N-640.webp` files and both `/portfolio/projects/identity/logo-animation-poster.webp` and `.mp4`; all eight exist in `public` and `dist/client`. Current production still references older PNG portraits, so the present page does not break on those six 404s.
 - **Reproduction:** Compare the count/diff of `aria-label="View … full screen"` in live SSR and candidate SSR; GET the eight candidate URLs on `m0code.com`; compare live and candidate asset manifest names.
@@ -52,6 +53,7 @@ Release posture: **not functionally cleared**. No source, dependency, build, con
 - **Estimated effort:** S (deployment verification), M if pipeline changes are required.
 - **Dependencies:** Scope 13 deployment/rollback plan; browser availability; final approved candidate hash.
 - **Objective verification:** Production route assets match the approved `dist`; all 77 current URLs return `200` with correct MIME; production SSR exposes 32 triggers; full browser smoke passes after a cold-cache deploy.
+- **Current verification:** production and the rebuilt current artifact expose identical three root asset hashes, 1 video, 32 images, 32 full-screen triggers, and the same sole initial Orgo MP4. All 77 referenced public URLs return `200` with expected MIME. Cache-disabled desktop/mobile, Slow 3G mobile, portrait reveal, and Orgo modal tests passed 5/5 with no request, console, or page errors; the modal video reached `readyState=4`, duration `4.534`, `error=null`.
 
 ### FQA-002 — Live links for projects inside “Selected Experiments” are not rendered
 
@@ -213,7 +215,7 @@ Release posture: **not functionally cleared**. No source, dependency, build, con
 
 ## False Positives
 
-- The six current WebP portrait 404s do **not** break the currently deployed page: live SSR is an older build that references the six PNG portraits, and those PNGs return `200`. They remain evidence of production/candidate drift.
+- The six WebP portrait `404`s were historical drift evidence, not breakage in the older deployed page. ITEM-06 now confirms all six optimized portrait URLs return production `200` with correct MIME and the current page requests them only after reveal.
 - The 16 SSR copies of project selector buttons are not 16 simultaneous active control sets: inactive story articles receive `inert`; runtime behavior still needs browser confirmation.
 - A rejected inline-gallery autoplay request is handled by `ResilientVideo` and retains its poster; it is not automatically a blank-media defect. The full-screen `ViewerVideo` lacks that protection.
 - Different response hashes across repeated SSR GETs are explained by streamed route payload values; status and response byte size were stable.
@@ -221,17 +223,18 @@ Release posture: **not functionally cleared**. No source, dependency, build, con
 
 ## Passed Checks
 
-- Candidate and production return `200` for both declared routes; direct loading of `/video-player-lab` works.
+- Current production returns `200` for `/`; the retired `/video-player-lab` route correctly returns `404` under ITEM-01.
 - Candidate and production return a real HTTP `404` for an unknown route rather than a `200` soft 404.
 - All 77 current source-referenced media/SVG paths exist in `public` and `dist/client`.
+- All 77 current source-referenced media/SVG paths return production `200` with the expected MIME type.
 - Every media video in the candidate has its derived WebP poster in the candidate artifact.
 - All eight unique HTTPS destinations currently surfaced in production returned `200` during the audit; home/self hrefs also resolve to `200`.
-- Candidate SSR exposes exactly 32 full-screen media buttons: 15 image chapters and 17 video chapters. Production exposes 31, with the exact drift recorded above.
-- `/video-player-lab` SSR exposes all 10 named tabs, a single selected tab (`player-tab-7` / Frame Count), play control, range control, poster, and video source.
+- Current build and production SSR each expose exactly 32 full-screen media buttons and identical root asset hashes.
+- Historical 2026-07-29 `/video-player-lab` SSR exposed all 10 named tabs and its player controls; ITEM-01 retired that route and implementation.
 - Source contains modal close button, backdrop close, Escape handling, focus trapping, body scroll lock, and post-exit trigger focus restoration.
-- Source contains wrapping arrow-key tab selection in the video lab and bounded Arrow/Home/End navigation in the project rail.
+- Current source contains bounded Arrow/Home/End navigation in the project rail; the retired lab previously contained wrapping tab selection.
 - Inline gallery video code retains a poster on autoplay block/error and avoids autoplay under reduced motion; modal playback is also suppressed under reduced motion.
-- Touch-oriented CSS explicitly keeps both player control strips visible under `@media (hover: none)`; actual devices remain untested.
+- Touch-oriented gallery CSS keeps retained controls visible under `@media (hover: none)`; actual devices remain untested.
 - The schedule/email/social checks did not initiate any external action.
 
 ## Not Tested
@@ -241,8 +244,8 @@ Release posture: **not functionally cleared**. No source, dependency, build, con
 - Project dots, horizontal wheel/swipe, arrow/Home/End changes, vertical story scroll, custom scrollbar click/drag/keys, snap settling, and scroll restoration.
 - Portrait hover/focus/tap/cycle/hide behavior and logo hover/click animation completion.
 - All 10 video-lab tab clicks, wrapping arrow navigation, autoplay, play/pause, seek, duration/time updates, end/loop, ready/error/poster transition, and browser Back/Forward.
-- Browser fresh/repeat/cache-disabled state, Slow 3G, offline, failed/partial media, JavaScript-disabled visual behavior, reduced-motion emulation, and update/recovery behavior.
-- Console errors, network waterfall failures, React hydration warnings/mismatches, uncaught promise errors, memory growth, and CPU behavior.
+- Repeat-visit persistence, offline, failed/partial media, update/recovery, memory growth, and CPU behavior. ITEM-06 completed cache-disabled desktop/mobile and one Slow 3G initial-media run; ITEM-05 completed JavaScript-disabled and reduced-motion coverage.
+- Exhaustive console/network/hydration coverage across every state remains untested; focused ITEM-06 flows produced no request, console, page, or media errors.
 - Cross-browser and breakpoint execution; scope 11 owns the full responsive/device matrix.
 - 500/error-boundary behavior because safe read-only requests cannot induce a server fault and no injectable test boundary exists.
 - `mailto:` launch, calendar booking UI, external social/project clicks, or any action that could change external state.
@@ -254,3 +257,9 @@ Release posture: **not functionally cleared**. No source, dependency, build, con
 - **Focused regression evidence:** opened the homepage Orgo full-screen viewer; one video used `/portfolio/projects/orgo/walkthrough.mp4`, reached `readyState=4`, reported duration `4.534`, had `error=null`, and produced no console errors/warnings. Retained implementation/data/media hashes are unchanged.
 - **Route evidence:** production `/video-player-lab` renders `Not Found` and returns `404` without redirect; no lab source/build reference remains.
 - **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; the retained viewer check above passed on the public origin with no console errors/warnings.
+
+## Implementation tracking — ITEM-06
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `FQA-001` is complete. Production matches the rebuilt artifact and all previously missing candidate assets are healthy. Broader interaction coverage, failure-state behavior, and the dedicated automated suite opportunity remain open.
+- **Verification:** exact SSR/root-asset parity, 77/77 production status/MIME passes, and a 5/5 browser matrix covering desktop, mobile, Slow 3G, portrait reveal, and Orgo playback. No application or player source changed.
