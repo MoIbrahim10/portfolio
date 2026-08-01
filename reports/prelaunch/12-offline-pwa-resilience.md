@@ -36,7 +36,7 @@ Methods and evidence:
 | Cache-disabled document | HTTP 200 | HTTP 200 | Confirmed using `Cache-Control: no-cache` and `Pragma: no-cache` |
 | Existing local production worker | HTTP 200, 59,915-byte SSR | HTTP 200, 6,280-byte SSR | Confirmed by in-memory worker invocation |
 | Missing route | HTTP 404, generic `Not Found` HTML | N/A | Confirmed live and in existing local worker |
-| JavaScript disabled / main JS blocked | Live home is serialized hidden; fails closed | SSR content remains, but tabs/player controls cannot operate | Home failure confirmed from response state; visual browser test unavailable |
+| JavaScript disabled / main JS blocked | Core identity, work, and contact content remains visible | Retired route; not applicable | Passed production Chromium desktop/mobile in both failure modes under ITEM-05 |
 | CSS blocked | Semantic SSR remains in HTML | Semantic SSR remains in HTML | Static/HTTP evidence; visual browser test unavailable |
 | Offline first visit | No application fallback | No application fallback | Manifest/SW/offline endpoints are 404; browser test unavailable |
 | Offline repeat visit | Network-independent replay not guaranteed | Network-independent replay not guaranteed | Assets require immediate revalidation; browser test unavailable |
@@ -53,6 +53,7 @@ Methods and evidence:
 ### OFF-12-001 — Live home fails closed when hydration does not start
 
 - **Severity:** `P1 high`
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original 2026-07-29 finding.
 - **Affected:** `https://m0code.com/`; live deployed SSR output. The current repository uses CSS entrance classes at `src/components/v14-exploration-lab/V14ExplorationLab.tsx:333-366` and reduced-motion overrides at `src/components/v14-exploration-lab/V14ExplorationLab.module.css:354-395`; the problematic inline state was not found in the existing local `dist` home article.
 - **Evidence:** At 2026-07-29 15:15–15:18 UTC, the live home response serialized `<article ... style="filter:blur(4px);opacity:0;transform:translateY(14px)">`. The visibility transition depends on `/assets/index-BTo1nZ1V.js`. The current local worker instead serializes `<article aria-label="Mo Ibrahim portfolio" ...>` without a hidden article style.
 - **Reproduction:** Disable JavaScript or block `/assets/index-BTo1nZ1V.js`, then load `https://m0code.com/`. Independently, `curl -sS https://m0code.com/` and inspect the opening portfolio `<article>` tag.
@@ -63,6 +64,7 @@ Methods and evidence:
 - **Estimated effort:** `S` (roughly 0.5 day including regression checks).
 - **Dependencies:** Production artifact reconciliation; scope 10 interaction QA; scope 14 release gate; scope 13 deployment/rollback ownership.
 - **Objective verification:** With JavaScript disabled and with the main module URL blocked separately, both mobile and desktop renders show the bio, project content, and contact links within one second; computed opacity on the portfolio article is `1`; no element containing primary content has `visibility:hidden` or an equivalent transform/clip hiding it.
+- **Current verification:** four production Chromium resilience runs passed: JavaScript disabled and `/assets/index-DWNzLafz.js` blocked, each at desktop 1440×1000 and mobile 390×844. All runs retained visible bio, Orgo project heading, and contact action; the article computed to `opacity: 1`, `visibility: visible`, `filter: none`, and `transform: none`. Normal hydration and reduced motion also produced no page errors. No runtime change was required.
 
 ### OFF-12-002 — Full-screen video failure has no fallback or actionable state
 
@@ -207,6 +209,7 @@ Methods and evidence:
 - Live `/` and `/video-player-lab` return SSR HTML with status 200; a fabricated route returns status 404.
 - The existing local worker returns 200 for both routes and 404 for the fabricated route.
 - Current local `/` SSR does not serialize the whole portfolio article at opacity 0.
+- Current production `/` keeps primary content visible in Chromium desktop/mobile with JavaScript disabled and with the main module blocked.
 - Both routes expose meaningful semantic text in SSR; `/video-player-lab` remains readable without hydration even though controls cannot function.
 - Current gallery video cards preserve a poster when reduced motion is requested or video playback fails.
 - The lab player keeps a poster `<picture>` underneath the video and marks failed playback as not ready.
@@ -219,7 +222,7 @@ Methods and evidence:
 ## Not Tested
 
 - Actual browser fresh/repeat/offline reloads, Cache Storage contents, active service-worker registrations, storage estimates/eviction, install prompt, and update lifecycle: no in-app browser was available.
-- Browser DevTools request interception for failed main JS, route JS, CSS, document, images, and video.
+- Browser request interception for route JS, CSS, document, images, and video. Main-JS interception was completed under ITEM-05.
 - True Slow 3G/latency/loss behavior, CPU/memory under stalls, and mobile radio transitions; only byte-rate throttling was performed.
 - Safari, Firefox, Chromium, iOS, and Android differences in offline navigation, autoplay, media ranges, and cache revalidation.
 - Screen-reader announcements and keyboard behavior of newly failed/stalled states; the current viewer has no such state to test.
@@ -234,3 +237,9 @@ Methods and evidence:
 - **Disposition:** all lab-specific resilience rows and references are retired from the deployed release. Homepage media recovery, offline navigation, service-worker/PWA policy, and failure boundaries remain open; the candidate/live drift premise is resolved for this release.
 - **Verification:** the retired path is a real local `404`, the new build has no lab route/chunk, and the retained homepage video path, source code, poster, and MP4 are unchanged; focused browser QA loaded that video without media or console errors.
 - **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; deployed route and retained-player checks passed. No offline/PWA success is inferred from this route removal.
+
+## Implementation tracking — ITEM-05
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `OFF-12-001` is complete. The homepage fails open to readable SSR when JavaScript is unavailable or its current main module is blocked. Offline navigation, resource-specific failures, media recovery, and PWA policy remain open.
+- **Verification:** four desktop/mobile production failure-mode runs retained visible identity, work, and contact content with article `opacity: 1`, `visibility: visible`, `filter: none`, and `transform: none`. Normal/reduced-motion checks and the retained Orgo viewer also passed; no runtime source change was made.

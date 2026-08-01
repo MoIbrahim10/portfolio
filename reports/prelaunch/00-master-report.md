@@ -39,7 +39,7 @@ Audit-boundary exception: browser tooling auto-created exactly 10 ignored `.play
 The following must be resolved or explicitly disproved against one immutable release candidate before launch sign-off:
 
 1. `M-C01`: source/build/live identity mismatch.
-2. `M-C05` and `M-C06`: production no-JavaScript blank page and extreme media overfetch. `M-C02` and `M-C03` transport findings are complete.
+2. `M-C06`: production extreme media overfetch. `M-C02` through `M-C05` are complete.
 3. `M-C07`, `M-C08`, and `M-C09`: confirmed WCAG contrast, reflow, semantic, and error-page failures.
 4. `M-C10` and `M-C11`: no product test suite and uncontrolled/unverifiable release promotion.
 5. `M-R01`, `M-R02`, and `M-R03`: incomplete real-browser evidence, no Lighthouse Performance score, and unverified asset/case-study rights.
@@ -107,7 +107,8 @@ The following must be resolved or explicitly disproved against one immutable rel
 ### M-C05 — Live home is visually blank when JavaScript/hydration fails
 
 - **Severity:** `P1 high`
-- **Affected:** live `/`; deployed historical home entrance state; current replacement near `V14ExplorationLab.tsx:327-367`.
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original 2026-07-29 finding.
+- **Affected:** live `/`; deployed historical home entrance state; current implementation at `src/components/v14-exploration-lab/V14ExplorationLab.tsx:327-367` and `V14ExplorationLab.module.css:354-395`.
 - **Sources:** [SEO-07-R02](./07-technical-seo.md), [09-C-07](./09-accessibility.md), [OFF-12-001](./12-offline-pwa-resilience.md).
 - **Evidence:** live SSR serializes the primary article with `opacity:0`, blur, and transform; no no-script fallback exists. Current source/dist no longer emits the same hidden state.
 - **Reproduction:** block the live main JS module or disable JavaScript and inspect computed visibility/SSR article style.
@@ -116,6 +117,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** remove the page-level entrance for maximum resilience; `<noscript>` is only partial containment because it misses runtime hydration failure.
 - **Effort/dependencies:** `S–M`, 0.5–1 day plus release verification; M-C01, motion QA, browser tests.
 - **Objective verification:** core content is visible within one second with JS disabled and main module blocked, while normal/reduced-motion modes retain approved behavior.
+- **Current verification:** passed 6/6 production Chromium scenarios against deployed source revision `3c690b699ae5848fdabfea4aa3ec2d6e16c0f1f2`. Desktop (1440×1000) and mobile (390×844) both showed the bio, Orgo project heading, and contact action with JavaScript disabled and with the current main module `/assets/index-DWNzLafz.js` explicitly blocked. In all four failure-mode runs, the portfolio article computed to `opacity: 1`, `visibility: visible`, `filter: none`, and `transform: none`; screenshots were captured and visually reviewed. Normal hydration and reduced-motion runs produced no page errors. The retained Orgo viewer played at `readyState=4`, duration `4.534`, `error=null`. No runtime source change was required because the current production artifact already uses the visible-by-default CSS implementation.
 
 ### M-C06 — Live home overfetches all inactive videos and multi-megabyte portraits
 
@@ -627,7 +629,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - NVDA, JAWS, VoiceOver, TalkBack, rotor/landmark behavior, live announcements, actual modal focus/inert interoperability, and forced-colors runtime were not exercised.
 - 200% text resize, 320 CSS px/400% zoom, text-spacing overrides, system font scaling, dark/contrast modes, and print were not comprehensively rendered.
 - Cold cache-disabled mobile Lighthouse Performance, Speed Index, trace-derived TBT, five-run variability, CPU/network throttling, packet loss, and field CrUX/RUM p75 data are absent.
-- Full JavaScript-disabled/browser-blocked candidate comparison, offline first/repeat navigation, Slow 3G, CSS/chunk/image/video failure injection, media stalls, and mixed-version deployment recovery remain incomplete.
+- JavaScript-disabled and blocked-main-module Chromium coverage is complete for desktop/mobile. Offline first/repeat navigation, Slow 3G, CSS/route-chunk/image/video failure injection, media stalls, non-Chromium behavior, and mixed-version deployment recovery remain incomplete.
 - MP4 duration/audio/codec/frame/caption/transcript/flash analysis and every asset’s visual/rightsholder review were not completed.
 - Search Console, Bing Webmaster Tools, selected canonicals, index coverage, URL Inspection, social preview debuggers, and physical favicon/install rendering were unavailable.
 - Cloudflare dashboard settings/token scopes/WAF/logs/alerts/analytics/vars, GitHub security consoles, production source-map state, DNS change safety, multi-region availability, and historical uptime were inaccessible.
@@ -744,3 +746,11 @@ Key constraints:
 - **Objective evidence:** rotating 32-character nonces match every SSR script on HTML `200` and `404`; no report-only header remains. Exact edge headers pass on HTML, controlled JSON `500`, JS, CSS, SVG, and Orgo MP4. Browser home/hydration, modal, active Orgo playback (`readyState=4`, `duration=4.534`, `paused=false`, `error=null`), and 404 checks emit zero warning/error logs.
 - **Documented boundaries:** the Cloudflare-managed `text/plain` `/robots.txt` bypasses Response Header Transforms. The audit browser blocks synthetic test/data iframe harnesses; frame refusal is verified from enforced `frame-ancestors 'none'` plus `X-Frame-Options: DENY` rather than a rendered harness.
 - **Finding disposition:** `M-C04`, `SEC-002`, `SEC-O01`, and `DEP-13-003` are complete. Rollback is redeploying the last approved application version and disabling Cloudflare rule `fad9352426bf49b0b7f2916ed66a5d5d` if a verified regression appears.
+
+## Implementation progress — ITEM-05 verify no-JavaScript resilience
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Implemented scope:** evidence and tracking only. The deployed homepage already renders its identity, work, and contact content visibly from SSR and uses CSS-only entrance motion; no application, dependency, configuration, lockfile, deployment, or video-player change was necessary.
+- **Objective evidence:** a 6/6 production Chromium matrix passed. Desktop (1440×1000) and mobile (390×844) passed with JavaScript disabled and with `/assets/index-DWNzLafz.js` blocked; the article computed to `opacity: 1`, `visibility: visible`, `filter: none`, and `transform: none`, while the bio, Orgo heading, and contact action retained visible geometry.
+- **Regression evidence:** normal hydration and reduced-motion loads had no page errors. Reduced motion kept the initial video paused; the normal-flow Orgo viewer played with `readyState=4`, duration `4.534`, `error=null`.
+- **Finding disposition:** `M-C05`, `SEO-07-R02`, `09-C-07`, and `OFF-12-001` are complete. Offline navigation, other resource-failure modes, non-Chromium engines, and assistive-technology coverage remain separately open. No rollback is applicable because runtime behavior was not changed.
