@@ -104,7 +104,8 @@ test('Orgo video viewer controls, Escape, and focus return work', async ({
   const trigger = page.getByRole('button', {
     name: `View ${orgoCaption} full screen`,
   })
-  await trigger.click()
+  await trigger.focus()
+  await page.keyboard.press('Enter')
 
   const dialog = page.getByRole('dialog')
   const closeButton = dialog.getByRole('button', {
@@ -125,6 +126,8 @@ test('Orgo video viewer controls, Escape, and focus return work', async ({
     name: /^(Play|Pause) video$/,
   })
   await expect(playbackButton).toBeVisible()
+  await video.hover()
+  await expect(playbackButton).toHaveCSS('pointer-events', 'auto')
   await playbackButton.click()
   await expect(dialog.getByLabel('Video progress')).toBeEnabled()
 
