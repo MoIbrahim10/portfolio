@@ -29,7 +29,7 @@ export default defineConfig({
         ['line'],
         ['html', { open: 'never', outputFolder: 'playwright-report' }],
       ],
-  retries: process.env.CI ? 1 : 0,
+  retries: 0,
   testDir: './tests/e2e',
   timeout: 30_000,
   use: {
