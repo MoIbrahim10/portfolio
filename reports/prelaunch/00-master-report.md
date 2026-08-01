@@ -8,7 +8,7 @@ Production origin: `https://m0code.com`
 
 ## Executive audit status
 
-**Launch recommendation: HOLD.** No `P0 blocker` was confirmed, but the evidence contains multiple unresolved `P1 high` findings and P1 unknowns. In particular, the reviewed local HEAD, existing `dist`, and live production are not one release; TLS 1.0/1.1 are accepted; production can render the home page blank without hydration; material WCAG failures are confirmed; production release controls and behavioral tests are inadequate; and asset-rights evidence is unavailable. Approval would therefore be approval of an unverified release, not of a single tested launch candidate. The plaintext-HTTP/HSTS blocker `M-C02` was remediated and production-verified on 2026-08-01.
+**Launch recommendation: HOLD.** No `P0 blocker` was confirmed, but the evidence contains multiple unresolved `P1 high` findings and P1 unknowns. In particular, the reviewed local HEAD, existing `dist`, and live production are not one release; production can render the home page blank without hydration; material WCAG failures are confirmed; production release controls and behavioral tests are inadequate; and asset-rights evidence is unavailable. Approval would therefore be approval of an unverified release, not of a single tested launch candidate. The plaintext-HTTP/HSTS blocker `M-C02` and legacy-TLS blocker `M-C03` were remediated and production-verified on 2026-08-01.
 
 The live production site is older/different than both local HEAD and the existing `dist`. Findings that apply only to live or only to the candidate are labeled accordingly; missing candidate assets on the older live deployment are not treated as current broken-media requests.
 
@@ -39,11 +39,10 @@ Audit-boundary exception: browser tooling auto-created exactly 10 ignored `.play
 The following must be resolved or explicitly disproved against one immutable release candidate before launch sign-off:
 
 1. `M-C01`: source/build/live identity mismatch.
-2. `M-C03`: legacy TLS. `M-C02` plaintext HTTP/HSTS is complete.
-3. `M-C05` and `M-C06`: production no-JavaScript blank page and extreme media overfetch.
-4. `M-C07`, `M-C08`, and `M-C09`: confirmed WCAG contrast, reflow, semantic, and error-page failures.
-5. `M-C10` and `M-C11`: no product test suite and uncontrolled/unverifiable release promotion.
-6. `M-R01`, `M-R02`, and `M-R03`: incomplete real-browser evidence, no Lighthouse Performance score, and unverified asset/case-study rights.
+2. `M-C05` and `M-C06`: production no-JavaScript blank page and extreme media overfetch. `M-C02` and `M-C03` transport findings are complete.
+3. `M-C07`, `M-C08`, and `M-C09`: confirmed WCAG contrast, reflow, semantic, and error-page failures.
+4. `M-C10` and `M-C11`: no product test suite and uncontrolled/unverifiable release promotion.
+5. `M-R01`, `M-R02`, and `M-R03`: incomplete real-browser evidence, no Lighthouse Performance score, and unverified asset/case-study rights.
 
 ## Deduplicated prioritized confirmed findings
 
@@ -78,6 +77,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 ### M-C03 — Production accepts TLS 1.0 and TLS 1.1
 
 - **Severity:** `P1 high`
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original 2026-07-29 finding.
 - **Affected:** `m0code.com:443`; Cloudflare zone TLS minimum.
 - **Sources:** [DEP-13-002](./13-production-deployment.md).
 - **Evidence:** forced TLS 1.0 and 1.1 handshakes succeeded and returned `200`; TLS 1.2/1.3 also work.
@@ -87,6 +87,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** measure legacy-client traffic first if obsolete-client support is an explicit requirement.
 - **Effort/dependencies:** `S`, under 1 hour plus monitoring; Cloudflare SSL/TLS access.
 - **Objective verification:** TLS 1.0/1.1 fail before HTTP; TLS 1.2/1.3 succeed; independent scanner reports minimum 1.2.
+- **Current verification:** Cloudflare Edge Certificates persists `Minimum TLS Version: TLS 1.2`. Forced TLS 1.0/1.1 `curl` probes now fail before HTTP with exit 35 and a protocol-version alert; forced TLS 1.2 and OpenSSL TLS 1.3 handshakes succeed with certificate verification. SSL Labs engine 2.4.2 graded all four advertised IPv4/IPv6 endpoints `A`, with no warnings and only TLS 1.2/1.3.
 
 ### M-C04 — Browser security/privacy headers are absent
 
@@ -722,4 +723,13 @@ Key constraints:
 - **Implemented scope:** Cloudflare Single Redirect rule `68b2d9da04134d4e9aef99e85002e36c` (`Enforce HTTPS (308)`) redirects `http://*` to `https://${1}` with status `308` and query preservation. Response Header Transform rule `1bf3a525052b4554b7060662c14b2f8d` (`Staged HSTS (300 seconds)`) sets `Strict-Transport-Security: max-age=300` only when `http.host eq "m0code.com" and ssl`. Cloudflare managed HSTS, `includeSubDomains`, and preload remain disabled.
 - **Objective evidence:** HTTP `/`, `/video-player-lab?audit=1`, `/assets/index-CtbOey3K.js?audit=1`, POST `/contact?from=audit`, and the Orgo MP4 each return one `308` to the identical HTTPS path/query. Following the retired-path URL produces exactly one redirect and the expected final `404`. HTTPS `/` is `200`, the retired path is `404`, JS and MP4 are `200`, and all carry exactly `max-age=300`; cache-busted HTTP responses omit HSTS.
 - **Regression evidence:** TLS 1.2 and TLS 1.3 still negotiate. Browser QA loaded the portfolio without console warnings/errors and played the retained Orgo viewer from `https://m0code.com/portfolio/projects/orgo/walkthrough.mp4` at `readyState=4`, duration `4.534`, `error=null`. No repository source, dependency, lockfile, or deployment configuration changed.
-- **Finding disposition:** `M-C02`, `SEC-001`, `SEO-07-001`, and `DEP-13-001` are complete. The protocol portion of `08-META-001` is complete; missing canonical/query policy remains open. `M-C03` legacy TLS and the deliberate post-canary HSTS duration decision remain separate follow-ups.
+- **Finding disposition:** `M-C02`, `SEC-001`, `SEO-07-001`, and `DEP-13-001` are complete. The protocol portion of `08-META-001` is complete; missing canonical/query policy remains open. `M-C03` is now complete under ITEM-03; the deliberate post-canary HSTS duration decision remains a separate follow-up.
+
+## Implementation progress — ITEM-03 require TLS 1.2+
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Implemented scope:** changed only the Cloudflare zone-level Edge Certificates `Minimum TLS Version` setting from `TLS 1.0 (default)` to `TLS 1.2`; TLS 1.3 remains enabled. No repository source, dependency, lockfile, Worker, DNS, certificate, redirect, HSTS, cache, or deployment configuration changed.
+- **Objective evidence:** after dashboard reload, the setting persisted as `TLS 1.2`. Forced TLS 1.0 and TLS 1.1 requests fail before HTTP with `curl` exit 35 and `tlsv1 alert protocol version`; forced TLS 1.2 returns `200` with certificate verification, and OpenSSL TLS 1.3 negotiates successfully with verification `OK`.
+- **Independent evidence:** SSL Labs engine 2.4.2 completed against all four advertised IPv4/IPv6 endpoints; every endpoint received grade `A`, reported no warnings, and exposed only TLS 1.2 and TLS 1.3.
+- **Regression evidence:** production `/` remains `200`, the retired `/video-player-lab?tls=1.2` remains `404`, the current JS asset is `200`, and the retained Orgo MP4 is `200 video/mp4`. Browser QA opened the retained Orgo viewer at `readyState=4`, duration `4.534`, `currentTime=0.721`, `paused=false`, `error=null`, with no console errors.
+- **Finding disposition:** `M-C03` and `DEP-13-002` are complete. Rollback is restoring the prior Cloudflare minimum only if an approved legacy-client requirement is discovered.
