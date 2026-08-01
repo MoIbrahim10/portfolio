@@ -263,3 +263,10 @@ Release posture: **not functionally cleared**. No source, dependency, build, con
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Disposition:** `FQA-001` is complete. Production matches the rebuilt artifact and all previously missing candidate assets are healthy. Broader interaction coverage, failure-state behavior, and the dedicated automated suite opportunity remain open.
 - **Verification:** exact SSR/root-asset parity, 77/77 production status/MIME passes, and a 5/5 browser matrix covering desktop, mobile, Slow 3G, portrait reveal, and Orgo playback. No application or player source changed.
+
+## Implementation tracking — ITEM-08
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `FQA-005` is complete. Direct-load and hydrated unknown URLs preserve `404`, explain the failure, and provide one working route home; keyboard activation returns to the portfolio.
+- **Regression evidence:** fresh/cache-bypassed production checks show no console/page errors. The retained Orgo full-screen viewer still opens, loads and plays `/portfolio/projects/orgo/walkthrough.mp4` at `readyState=4`, restores body scrolling on close, and was not functionally changed.
+- **Release evidence:** PR [#10](https://github.com/MoIbrahim10/portfolio/pull/10), merge `f5bf8335…`, Actions run `30701980701`, Cloudflare version `3ba23d32…`.

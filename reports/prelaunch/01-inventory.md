@@ -274,3 +274,10 @@ The live root SSR referenced 53 unique internal URLs and the live video-lab SSR 
 - **Verification:** check/build pass, no source/build lab reference remains, local SSR reports `/` `200` and the retired path `404`, and browser QA loaded the retained Orgo video without media or console errors.
 - **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; public `/` is `200` with the retained Orgo video and the retired path is a non-redirecting `404`. Browser QA loaded and played that video without media or console errors.
 - **Tracking result:** the earlier inventory remains historical audit evidence; its lab rows are superseded for the deployed release.
+
+## Implementation tracking — ITEM-08
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `INV-C02` is complete. Unknown routes now use the root not-found component and remain genuine HTTP `404` responses.
+- **Verification:** cache-bypassed SSR and hydrated browser checks show a unique error title/description, one `main`, one H1, approved recovery copy, and one working home link. Desktop/mobile accessibility snapshots expose the intended main/region/heading/link structure with no console or page errors.
+- **Regression evidence:** production `/` remains `200`; its retained Orgo viewer loads the same MP4, reaches `readyState=4`, plays, and closes normally. PR [#10](https://github.com/MoIbrahim10/portfolio/pull/10) deployed as merge `f5bf8335…`, Actions run `30701980701`, Cloudflare version `3ba23d32…`.

@@ -273,3 +273,10 @@ Normal and cache-disabled requests returned the same status and byte counts for 
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Disposition:** `SEO-07-R02` is complete. Current SSR is visible by default, and desktop/mobile Chromium renders preserved primary identity, project, and contact content with JavaScript disabled or the main module blocked.
 - **Verification:** four failure-mode runs showed visible geometry and computed `opacity: 1`, `visibility: visible`, `filter: none`, and `transform: none`; normal hydration retained the approved experience without page errors. No source or deployment change was required.
+
+## Implementation tracking — ITEM-08
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `SEO-07-004` and `SEO-07-005` are complete. Raw production SSR contains exactly one meaningful homepage H1 before the four project H2s. Unknown URLs preserve HTTP `404` and provide a crawlable home link rather than a dead end.
+- **Verification:** normal, repeat, and cache-bypassed production probes return the new semantic markup; the hydrated accessibility tree agrees with SSR. The 404 has a unique title/description, `main`, H1, explanation, and recovery link. No canonical-to-home or soft-404 behavior was introduced.
+- **Release evidence:** PR [#10](https://github.com/MoIbrahim10/portfolio/pull/10), merge `f5bf8335…`, Actions run `30701980701`, Cloudflare version `3ba23d32…`.

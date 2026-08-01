@@ -329,3 +329,10 @@ Exact-byte duplicate pairs:
 - **Asset safety:** the shared Orgo walkthrough MP4 and poster were retained because the homepage viewer consumes them; both hashes match the pre-change baseline. No unrelated public asset was deleted.
 - **Verification:** no lab source/build reference remains, the retired path returns `404`, and focused browser QA loaded the retained Orgo video without media or console errors.
 - **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; the public route is `404`, and retained shared media passed live browser verification.
+
+## Implementation tracking — ITEM-08
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `C15-003` is complete. The approved branded 404 explains the missing address and exposes one clearly labeled route home while preserving the hard `404`; it does not hide broken URLs behind a redirect.
+- **Verification:** SSR, hydrated desktop/mobile, keyboard, and 200% text checks pass. The page introduces no form, tracking, third-party script, new external destination, legal claim, cookie, or personal-data flow.
+- **Regression evidence:** homepage presentation and the retained Orgo video source remain unchanged in behavior; production playback reaches `readyState=4` and closes with no console/page errors.

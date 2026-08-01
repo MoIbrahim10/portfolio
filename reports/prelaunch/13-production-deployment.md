@@ -436,3 +436,10 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 - **Staged rollout:** report-only workflow run `30696115179` passed before enforcement workflow run `30696408648`; both ran frozen install, type-check, build, Wrangler dry-run, deployment, and live smoke verification.
 - **Acceptance evidence:** enforced CSP covers HTML `200` and `404` with rotating, matching 32-character script/style nonces. Exact edge headers cover HTML, controlled JSON `500`, JavaScript, CSS, SVG, and Orgo MP4. HTTP retains one query-preserving `308`; the managed `text/plain` robots response is the explicit transform bypass.
 - **Regression evidence:** browser hydration, Orgo modal open/close, active retained-player playback (`readyState=4`, `duration=4.534`, `paused=false`, `error=null`), and the SSR 404 produce zero warning/error logs. `DEP-13-003` is complete.
+
+## Implementation tracking — ITEM-08
+
+- **Status:** `404 portion complete — verified in production` (2026-08-01).
+- **Disposition:** the not-found/recovery portion of `DEP-13-009` is complete. Unknown routes retain HTTP `404` and now have an intentional, accessible, non-sensitive body plus a working home action. The same finding remains open for application `500` error boundaries, retry behavior, correlation/release identifiers, searchable events, and alerting.
+- **Deployment evidence:** frozen install, type-check, build, Worker dry-run, deploy, and smoke checks completed in Actions run `30701980701` for merge `f5bf8335…`; Wrangler reported Cloudflare version `3ba23d32-e67d-4e21-8a78-e92fe81dcaf6`.
+- **Production regression:** cache-bypassed `/` is `200`; the test unknown URL is `404`; CSP and existing security headers remain present. Browser hydration and retained Orgo playback/close pass without console or page errors.
