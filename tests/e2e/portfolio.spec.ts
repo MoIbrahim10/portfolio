@@ -195,16 +195,16 @@ test('inline video failure preserves the poster fallback', async ({ page }) => {
   assertRuntimeClean()
 })
 
-test('unknown and retired routes return useful 404 documents', async ({
-  page,
-}) => {
-  const expected404 =
-    /Failed to load resource: the server responded with a status of 404/
-  const assertRuntimeClean = monitorRuntime(page, {
-    expectedConsoleErrors: [expected404, expected404],
-  })
-
-  for (const path of ['/not-a-real-route', '/video-player-lab']) {
+for (const [label, path] of [
+  ['unknown route', '/not-a-real-route'],
+  ['retired video lab', '/video-player-lab'],
+] as const) {
+  test(`${label} returns a useful 404 document`, async ({ page }) => {
+    const expected404 =
+      /Failed to load resource: the server responded with a status of 404/
+    const assertRuntimeClean = monitorRuntime(page, {
+      expectedConsoleErrors: [expected404],
+    })
     const response = await page.goto(path, { waitUntil: 'networkidle' })
     expect(response?.status(), path).toBe(404)
     await expect(page).toHaveTitle('Page Not Found — MO')
@@ -214,7 +214,7 @@ test('unknown and retired routes return useful 404 documents', async ({
     await expect(
       page.getByRole('link', { name: 'Return home' }),
     ).toHaveAttribute('href', '/')
-  }
 
-  assertRuntimeClean()
-})
+    assertRuntimeClean()
+  })
+}

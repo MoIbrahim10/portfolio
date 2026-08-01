@@ -107,6 +107,7 @@ The local branch is one commit ahead of `origin/master`. The existing local buil
 ### CI14-001 — No automated product test suite
 
 - **Severity:** `P1 high`
+- **Remediation status:** `Complete — blocking CI and public-origin verification passed` (2026-08-01). Baseline evidence below is historical.
 - **Affected:** `/`, `/video-player-lab`, unknown/error routes; all files under `src/components/**`; `package.json:8-33`; `.github/workflows/cloudflare.yml:32-42`.
 - **Evidence:** `package.json` defines only `dev`, `generate-routes`, `build`, `check`, and `preview`. No product-owned test/spec files, test configuration, runner dependency, coverage output, or browser automation was found. The state-heavy rail alone is 1,856 lines and includes modal, media, pointer, touch/scroll, keyboard, observer, responsive, and error logic (`CrossAxisProjectRail.tsx:600-1836`) without executable regression coverage.
 - **Reproduction steps:** (1) Run `find src -type f \( -name '*.test.*' -o -name '*.spec.*' \) -print`; observe no results. (2) Inspect `package.json:8-33`; observe no test script or runner. (3) Inspect `.github/workflows/cloudflare.yml:32-42`; observe install, type-check, build, and dry-run only.
@@ -117,6 +118,7 @@ The local branch is one commit ahead of `origin/master`. The existing local buil
 - **Estimated effort:** `L` — approximately 4-8 engineering days for harness, fixtures, critical coverage, and CI integration.
 - **Dependencies:** Approval to add test dependencies; stable selectors; deterministic media fixtures; agreed browser support matrix; accessibility and performance acceptance thresholds from specialists 05, 06, 09, 10, and 11.
 - **Objective verification method:** A fresh checkout must pass documented `test:unit`, `test:component`, and `test:e2e` scripts in CI. The blocking suite must exercise both routes, 404, critical modal/media/keyboard/touch states, and intentional failure fixtures. CI must publish machine-readable results and coverage, and a deliberately broken critical journey on a test branch must make the gate fail.
+- **Current verification:** exact Playwright 1.61.0 is locked and `bun run test:e2e` registers 12 desktop/mobile Chromium cases covering the retained route, both 404 routes, hydration, keyboard selection, modal/video controls, reduced motion, deterministic MP4 failure, Escape, inert cleanup, and focus return. Unexpected console/page/request failures are blocking. PR #16 run `30706719944` and master run `30706793536` passed; failure artifacts are configured for 14-day retention. The same suite passed the public origin 12/12. Unit/component coverage thresholds and non-Chromium tiers remain future scope rather than grounds to keep this specific finding open.
 
 ### CI14-002 — Production deployment is not protected by review, branch, or environment policy
 
@@ -362,7 +364,7 @@ These are narrow evidence-backed passes, not substitutes for the absent tests:
 
 ### Current decision
 
-**Block launch sign-off for tests/CI/release readiness** until CI14-001 through CI14-004 are resolved and objectively verified. CI14-005 and CI14-006 should be resolved before treating the deployment process as repeatable and recoverable.
+**Block launch sign-off for the remaining tests/CI/release-readiness controls** until approval/preview and post-deploy-browser portions of CI14-002/CI14-003 plus CI14-005/CI14-006 are resolved. CI14-001 and CI14-004 are complete.
 
 ### Required release sequence
 
@@ -392,17 +394,24 @@ These are narrow evidence-backed passes, not substitutes for the absent tests:
 
 - **Status:** `Complete — verified in production` (2026-07-31).
 - **Local gates passed:** route generation, `bun run check`, `bun run build`, SSR assertions (`/` `200`, retired path `404`), absence of lab strings/chunks, retained-file hash comparison, and focused retained-video browser smoke.
-- **Disposition:** the release route matrix is now `/` plus a required `/video-player-lab` negative assertion and generic 404 coverage. ITEM-09 subsequently completed `CI14-004` and partially completed `CI14-003`/`CI14-005`; `CI14-001`, browser CI, rollback proof, and broader release controls remain open. Manual evidence does not replace automated gates.
+- **Disposition:** the release route matrix is now `/` plus a required `/video-player-lab` negative assertion and generic 404 coverage. ITEM-09 subsequently completed `CI14-004` and partially completed `CI14-003`/`CI14-005`; ITEM-10 completed `CI14-001` and candidate browser CI. Rollback proof and broader release controls remain open.
 - **Production evidence:** PR #1 validation passed; merge SHA `c273f81…` passed Actions run `30657215155` and deployed as Cloudflare version `b8c0dab8…`. Public `404`, homepage assets, retained-video playback, and console health passed independent checks.
 
 ## Implementation tracking — ITEM-02
 
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Focused gates passed:** active-rule inspection; one-hop `308` assertions for HTML, missing-path/query, fingerprinted JS, POST, and MP4; exact HTTPS `Strict-Transport-Security: max-age=300` assertions on `200`, `404`, JS, and MP4; cache-busted HTTP header-negative checks; TLS 1.2/1.3 handshakes; homepage and retained-video browser smoke; removed-route browser smoke; zero observed console warnings/errors.
-- **Tracking limit:** these are manual production acceptance checks and do not close `CI14-001`, `CI14-003`, `CI14-005`, or replace automated transport/header regression gates. No source build was required because ITEM-02 changed only Cloudflare edge rules and Markdown tracking reports.
+- **Tracking limit:** these were manual production acceptance checks and did not close the test findings at the time. ITEM-10 later completed `CI14-001`; automated post-deploy browser execution in `CI14-003`, `CI14-005`, and transport/header regression gates remain open.
 
 ## Implementation tracking — ITEM-09
 
 - **Status:** `Complete for immutable release identity and artifact consumption` (2026-08-01).
-- **Disposition:** `CI14-004`, `CI14-R01`, `CI14-R02`, and `CI14-O02` are complete. `CI14-003` and `CI14-005` are partially resolved. `CI14-001`, approval/preview controls in `CI14-002`, rollback proof, browser CI, generated-route drift, timeouts/runner pinning, observability, and `CI14-R05` remain open.
+- **Disposition:** `CI14-004`, `CI14-R01`, `CI14-R02`, and `CI14-O02` are complete. ITEM-10 subsequently completed `CI14-001` and candidate browser CI. `CI14-003` and `CI14-005` remain partially resolved; approval/preview, rollback proof, generated-route drift, timeouts/runner pinning, observability, and `CI14-R05` remain open.
 - **Evidence:** PRs #12/#13 passed validation with deploy skipped. ITEM-09 implementation run `30703230758` built, retained, downloaded, byte-verified, deployed, smoke-verified, finalized, and retained the release receipt. A copied-artifact tamper test failed as designed. Implementation release `87864fe…` maps to artifact `8819491987`/SHA-256 `5ff2c2ad…` and Cloudflare `3666f6f8…`. The later reports-only run `30703726121` produced an identical 130-file application hash list under its own source/release receipt.
+
+## Implementation tracking — ITEM-10
+
+- **Status:** `CI14-001 complete; CI14-003 further resolved but still lacks automated post-deploy execution` (2026-08-01).
+- **CI gate:** after frozen install, type-check, build, and Worker dry-run, CI installs only Chromium and executes desktop/mobile product tests before the immutable artifact is created. A failure prevents deployment and retains trace, screenshot, video, HTML, and JSON artifacts for 14 days. PR deploy remains skipped; master deploy remains conditional on the passing build job.
+- **Coverage/evidence:** 12 cases cover SSR/hydration, keyboard rail selection, Orgo modal/video readiness and controls, Escape/focus return, reduced motion, deterministic media failure/poster fallback, generic 404, and retired-route 404. Local CI and production each passed 12/12. PR #16 run `30706719944` passed in 1m35s; merge `ebcd8b1…` passed run `30706793536` and deployed as Cloudflare version `5c861a15…`.
+- **Remaining controls:** browser tests currently target the candidate dev server in CI; production execution was an independent acceptance run, not a workflow step. WebKit/Firefox, unit/component coverage, generated-route drift, job timeouts/runner pinning, approval/preview, observability, and rollback remain tracked separately.

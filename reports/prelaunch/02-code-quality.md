@@ -305,3 +305,10 @@ No P0 blocker or P1 high finding was confirmed in scope 02. The deployment/sourc
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Disposition:** the release-drift premise of `CQ-01` is complete. CI now builds once, retains and verifies the exact output before deploy, and records source/input/output/tool/artifact/Cloudflare identity. Architecture, duplication, dead-code, and automated characterization findings remain independently open.
 - **Evidence:** master `87864fe…`, Actions run `30703230758`, build artifact `8819491987`/SHA-256 `5ff2c2ad…`, and Cloudflare version `3666f6f8…` agree; live generated assets and Orgo media match the manifest.
+
+## Implementation tracking — ITEM-10
+
+- **Status:** `CQ-R02 complete for the approved critical characterization baseline` (2026-08-01).
+- **Disposition:** `CrossAxisProjectRail` now has tracked desktop/mobile browser characterization for SSR/hydration, keyboard selection, Orgo viewer media/control behavior, Escape, inert cleanup and focus return, reduced motion, MP4 failure fallback, and both negative routes. Broader pure-helper coverage and any later architecture work remain separate opportunities.
+- **Defects found and fixed:** the new suite exposed a reduced-motion SSR/client attribute mismatch and focus restoration racing background `inert` cleanup. The surgical fixes make the pre-hydration rail motion-free and restore focus only after the trigger is no longer inert; no styles, asset paths, or media UI changed.
+- **Verification:** frozen install, type-check, production build, Worker dry-run, local CI matrix 12/12, public-origin matrix 12/12, PR #16 run `30706719944`, and release run `30706793536` passed. Merge `ebcd8b1…` deployed as Cloudflare `5c861a15…`.
