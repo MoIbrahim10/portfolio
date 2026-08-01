@@ -5,6 +5,8 @@ Repository: `/Users/mo/Documents/porfolio` at `ae1ec7cb0b1162be7c0aa01214ed5146f
 Production: `https://m0code.com`
 Verdict: **not ready for an honest all-100 claim.** Both live routes scored 96 Accessibility because of confirmed contrast failures. Performance was excluded by the available Lighthouse MCP audit and no performance score is claimed.
 
+Current note: ITEM-07 remediated the retained homepage contrast finding and production Lighthouse 13.4.0 now scores Accessibility 100 on mobile and desktop. The historical score matrix remains the 2026-07-29 baseline; Lighthouse Performance evidence is still absent.
+
 ## Method, versions, and limitations
 
 - Inspected the real source, existing `dist/`, live SSR HTML, live assets, and the four Lighthouse JSON reports. No build, install, source/config/lockfile edit, dependency change, Git mutation, or external write was performed.
@@ -49,6 +51,7 @@ These warm-state/unknown-cache traces have no CrUX data, Speed Index, trace-deri
 
 ### LH-06-001 — P1 high — Portfolio captions fail contrast and cap Accessibility at 96
 
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original finding.
 - **Affected:** `https://m0code.com/`; `src/components/v14-exploration-lab/CrossAxisProjectRail.module.css:458-475`, `:565-575`, `:613-620`; captions rendered at `src/components/v14-exploration-lab/CrossAxisProjectRail.tsx:823-828`.
 - **Evidence / audit IDs:** Lighthouse 13.4.0 `color-contrast` scored 0 on mobile and desktop. The foreground `#d79d40` on `#f1e9d9` measured **1.98:1** at 8.32 px bold; 4.5:1 is required. Mobile reported all five visible Orgo captions; desktop reported the first. Accessibility score was 96 in both runs.
 - **Reproduction:** Run an unmodified Lighthouse navigation audit on `/` for mobile or desktop; open `Accessibility → color-contrast`; inspect `div…figure…figcaption > span`.
@@ -59,6 +62,7 @@ These warm-state/unknown-cache traces have no CrUX data, Speed Index, trace-deri
 - **Estimated effort:** 1–3 hours including theme and breakpoint validation.
 - **Dependencies:** Design approval and WCAG specialist review.
 - **Objective verification:** Lighthouse `color-contrast` passes on `/` mobile and desktop; axe reports zero caption failures; computed colors independently measure ≥4.5:1 at every project/theme/breakpoint; visual regression review passes.
+- **Current verification:** every rendered editorial caption pair across all four stories measures at least **5.07:1** in production. Fresh Lighthouse 13.4.0 navigation audits on the deployed URL scored Accessibility, Best Practices, SEO, and Agentic Browsing **100** on both mobile (51/51 passed) and desktop (50/50 passed), with `color-contrast=1` and zero failed audits. This does not satisfy the separate Lighthouse Performance distribution gate in `LH-06-R01`.
 
 ### LH-06-002 — P1 high — Video-lab footer text fails contrast and caps Accessibility at 96
 
@@ -204,7 +208,7 @@ These warm-state/unknown-cache traces have no CrUX data, Speed Index, trace-deri
 ## Honest 100-score acceptance gate
 
 1. Reconcile the approved candidate with live production and record commit plus deployed asset hashes.
-2. Fix LH-06-001 and LH-06-002; independently verify all affected colors before rerunning.
+2. **Complete:** remediate LH-06-001; retire LH-06-002 with the removed lab; independently verify all retained colors and rerun both profiles.
 3. Use one pinned Lighthouse/Chrome pair and default, unmodified categories. No `skipAudits`, blocked URLs, extensions, artificial waits, score rounding, hidden failures, or discarded bad runs.
 4. Run **five consecutive cold navigation audits** for each route on standard mobile and standard desktop presets. Save every JSON/HTML report with timestamp, URL, final URL, version, UA, viewport, throttling, benchmark index, and candidate hash.
 5. Claim a stable category 100 only when **every retained run** is exactly 100. If any run is 99 or below, publish the distribution and do not claim stable 100.
@@ -215,7 +219,7 @@ These warm-state/unknown-cache traces have no CrUX data, Speed Index, trace-deri
 ## Implementation tracking — ITEM-01
 
 - **Status:** `Complete — verified in production` (2026-07-31).
-- **Disposition:** `LH-06-002` is not applicable to the deployed release because the video-lab route and footer were removed. The release Lighthouse matrix now covers `/` plus the error route; `LH-06-001` and all honest/stable-score evidence gaps remain open. ITEM-06 subsequently completed the production-drift and homepage-overfetch portions of `LH-06-003`.
+- **Disposition:** `LH-06-002` is not applicable to the deployed release because the video-lab route and footer were removed. `LH-06-001` subsequently completed under ITEM-07. The release Lighthouse matrix now covers `/` plus the error route; honest/stable-score evidence gaps remain open. ITEM-06 subsequently completed the production-drift and homepage-overfetch portions of `LH-06-003`.
 - **Verification:** regenerated production artifacts contain no lab route or chunk; local route handling returns `404` for the retired URL; retained homepage media loaded in focused browser QA with no console errors/warnings.
 - **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; the public lab path is `404` and the retained homepage video passed browser smoke. Historical lab scores are not current evidence.
 
@@ -224,3 +228,9 @@ These warm-state/unknown-cache traces have no CrUX data, Speed Index, trace-deri
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Disposition:** `LH-06-003` is complete for artifact parity and media overfetch. `LH-06-R01` and the honest five-run Performance-score gate remain open; ITEM-06 does not claim a Lighthouse Performance score.
 - **Verification:** production/build SSR signatures and hashes match; all 77 assets pass status/MIME; cache-disabled desktop/mobile and Slow 3G mobile request exactly one initial MP4 and zero portraits. The Orgo viewer regression passed with no console/page errors. No runtime source change was required.
+
+## Implementation tracking — ITEM-07
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `LH-06-001` is complete. Historical `/video-player-lab` contrast evidence remains retired under ITEM-01; `LH-06-R01` and the honest five-run Lighthouse Performance gate remain open.
+- **Verification:** the deployed `routes-BRnAUAbE.css` produces a minimum **5.07:1** across every rendered caption pair. Lighthouse 13.4.0 navigation runs scored Accessibility 100 on mobile and desktop with zero failed audits. Merge SHA `1db9d57008b6db30a32178fc4e83597d76074caa`, Actions run `30700858043`, and Cloudflare version `a3299de6-82a2-49d7-9815-25da9fe35f8e` identify the production artifact.

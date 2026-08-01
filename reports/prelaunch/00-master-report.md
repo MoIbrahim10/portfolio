@@ -8,7 +8,7 @@ Production origin: `https://m0code.com`
 
 ## Executive audit status
 
-**Launch recommendation: HOLD.** No `P0 blocker` was confirmed, but multiple unresolved `P1 high` findings and P1 unknowns remain. Material WCAG failures are confirmed; production release controls and behavioral tests are inadequate; and asset-rights evidence is unavailable. Transport, TLS, browser headers, no-JavaScript visibility, and homepage media overfetch findings `M-C02` through `M-C06` were remediated or disproved and production-verified by 2026-08-01.
+**Launch recommendation: HOLD.** No `P0 blocker` was confirmed, but multiple unresolved `P1 high` findings and P1 unknowns remain. Material WCAG semantic/error-page failures remain; production release controls and behavioral tests are inadequate; and asset-rights evidence is unavailable. Transport, TLS, browser headers, no-JavaScript visibility, homepage media overfetch, and contrast findings `M-C02` through `M-C07` were remediated or disproved and production-verified by 2026-08-01.
 
 The 2026-07-29 audit baseline found an older production artifact. By 2026-08-01, production and the current build exposed identical root asset hashes, SSR counts, and the same 77 referenced public assets. Durable build provenance/promotion controls remain open under `M-C01`/`M-C11`; historical drift evidence is preserved in the findings.
 
@@ -27,7 +27,7 @@ Audit-boundary exception: browser tooling auto-created exactly 10 ignored `.play
 | Dependencies | 15 direct packages, 204 locked records, vendored skills, advisories, licenses, action refs | Snapshot complete; continuous policy/provenance incomplete |
 | Performance | SSR, bundle/media sizes, caching, compression, CWV samples, overfetch, range behavior | Useful lab evidence; cold throttled traces/field data/Performance score absent |
 | SEO/metadata | Crawl matrix, robots, sitemap, canonicals, headings, metadata, social cards, icons, JSON-LD | HTTP/SSR complete; Search Console/social debugger unavailable |
-| Accessibility | WCAG 2.2 AA source/SSR/contrast matrix, Lighthouse accessibility, semantics | Confirmed failures; manual AT/zoom/forced-colors incomplete |
+| Accessibility | WCAG 2.2 AA source/SSR/contrast matrix, Lighthouse accessibility, semantics | Contrast complete; semantic/error and manual AT coverage remain |
 | Functional/responsive | Controls, links, modal/media flows, breakpoints, touch/keyboard/motion logic | Static/HTTP complete; exhaustive execution incomplete |
 | Offline/PWA | SW/manifest/offline inventory, failures, range/revalidation behavior | Product contract unresolved; browser offline matrix incomplete |
 | Deployment/operations | GitHub workflow, environments, Cloudflare delivery, TLS, cache, compression, rollback/observability | Repository/live evidence strong; dashboard-only settings and drills unavailable |
@@ -39,7 +39,7 @@ Audit-boundary exception: browser tooling auto-created exactly 10 ignored `.play
 The following must be resolved or explicitly disproved against one immutable release candidate before launch sign-off:
 
 1. `M-C01`: source/build/live identity mismatch.
-2. `M-C07`, `M-C08`, and `M-C09`: confirmed WCAG contrast, reflow, semantic, and error-page failures.
+2. `M-C08` and `M-C09`: confirmed WCAG reflow, semantic, and error-page failures. `M-C07` contrast is complete under ITEM-07.
 3. `M-C10` and `M-C11`: no product test suite and uncontrolled/unverifiable release promotion.
 4. `M-R01`, `M-R02`, and `M-R03`: incomplete real-browser evidence, no Lighthouse Performance score, and unverified asset/case-study rights.
 
@@ -135,6 +135,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 
 ### M-C07 — Text, focus, and state contrast fail WCAG 2.2 AA
 
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original 2026-07-29 finding.
 - **Severity:** `P1 high`
 - **Affected:** both routes; `V14ExplorationLab.module.css:20-23`; `CutCornerButton.module.css:35`; `CrossAxisProjectRail.module.css:90-116,170-175,458-653,672-675,960-963`; `VideoPlayerLab.module.css:45-50,135-140,557-572`.
 - **Sources:** [LH-06-001, LH-06-002](./06-lighthouse.md), [09-C-01, 09-C-02](./09-accessibility.md).
@@ -145,6 +146,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** two-color focus rings are more robust but visually stronger; increasing text size alone changes layout and still needs proof.
 - **Effort/dependencies:** `M`, 1–2 days; design approval, visual regression, accessibility verification.
 - **Objective verification:** independent contrast matrix passes; axe/Lighthouse color contrast passes on both routes/profiles; all focusable states remain visible at 100%/200% and forced colors.
+- **Current verification:** all rendered homepage story text now measures at least **4.68:1**, all 32 editorial caption pairs at least **5.07:1**, selected indicators at least **3.95:1**, story focus rings at least **6.07:1**, and gallery focus rings **12.01:1**. Production Lighthouse 13.4.0 navigation audits scored Accessibility 100 on mobile and desktop with zero failed audits. Chromium checks passed at 390×844, 1440×1000, 200% text, reduced motion, and forced colors. The retained Orgo modal video reached `readyState=4`, played, paused, and closed with no media, console, or page error.
 
 ### M-C08 — Video-lab selector fails 320 CSS px reflow
 
@@ -719,7 +721,7 @@ Key constraints:
 - **Implemented scope:** removed the standalone route, component, and CSS module; regenerated the TanStack route tree. The Orgo walkthrough asset remains because the portfolio viewer still uses it.
 - **Objective evidence:** `bun run check` and `bun run build` pass; local SSR returns `/` as `200` with exactly one retained video and `/video-player-lab` as `404`; the new build contains no lab route/chunk/text; focused browser QA opened the retained Orgo viewer with media `readyState=4`, duration `4.534`, `error=null`, and no console errors/warnings.
 - **Regression guard:** SHA-256 hashes for `CrossAxisProjectRail.tsx`, its CSS module, `portfolio-data.ts`, the Orgo MP4, and its poster are unchanged from the pre-change baseline.
-- **Finding disposition:** `M-R04` is complete. Lab-only portions of `M-C07`, `M-C08`, `M-C09`, `M-C15`, `M-C17`, and `M-R05` are retired in production; their homepage/site-wide portions remain open. `M-C01` release parity is established for this deployed revision, while the broader provenance/promotion controls in `M-C11` remain open.
+- **Finding disposition:** `M-R04` is complete. Lab-only portions of `M-C07`, `M-C08`, `M-C09`, `M-C15`, `M-C17`, and `M-R05` are retired in production. `M-C07` subsequently completed under ITEM-07; the other homepage/site-wide portions remain open. `M-C01` release parity is established for this deployed revision, while the broader provenance/promotion controls in `M-C11` remain open.
 - **Production acceptance evidence:** GitHub merge SHA `c273f81f59b8a1d7cd01e3cedb03b948b7d6cd32`, Actions run `30657215155`, and Cloudflare version `b8c0dab8-207e-4568-87ca-289ef74ae6e6` are bound by the deployment log. Public `/` returns `200` with the new hashed assets; `/video-player-lab` returns `404` with no redirect; browser QA opened and played the retained Orgo viewer at `readyState=4`, duration `4.534`, `error=null`, with no console errors/warnings.
 
 ## Implementation progress — ITEM-02 enforce HTTPS transport
@@ -763,3 +765,11 @@ Key constraints:
 - **Objective evidence:** Chrome traces plus a 5/5 cache-disabled browser matrix covered desktop, mobile, Slow 3G mobile, portrait reveal, and the Orgo modal. Every initial load requested exactly one MP4, no pre-reveal portrait, and WebP-only images; observed initial media files totaled 401,726 B desktop and 490,906 B mobile. Direct production GETs verified all six portraits at 31,426–39,254 B, below the 40 KB gate.
 - **Parity evidence:** production and the current build match at 1 video, 32 images, 32 full-screen triggers, three root asset hashes, and the sole initial MP4. All 77 referenced assets returned `200` with correct MIME; deployment SHA `370419837bea1232dfb61348d46e1be7a315be6a` maps to Cloudflare version `c290c6be-291c-439d-94a6-119743aa2801`.
 - **Regression evidence:** Orgo played at `readyState=4`, duration `4.534`, `paused=false`, `error=null`; the matrix recorded zero request, console, or page failures. `M-C06`, `PERF-05-001`, `LH-06-003`, and `FQA-001` are complete. Lighthouse Performance distributions, field CWV, caching, and broader interaction coverage remain separately open. No rollback applies because runtime behavior was not changed.
+
+## Implementation progress — ITEM-07 meet WCAG contrast requirements
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Implemented scope:** raised muted semantic text opacity, assigned tested editorial caption colors, separated surface-aware focus tokens from decorative accents, preserved forced-colors focus, and changed only the failing Selected Experiments active dot. No layout, media source/loading, modal lifecycle, event handling, or video-player logic changed.
+- **Objective evidence:** all story text is ≥4.68:1, all 32 caption pairs ≥5.07:1, selected indicators ≥3.95:1, story focus ≥6.07:1, and gallery focus 12.01:1. Production Chromium passed 390×844, 1440×1000, 200% text, reduced motion, forced colors, and Good Invoice hover. Lighthouse mobile/desktop scored Accessibility 100 with zero failed audits.
+- **Regression evidence:** the public Orgo modal loaded the unchanged walkthrough at `readyState=4`, played to `currentTime=0.414`, paused, and closed with zero media, console, or page errors. Production serves `routes-BRnAUAbE.css` from merge `1db9d57008b6db30a32178fc4e83597d76074caa`, Actions run `30700858043`, Cloudflare version `a3299de6-82a2-49d7-9815-25da9fe35f8e`.
+- **Finding disposition:** `M-C07`, `LH-06-001`, `09-C-01`, and `09-C-02` are complete. Lighthouse Performance, semantics, assistive-technology, full keyboard traversal, and non-Chromium coverage remain separate open items.

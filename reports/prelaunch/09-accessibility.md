@@ -33,12 +33,12 @@ Important build observation: production asset hashes (`routes-BvKEGjiQ.css`, `st
 | 1.3.3 Sensory Characteristics | Source pass | Project changes expose named buttons in addition to swipe/scroll instructions. |
 | 1.3.4 Orientation | Source pass; runtime unverified | No orientation lock found. |
 | 1.3.5 Identify Input Purpose | Not applicable | No user-input forms. |
-| 1.4.1 Use of Color | Mostly pass; runtime unverified | Active project state also changes scale and exposes `aria-pressed`; contrast issues remain. |
-| 1.4.3 Contrast (Minimum) | Fail | Multiple small-text combinations are below 4.5:1 (`09-C-02`). |
-| 1.4.4 Resize Text | Risk / not tested | Absolute positioning and overflow may clip at 200% text resize (`09-R-04`). |
+| 1.4.1 Use of Color | Pass for retained homepage | Active project state changes color and scale and exposes `aria-pressed`; ITEM-07 verified state contrast. |
+| 1.4.3 Contrast (Minimum) | Pass for retained homepage | ITEM-07 verified every affected story/caption pair at ≥4.5:1 and retired the removed lab portion (`09-C-02`). |
+| 1.4.4 Resize Text | Homepage Chromium pass; broader risk remains | ITEM-07 passed 200% text at 390×844 without page overflow; non-Chromium/system scaling remains under `09-R-04`. |
 | 1.4.5 Images of Text | Pass for page UI | No essential page text rendered as an image was found; portfolio screenshots are project exhibits. |
 | 1.4.10 Reflow | Fail | Video-lab tab grid is fixed to `68rem` and requires horizontal scrolling at 320 CSS px (`09-C-04`). |
-| 1.4.11 Non-text Contrast | Fail | Focus/state colors fall below 3:1 in multiple themes (`09-C-01`). |
+| 1.4.11 Non-text Contrast | Pass for retained homepage | ITEM-07 verified selected states at ≥3.95:1 and focus indicators at ≥6.07:1 (`09-C-01`). |
 | 1.4.12 Text Spacing | Risk / not tested | Fixed/absolute containers require browser validation (`09-R-04`). |
 | 1.4.13 Content on Hover or Focus | Source pass; runtime unverified | Portrait and media cues are focus-triggerable/dismissible by blur; manual persistence/hover tests unavailable. |
 | 2.1.1 Keyboard | Source support present; runtime unverified | Native controls, arrow handlers, scrollbar keys, dialog Escape/trap code reviewed. |
@@ -53,7 +53,7 @@ Important build observation: production asset hashes (`routes-BvKEGjiQ.css`, `st
 | 2.4.4 Link Purpose | Source pass | Links have visible purpose or explicit accessible names. |
 | 2.4.5 Multiple Ways | Not assessed | Small two-route site; sitemap/search behavior belongs to SEO/functional scopes. |
 | 2.4.6 Headings and Labels | Fail / concern | Homepage lacks a primary heading; 404 has no heading (`09-C-03`, `09-C-06`). |
-| 2.4.7 Focus Visible | CSS present; visual adequacy fails | Focus rules exist, but their contrast is inadequate (`09-C-01`). |
+| 2.4.7 Focus Visible | Homepage contrast pass; traversal incomplete | ITEM-07 verified surface-aware and forced-colors indicators; full keyboard/AT traversal remains separate. |
 | 2.4.11 Focus Not Obscured (Minimum) | Runtime unverified | Modal, overflow regions, and clipped cards require real focus traversal. |
 | 2.5.1 Pointer Gestures | Source pass | Project destinations have single-pointer buttons in addition to swipe/scroll. |
 | 2.5.2 Pointer Cancellation | Runtime unverified | Drag scrollbar behavior was not manually exercised. |
@@ -71,6 +71,7 @@ Important build observation: production asset hashes (`routes-BvKEGjiQ.css`, `st
 
 ### 09-C-01 — Focus indicators and active-state graphics fail 3:1 contrast
 
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original finding.
 - **Severity:** P1 high
 - **Affected:** `/` and `/video-player-lab`; `V14ExplorationLab.module.css:20-23`; `CutCornerButton.module.css:35`; `CrossAxisProjectRail.module.css:170-175,273-275,672-675,960-963`; `VideoPlayerLab.module.css:45-50`; same declarations are present in deployed CSS.
 - **WCAG:** 1.4.11 Non-text Contrast; 2.4.7 Focus Visible; 2.4.11 Focus Not Obscured (focus appearance contrast aspect).
@@ -83,9 +84,11 @@ Important build observation: production asset hashes (`routes-BvKEGjiQ.css`, `st
 - **Estimated effort:** S–M, 0.5–1 day including theme verification.
 - **Dependencies:** Approved focus visual treatment and a reusable contrast test matrix.
 - **Objective verification:** Automated color calculations at 3:1 minimum plus screenshot comparison of every focusable element in every theme at 100%/200% zoom, forced colors, and keyboard-only traversal.
+- **Current verification:** production selected indicators measure Orgo **6.50:1**, Good Invoice **3.95:1**, Lumen **9.60:1**, and Selected Experiments **6.07:1**. Story focus rings measure **6.07:1–15.94:1** and editorial gallery focus **12.01:1**. Chromium forced-colors exposes solid 3 px system-highlight outlines on project, gallery, and page controls. Full assistive-technology traversal remains outside this finding.
 
 ### 09-C-02 — Small text fails minimum contrast in both routes
 
+- **Remediation status:** `Complete — verified in production` (2026-08-01). The title and baseline evidence below preserve the original finding; the removed lab portion was retired under ITEM-01.
 - **Severity:** P1 high
 - **Affected:** `/`; `CrossAxisProjectRail.module.css:90-96,106-116,458-478,480-489,529-535,613-653`. `/video-player-lab`; `VideoPlayerLab.module.css:135-140,569-572`. Deployed CSS contains the same values.
 - **WCAG:** 1.4.3 Contrast (Minimum).
@@ -98,6 +101,7 @@ Important build observation: production asset hashes (`routes-BvKEGjiQ.css`, `st
 - **Estimated effort:** M, 1–2 days including all story states.
 - **Dependencies:** Final palette and visual regression coverage.
 - **Objective verification:** Programmatic contrast check of each computed text/background pair plus manual checks on every story, selected/unselected tab state, and video frame label across representative frames.
+- **Current verification:** all retained homepage story text measures at least **4.68:1** and all 32 rendered editorial caption pairs at least **5.07:1**. The Good Invoice collaboration text is **4.80:1** and keeps a readable foreground plus a 2 px hover underline. Production Lighthouse mobile/desktop reports pass `color-contrast` and score Accessibility 100.
 
 ### 09-C-03 — Homepage has no primary page heading
 
@@ -331,7 +335,7 @@ These are source/SSR-level passes unless noted; direct multi-browser/AT behavior
 ## Implementation tracking — ITEM-01
 
 - **Status:** `Complete — verified in production` (2026-07-31).
-- **Disposition:** lab-only `09-C-04` and `09-O-03` are not applicable to the deployed release. The lab portion of `09-C-02` is retired; homepage contrast, semantics, heading, motion, media alternatives, keyboard/focus, and 404 findings remain open.
+- **Disposition:** lab-only `09-C-04` and `09-O-03` are not applicable to the deployed release. The lab portion of `09-C-02` is retired; homepage contrast subsequently completed under ITEM-07. Semantics, heading, motion, media alternatives, keyboard traversal, and 404 findings remain open.
 - **Verification:** the lab UI/CSS no longer exists in source or build output, the retired path returns `404`, and focused browser QA found the retained Orgo media ready with no media/console error. No claim is made that broader WCAG coverage is complete.
 - **Production evidence:** merge SHA `c273f81…` deployed as Cloudflare version `b8c0dab8…`; the lab path is `404` and retained Orgo media passed browser smoke. All mixed/site-wide findings remain open until their own acceptance criteria pass.
 
@@ -340,3 +344,10 @@ These are source/SSR-level passes unless noted; direct multi-browser/AT behavior
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Disposition:** `09-C-07` is complete. Primary homepage content remains perceivable when JavaScript is disabled or the main bundle fails; other WCAG findings and the broader assistive-technology matrix remain open.
 - **Verification:** four desktop/mobile failure-mode runs showed the bio, project, and contact content with visible geometry and safe computed styles. Normal and reduced-motion regressions passed without page errors, and the retained Orgo player remained functional. No runtime source change was required.
+
+## Implementation tracking — ITEM-07
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `09-C-01` and `09-C-02` are complete for the retained site. This does not close semantics, media alternatives, screen-reader, full keyboard traversal, or non-Chromium findings.
+- **Verification:** computed production matrices covered every story and all 32 captions at 100% plus homepage reflow at 200% text; selected/focus state contrast and forced colors passed. Production Lighthouse mobile/desktop scored Accessibility 100. Orgo modal playback reached `readyState=4`, played, paused, and closed with zero console/page errors.
+- **Release evidence:** PR [#8](https://github.com/MoIbrahim10/portfolio/pull/8), merge `1db9d57008b6db30a32178fc4e83597d76074caa`, Actions run `30700858043`, Cloudflare version `a3299de6-82a2-49d7-9815-25da9fe35f8e`.
