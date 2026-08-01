@@ -47,6 +47,26 @@ jobs:
       - name: Validate Worker bundle
         run: bunx wrangler@4.114.0 deploy --dry-run
 
+      - name: Install Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run browser product tests
+        id: browser_tests
+        run: bun run test:e2e
+
+      - name: Retain browser failure evidence
+        if: failure() && steps.browser_tests.outcome == 'failure'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: portfolio-browser-failures-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: error
+          include-hidden-files: true
+          compression-level: 6
+          retention-days: 14
+
       - name: Create build manifest
         run: bun scripts/release-manifest.mjs create
 

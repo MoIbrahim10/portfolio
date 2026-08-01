@@ -77,6 +77,15 @@ interface ProjectStory {
   chapters: StoryChapter[]
 }
 
+function useHydrationSafeReducedMotion() {
+  const reducedMotion = useReducedMotion()
+  const [hydrated, setHydrated] = useState(false)
+
+  useEffect(() => setHydrated(true), [])
+
+  return hydrated ? Boolean(reducedMotion) : true
+}
+
 const projectById = (id: string) => {
   const project = PORTFOLIO_PROJECTS.find((item) => item.id === id)
   if (!project) throw new Error(`Missing portfolio project: ${id}`)
@@ -685,7 +694,7 @@ function StoryMedia({
   prewarm: boolean
   story: ProjectStory
 }) {
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useHydrationSafeReducedMotion()
   const [focused, setFocused] = useState(false)
   const [requested, setRequested] = useState(eager)
   const mediaRef = useRef<HTMLDivElement>(null)
@@ -875,7 +884,7 @@ function ResilientVideo({
   media: PortfolioMedia
   src: string
 }) {
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useHydrationSafeReducedMotion()
   const [inView, setInView] = useState(eager)
   const [playing, setPlaying] = useState(false)
   const [playbackBlocked, setPlaybackBlocked] = useState(false)
@@ -1011,7 +1020,7 @@ function ViewerVideo({
   media: PortfolioMedia
   src: string
 }) {
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useHydrationSafeReducedMotion()
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [playing, setPlaying] = useState(false)
@@ -1441,7 +1450,7 @@ export function CrossAxisProjectRail({
   const mobileHeightFrameRef = useRef<number | null>(null)
   const horizontalScrollingRef = useRef(false)
   const settlingHorizontalScrollRef = useRef(false)
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useHydrationSafeReducedMotion()
 
   useEffect(
     () => () => {
@@ -1850,8 +1859,16 @@ export function CrossAxisProjectRail({
         instant={viewerInstant}
         onClose={closeMedia}
         onExitComplete={() => {
-          viewerTriggerRef.current?.focus({ preventScroll: true })
-          viewerTriggerRef.current = null
+          const trigger = viewerTriggerRef.current
+          const restoreFocus = () => {
+            if (trigger?.closest('[inert]')) {
+              requestAnimationFrame(restoreFocus)
+              return
+            }
+            trigger?.focus({ preventScroll: true })
+            viewerTriggerRef.current = null
+          }
+          requestAnimationFrame(restoreFocus)
         }}
         selection={mediaSelection}
       />
