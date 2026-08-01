@@ -109,6 +109,7 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 ### DEP-13-005 — The audited launch candidate is not the production artifact
 
 - **Severity:** `P1 high`
+- **Remediation status:** `Complete — verified in production` (2026-08-01). Baseline evidence below remains historical.
 - **Affected route/component/file and line:** repository `HEAD`; `origin/master`; `dist/client/assets/*`; live `/assets/*`; `.github/workflows/cloudflare.yml:7-9,44-56`
 - **Evidence:** `git rev-list --left-right --count origin/master...HEAD` returned `0 1`. Local `HEAD` is `ae1ec7c…`; the latest successful production run/deployment is `5d80cbf…`. Existing `dist` references `index-COTNhO9J.js`, `routes-BXeiZRtJ.js`, and `styles-DDBD8rJB.css`; live HTML references different `index-BTo1nZ1V.js`, `routes-DAvGpumd.js`, and `styles-B9P8SFFr.css`. A new candidate asset, `/avatar/mo-avatar-portrait-01-640.webp`, returns live `404`.
 - **Reproduction steps:** Run `git rev-list --left-right --count origin/master...HEAD`; compare `git show -s HEAD origin/master`; list `dist/client/assets`; extract `/assets/*.js|css` from both live routes; request the sampled candidate avatar.
@@ -119,6 +120,7 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 - **Estimated effort:** S for identification/metadata; M if artifact promotion must be added.
 - **Dependencies:** All audit scopes; authorized push/deployment; reproducible build; release owner.
 - **Objective verification method:** `HEAD`, approved remote SHA, build provenance, GitHub deployment SHA, Cloudflare version, and live manifest all map to the same release; a known candidate asset returns its expected status/hash.
+- **Current verification:** master `87864fe…` produced retained build artifact `8819491987`/SHA-256 `5ff2c2ad…`; the deploy job downloaded and reverified all 130 files before Cloudflare deployment. Release artifact `8819497837` records Cloudflare version `3666f6f8…`, `https://m0code.com`, and attempt-1 live parity for generated assets, brand, and Orgo media.
 
 ### DEP-13-006 — Fingerprinted bundles receive a zero-second browser cache lifetime
 
@@ -179,6 +181,7 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 ### DEP-13-010 — Releases are not captured as promotable artifacts and rollback is undocumented
 
 - **Severity:** `P2 medium`
+- **Remediation status:** `Partially resolved — immutable artifact and release evidence complete; rollback documentation/drill remains open` (2026-08-01).
 - **Affected route/component/file and line:** `.github/workflows/cloudflare.yml:31-56`; `wrangler.jsonc:1-17`; no release/rollback runbook
 - **Evidence:** CI builds and immediately runs `wrangler deploy`; it does not upload/persist the exact `dist`, build manifest, checksum, Cloudflare version ID, or deployment URL. No rollback job, command, health threshold, owner, or recovery checklist exists. The GitHub deployment record has an empty `environment_url`.
 - **Reproduction steps:** Inspect workflow steps and repository files; query the latest GitHub deployment/status metadata; confirm no artifact/promotion/rollback step and blank environment URL.
@@ -189,6 +192,7 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 - **Estimated effort:** M (1–2 days, including a non-production drill).
 - **Dependencies:** Cloudflare deployment permissions; release metadata; observability/health signals; any future stateful binding inventory.
 - **Objective verification method:** In a preview/test Worker, promote version A, promote B, roll back to A, and verify routes/assets/headers; record recovery time and evidence. Production documentation identifies the exact previous stable version without rebuilding.
+- **Current verification:** CI retains the exact build for 30 days and its three-file release receipt for 90 days; production deploys the downloaded artifact without rebuilding and records source/input/output hashes, artifact digest/URL, Cloudflare version, production URL, and smoke result. No rollback command, owner, threshold, RTO, preview Worker, or completed rollback drill exists, so the finding remains partially open.
 
 ## Risks / Unverified Configuration
 
@@ -410,7 +414,7 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 ## Implementation tracking — ITEM-01
 
 - **Status:** `Complete — verified in production` (2026-07-31).
-- **Deployed change:** the lab route and its normalization target no longer exist; production `/video-player-lab` is a non-redirecting `404`. `DEP-13-008` remains open for other URL normalization behavior, and all transport, TLS, headers, caching, observability, rollback, and broader artifact-provenance findings remain open.
+- **Deployed change:** the lab route and its normalization target no longer exist; production `/video-player-lab` is a non-redirecting `404`. `DEP-13-008` remains open for other URL normalization behavior. Transport/TLS/headers were subsequently completed under ITEM-02 through ITEM-04; artifact provenance was completed under ITEM-09; caching, observability, rollback, and other open deployment findings remain.
 - **Verification:** check/build pass; generated route/build output contains no lab entry; retained homepage media loads in focused browser QA and its implementation/assets are hash-identical to baseline.
 - **Production evidence:** GitHub merge SHA `c273f81f59b8a1d7cd01e3cedb03b948b7d6cd32`, Actions run `30657215155`, and Cloudflare version `b8c0dab8-207e-4568-87ca-289ef74ae6e6` are bound in the deployment log. Public route and retained-viewer acceptance checks passed.
 
@@ -443,3 +447,9 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 - **Disposition:** the not-found/recovery portion of `DEP-13-009` is complete. Unknown routes retain HTTP `404` and now have an intentional, accessible, non-sensitive body plus a working home action. The same finding remains open for application `500` error boundaries, retry behavior, correlation/release identifiers, searchable events, and alerting.
 - **Deployment evidence:** frozen install, type-check, build, Worker dry-run, deploy, and smoke checks completed in Actions run `30701980701` for merge `f5bf8335…`; Wrangler reported Cloudflare version `3ba23d32-e67d-4e21-8a78-e92fe81dcaf6`.
 - **Production regression:** cache-bypassed `/` is `200`; the test unknown URL is `404`; CSP and existing security headers remain present. Browser hydration and retained Orgo playback/close pass without console or page errors.
+
+## Implementation tracking — ITEM-09
+
+- **Status:** `Complete for immutable artifact provenance; rollback/approval/preview remain open` (2026-08-01).
+- **Disposition:** `DEP-13-005` is complete. Artifact/provenance/URL/version portions of `DEP-13-010` and `DEP-13-O02` are complete; `DEP-13-004`, observability, rollback ownership/threshold/runbook/drill, and gradual preview promotion remain open.
+- **Evidence:** final run `30703230758`; source `87864fe…`; build artifact `8819491987`/SHA-256 `5ff2c2ad…` (30 days); release artifact `8819497837`/SHA-256 `d3f94630…` (90 days); Cloudflare version `3666f6f8…`; valid URL `https://m0code.com`; attempt-1 live parity. The active Orgo player was unchanged and passed browser regression.

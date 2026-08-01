@@ -33,6 +33,7 @@ Severity describes launch risk, not certainty. Licensing observations are engine
 
 ### DEP-001 — P1 high — Production workflow actions use mutable major tags
 
+- **Remediation status:** `Complete — verified in pull-request and production workflows` (2026-08-01).
 - **Affected:** Production deployment pipeline, `.github/workflows/cloudflare.yml:25`, `:28`, `:46-52`.
 - **Evidence:** `actions/checkout@v4`, `oven-sh/setup-bun@v2`, and `cloudflare/wrangler-action@v4` are tags, not immutable full commit SHAs. The Cloudflare action directly receives `CLOUDFLARE_API_TOKEN` and the account identifier. GitHub states that a full-length commit SHA is the only immutable action reference; see [Secure use reference](https://docs.github.com/en/actions/reference/security/secure-use).
 - **Reproduction:** Run `rg -n 'uses:' .github/workflows/cloudflare.yml`; compare each reference with the 40-hex-character SHA form required by GitHub's immutable-reference guidance.
@@ -43,6 +44,7 @@ Severity describes launch risk, not certainty. Licensing observations are engine
 - **Estimated effort:** Small (2–4 hours, including review and a non-production workflow run).
 - **Dependencies:** Repository Actions-policy access; vetted upstream release SHAs; Dependabot or another controlled updater for `github-actions`.
 - **Objective verification:** All `uses:` entries resolve to reviewed 40-character SHAs; policy rejects a tag-only test workflow; a pull-request dry run passes; production deployment succeeds with no broader token permissions.
+- **Current verification:** checkout, setup-bun, wrangler-action, upload-artifact, and download-artifact all use exact 40-character official SHAs with version comments. PR runs `30703012943` and `30703197004` passed without deployment; final production run `30703230758` used those exact pins. Repository policy enforcement and controlled updates remain follow-up controls.
 
 ### DEP-002 — P2 medium — Two direct runtime dependencies are declared as `latest`
 
@@ -113,6 +115,7 @@ Severity describes launch risk, not certainty. Licensing observations are engine
 
 ### DEP-R03 — P2 medium — Exact production dependency provenance cannot be independently verified
 
+- **Remediation status:** `Partially resolved — source, lock input, build bytes, artifact digest, and deployment version are now bound; SBOM and signed attestation remain open` (2026-08-01).
 - **Affected:** `https://m0code.com`, local `dist/`, `bun.lock`, deployment workflow.
 - **Evidence:** Live asset hashes (`index-BTo1nZ1V.js`, `routes-DAvGpumd.js`) differ from local ignored `dist/` hashes (`index-COTNhO9J.js`, `routes-BXeiZRtJ.js`), which is expected when source revisions differ. HEAD is one commit ahead of `origin/master`, while `package.json` and `bun.lock` hashes are identical across those commits. Live bundles publish neither source maps nor a build/SBOM identifier, so the audited lock can be correlated with the workflow but not cryptographically tied to the exact deployed bytes.
 - **Reproduction:** Compare asset URLs from live HTML with `find dist/client/assets -type f`; run `git diff origin/master..HEAD -- package.json bun.lock`; inspect live JavaScript for a build identifier or source-map reference.
@@ -123,6 +126,7 @@ Severity describes launch risk, not certainty. Licensing observations are engine
 - **Estimated effort:** Medium (1–2 days).
 - **Dependencies:** CI artifact retention; deployment-platform metadata; SBOM format; signing/attestation identity; coordination with release/deployment audit.
 - **Objective verification:** Given a production asset digest, an operator can retrieve a signed/immutable record containing source commit, Bun version, lock hash, dependency SBOM, build command, and deployment ID; a rebuild from that record produces the expected dependency graph.
+- **Current verification:** release artifact `8819497837` records source `87864fe…`, Bun `1.3.10`, Node `v24.3.0`, Wrangler `4.114.0`, hashes for `bun.lock` and all other release inputs, 130 output-file hashes, build artifact `8819491987`/SHA-256 `5ff2c2ad…`, and Cloudflare version `3666f6f8…`. It does not contain an SBOM, package-level provenance, or signature, so the remaining recommendation is intentionally open.
 
 ### DEP-R04 — P3 low — Secret scanning coverage is heuristic and not continuous
 
@@ -173,8 +177,14 @@ Severity describes launch risk, not certainty. Licensing observations are engine
 ## Not Tested
 
 - Authenticated GitHub Dependabot, dependency-graph, secret-scanning, code-scanning, Actions policy, environment protection, and alert state: unauthenticated repository metadata returned 404 and security endpoints returned 401.
-- npm package signature/provenance verification, GitHub Action source review, action-tag-to-SHA verification, and Cloudflare action/CLI transitive artifact integrity.
+- npm package signature/provenance verification, full GitHub Action source review, and Cloudflare action/CLI transitive artifact integrity. ITEM-09 verified the selected official action SHAs but did not audit every upstream source/transitive byte.
 - A clean-room install or reproducible build: prohibited because it would install/write dependencies or build outputs. The existing installed tree and ignored `dist/` were inspected only.
 - Full entropy/encoded-secret scanning, CI log review, local ignored-file contents, developer machines, GitHub/Cloudflare secret values, or credential validity. No secret values were accessed.
 - Formal legal determination for npm packages, vendored skills, fonts, images, videos, brands, or portfolio project assets. This report inventories software/license signals only.
-- Complete live Worker/server dependency extraction: production exposes minified client bundles but no SBOM, source map, build identifier, or authenticated deployment record.
+- Complete live Worker/server dependency extraction and an SBOM remain unavailable. ITEM-09 added a restricted authenticated release record, but no public build identifier, package-level SBOM, or signed attestation.
+
+## Implementation tracking — ITEM-09
+
+- **Status:** `Complete for action pinning and artifact provenance; package/SBOM provenance remains open` (2026-08-01).
+- **Disposition:** `DEP-001` is complete. `DEP-R03` is partially resolved; `DEP-003`, `DEP-004`, SBOM/licensing, secret-scanning, and signed-attestation requirements remain open.
+- **Evidence:** five action types are pinned to full SHAs; PR and production paths passed. Release artifact `8819497837` binds source/tool/input/output hashes, build artifact `8819491987`/SHA-256 `5ff2c2ad…`, Cloudflare version `3666f6f8…`, production URL, and attempt-1 parity.

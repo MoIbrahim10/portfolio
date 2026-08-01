@@ -127,6 +127,7 @@ Methods and evidence:
 ### RISK-12-002 — Live deployment and audited local artifact are not the same release
 
 - **Severity:** `P2 medium`
+- **Remediation status:** `Complete — deployment now consumes and verifies one retained artifact` (2026-08-01).
 - **Affected:** Deployment/update/rollback path for `/`; live assets versus `dist/client/**`.
 - **Evidence:** Live HTML references `index-BTo1nZ1V.js`, `routes-DAvGpumd.js`, `styles-B9P8SFFr.css`, and `routes-BvKEGjiQ.css`; current `dist/client` contains `index-COTNhO9J.js`, `routes-BXeiZRtJ.js`, `styles-DDBD8rJB.css`, and `routes-DKGiQ1HX.css`. The live SSR home is initially hidden, while the existing local worker’s home article is visible by default.
 - **Reproduction:** Compare asset URLs from `curl -sS https://m0code.com/` with `find dist/client/assets -maxdepth 1 -type f`; compare the opening home article from live HTML with an in-memory `dist/server/server.js` fetch.
@@ -243,3 +244,9 @@ Methods and evidence:
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Disposition:** `OFF-12-001` is complete. The homepage fails open to readable SSR when JavaScript is unavailable or its current main module is blocked. Offline navigation, resource-specific failures, media recovery, and PWA policy remain open.
 - **Verification:** four desktop/mobile production failure-mode runs retained visible identity, work, and contact content with article `opacity: 1`, `visibility: visible`, `filter: none`, and `transform: none`. Normal/reduced-motion checks and the retained Orgo viewer also passed; no runtime source change was made.
+
+## Implementation tracking — ITEM-09
+
+- **Status:** `Complete for release-parity/mixed-artifact prevention` (2026-08-01).
+- **Disposition:** `RISK-12-002` is complete: deployment consumes one retained, hash-verified artifact and then checks live JS/CSS/media bytes. Offline navigation, service-worker/PWA policy, update behavior, mid-deploy failure simulation, and resource-failure recovery remain open.
+- **Evidence:** build artifact `8819491987` was downloaded and all 130 files reverified before deployment; attempt-1 production smoke matched five generated assets and the Orgo MP4 to the same manifest.

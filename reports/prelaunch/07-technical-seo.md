@@ -131,6 +131,7 @@ Normal and cache-disabled requests returned the same status and byte counts for 
 
 - **ID:** SEO-07-R01
 - **Severity:** P2 medium
+- **Remediation status:** `Complete — verified in production and bound by an immutable internal release receipt` (2026-08-01).
 - **Affected route/component/file and line:** Both routes; live `/assets/*`; current `dist/client/assets/*`; `src/components/v14-exploration-lab/V14ExplorationLab.tsx:322-367`
 - **Evidence:** Live assets use hashes such as `index-BTo1nZ1V.js` and `routes-DAvGpumd.js`, while existing `dist` uses `index-COTNhO9J.js` and `routes-BXeiZRtJ.js`. Live home SSR has a motion-hidden article and 1,254 px PNG avatars, while current source/`dist` has no hidden article and uses `-640.webp`. Eight newly referenced current-build paths return live `404`, but they exist in `dist/client` and are not referenced by the older live bundle. The deployed markup is consistent with prior repository state `58ed5af`, but no authoritative deployed SHA was available.
 - **Reproduction steps:** Compare the stylesheet/modulepreload names in live and local `dist` HTML. Compare the first portfolio `<article>` tag and avatar URLs. HEAD the six `-640.webp` avatars and two identity assets live, then confirm the files exist locally.
@@ -280,3 +281,9 @@ Normal and cache-disabled requests returned the same status and byte counts for 
 - **Disposition:** `SEO-07-004` and `SEO-07-005` are complete. Raw production SSR contains exactly one meaningful homepage H1 before the four project H2s. Unknown URLs preserve HTTP `404` and provide a crawlable home link rather than a dead end.
 - **Verification:** normal, repeat, and cache-bypassed production probes return the new semantic markup; the hydrated accessibility tree agrees with SSR. The 404 has a unique title/description, `main`, H1, explanation, and recovery link. No canonical-to-home or soft-404 behavior was introduced.
 - **Release evidence:** PR [#10](https://github.com/MoIbrahim10/portfolio/pull/10), merge `f5bf8335…`, Actions run `30701980701`, Cloudflare version `3ba23d32…`.
+
+## Implementation tracking — ITEM-09
+
+- **Status:** `Complete — verified in production` (2026-08-01).
+- **Disposition:** `SEO-07-R01` is complete. The approved master SHA, SSR structure, generated assets, brand asset, and retained media are now tied to the deployed Cloudflare version by an immutable internal receipt. Canonical, robots/sitemap, crawler-tool, and Search Console findings remain open.
+- **Evidence:** production smoke passed `/` `200`, one H1/four project groups, unknown `404` recovery, retired-lab `404`, and exact hashes for five generated assets; release `87864fe…` maps to Cloudflare `3666f6f8…`.

@@ -270,3 +270,9 @@ Release posture: **not functionally cleared**. No source, dependency, build, con
 - **Disposition:** `FQA-005` is complete. Direct-load and hydrated unknown URLs preserve `404`, explain the failure, and provide one working route home; keyboard activation returns to the portfolio.
 - **Regression evidence:** fresh/cache-bypassed production checks show no console/page errors. The retained Orgo full-screen viewer still opens, loads and plays `/portfolio/projects/orgo/walkthrough.mp4` at `readyState=4`, restores body scrolling on close, and was not functionally changed.
 - **Release evidence:** PR [#10](https://github.com/MoIbrahim10/portfolio/pull/10), merge `f5bf8335…`, Actions run `30701980701`, Cloudflare version `3ba23d32…`.
+
+## Implementation tracking — ITEM-09
+
+- **Status:** `Complete for release parity and retained-player regression` (2026-08-01).
+- **Disposition:** the release-identity dependency behind `FQA-001` is now automated. Exhaustive 32-trigger, keyboard/touch, network-failure, and cross-browser execution plus a browser CI suite remain open.
+- **Evidence:** CI matched production homepage structure, five generated assets, brand, 404s, and Orgo MP4 bytes. Independent production browser QA opened the Orgo dialog; the exact MP4 reached `readyState=4`, duration `4.534`, `error=null`, played and looped, emitted no console errors, and closed normally.
