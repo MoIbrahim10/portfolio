@@ -173,6 +173,21 @@ function parseCloudflareVersion(commandOutput) {
   return match[1]
 }
 
+function normalizeDeploymentUrl(value) {
+  const candidate = value?.trim() || 'https://m0code.com'
+  const match = candidate.match(
+    /https?:\/\/[^\s)]+|(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}/i,
+  )
+
+  if (!match) {
+    throw new Error('Wrangler output did not contain a deployment URL')
+  }
+
+  const url = new URL(match[0].includes('://') ? match[0] : `https://${match[0]}`)
+
+  return url.origin
+}
+
 async function finalizeReleaseManifest() {
   const buildManifest = await readJson(BUILD_MANIFEST_PATH)
   const productionVerification = await readJson(PRODUCTION_VERIFICATION_PATH)
@@ -204,7 +219,7 @@ async function finalizeReleaseManifest() {
       versionId: parseCloudflareVersion(
         requireEnvironment('WRANGLER_COMMAND_OUTPUT'),
       ),
-      url: process.env.DEPLOYMENT_URL?.trim() || 'https://m0code.com',
+      url: normalizeDeploymentUrl(process.env.DEPLOYMENT_URL),
     },
     productionVerification,
   }
