@@ -77,6 +77,17 @@ async function loadHome(page: Page) {
   expect(response?.status()).toBe(200)
 }
 
+async function selectStoryByKeyboard(page: Page, storyIndex: number) {
+  const rail = page.getByRole('region', {
+    name: 'Projects. Swipe or scroll horizontally to change project.',
+  })
+  await rail.focus()
+  await page.keyboard.press('Home')
+  for (let index = 0; index < storyIndex; index += 1) {
+    await page.keyboard.press('ArrowRight')
+  }
+}
+
 async function addCssRules(page: Page, rules: string[]) {
   await page.evaluate((rulesToAdd) => {
     const sheet = [...document.styleSheets].find((candidate) => {
@@ -196,24 +207,32 @@ test('every media trigger opens a labeled, keyboard-contained viewer', async ({
   await loadHome(page)
 
   for (const [storyIndex, storyName] of storyNames.entries()) {
-    if (storyIndex > 0) {
-      const rail = page.getByRole('region', {
-        name: 'Projects. Swipe or scroll horizontally to change project.',
-      })
-      await rail.focus()
-      await page.keyboard.press('ArrowRight')
-    }
-    const story = page.getByRole('article', {
+    await selectStoryByKeyboard(page, storyIndex)
+    let story = page.getByRole('article', {
       name: `${storyName} project story`,
     })
     await expect(story).toBeVisible()
-    const triggers = story.locator('button[aria-label^="View "]')
+    let triggers = story.locator('button[aria-label^="View "]')
     await expect(triggers).toHaveCount(expectedTriggerCounts[storyIndex])
     const triggerIndexes = isMobileProject(testInfo)
       ? [0, expectedTriggerCounts[storyIndex] - 1]
       : Array.from({ length: expectedTriggerCounts[storyIndex] }, (_, index) => index)
 
     for (const triggerIndex of [...new Set(triggerIndexes)]) {
+      if (
+        testInfo.project.name === 'desktop-webkit' &&
+        triggerIndex > 0 &&
+        triggerIndex % 5 === 0
+      ) {
+        const response = await page.reload()
+        await waitForHydration(page)
+        expect(response?.status()).toBe(200)
+        await selectStoryByKeyboard(page, storyIndex)
+        story = page.getByRole('article', {
+          name: `${storyName} project story`,
+        })
+        triggers = story.locator('button[aria-label^="View "]')
+      }
       const trigger = triggers.nth(triggerIndex)
       await trigger.scrollIntoViewIfNeeded()
       await trigger.click()
