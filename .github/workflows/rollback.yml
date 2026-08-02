@@ -1,0 +1,112 @@
+name: Roll Back Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_current_version:
+        description: Cloudflare version currently serving production
+        required: true
+        type: string
+      target_version:
+        description: Previously verified Cloudflare version to restore
+        required: true
+        type: string
+      reason:
+        description: Incident reason, at least 10 characters
+        required: true
+        type: string
+      confirmation:
+        description: Type ROLLBACK portfolio TO followed by target version
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-production
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment:
+      name: production
+      url: https://m0code.com
+    steps:
+      - name: Check out release controls
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Capture current deployment
+        run: |
+          mkdir -p release
+          bunx wrangler@4.114.0 deployments status --json > release/rollback-before.json
+          bunx wrangler@4.114.0 versions view "${{ inputs.target_version }}" --json > release/rollback-target.json
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 263ad8907dc3ed688838c72e2e9f994f
+
+      - name: Verify rollback target and approval
+        run: bun scripts/release-guard.mjs rollback-before
+        env:
+          EXPECTED_CURRENT_VERSION: ${{ inputs.expected_current_version }}
+          ROLLBACK_TARGET_VERSION: ${{ inputs.target_version }}
+          ROLLBACK_REASON: ${{ inputs.reason }}
+          ROLLBACK_CONFIRMATION: ${{ inputs.confirmation }}
+
+      - name: Restore verified Cloudflare version
+        id: rollback
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 263ad8907dc3ed688838c72e2e9f994f
+          packageManager: bun
+          wranglerVersion: 4.114.0
+          command: rollback ${{ inputs.target_version }} --yes --message "Approved rollback run ${{ github.run_id }}"
+
+      - name: Verify restored deployment identity
+        run: |
+          bunx wrangler@4.114.0 deployments status --json > release/rollback-after.json
+          bun scripts/release-guard.mjs rollback-after
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 263ad8907dc3ed688838c72e2e9f994f
+          ROLLBACK_TARGET_VERSION: ${{ inputs.target_version }}
+
+      - name: Verify restored production health
+        run: bun scripts/check-production-health.mjs
+        env:
+          HEALTH_OUTPUT_PATH: release/rollback-health.json
+
+      - name: Install Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run restored production browser tests
+        run: bun run test:e2e
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: https://m0code.com
+
+      - name: Retain rollback evidence
+        if: always() && steps.rollback.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: portfolio-rollback-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            release/rollback-before.json
+            release/rollback-target.json
+            release/rollback-after.json
+            release/rollback-health.json
+            test-results/results.json
+          if-no-files-found: warn
+          include-hidden-files: true
+          compression-level: 9
+          retention-days: 90

@@ -1,4 +1,4 @@
-name: Cloudflare
+name: Cloudflare Candidate
 
 on:
   pull_request:
@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - master
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -16,12 +15,13 @@ env:
   BUILD_ARTIFACT_NAME: portfolio-build-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
 
 concurrency:
-  group: cloudflare-production
-  cancel-in-progress: false
+  group: cloudflare-candidate-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
     outputs:
       artifact_digest: ${{ steps.upload.outputs.artifact-digest }}
       artifact_id: ${{ steps.upload.outputs.artifact-id }}
@@ -83,21 +83,25 @@ jobs:
           compression-level: 0
           retention-days: 30
 
-  deploy:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+  candidate:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     environment:
-      name: production
-      url: https://m0code.com
+      name: preview
+      url: ${{ steps.candidate.outputs.preview_url }}
     steps:
-      - name: Check out deployment configuration
+      - name: Check out candidate configuration
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version-file: .bun-version
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
 
       - name: Download retained build artifact
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
@@ -108,40 +112,76 @@ jobs:
       - name: Verify retained build artifact
         run: bun scripts/release-manifest.mjs verify
 
-      - name: Deploy production Worker
-        id: deploy
+      - name: Upload immutable candidate version
+        id: upload_version
         uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 263ad8907dc3ed688838c72e2e9f994f
           packageManager: bun
           wranglerVersion: 4.114.0
-          command: deploy
+          command: versions upload --preview-alias candidate-${{ github.run_id }}
 
-      - name: Verify production
-        id: production_verify
+      - name: Record candidate metadata
+        id: candidate
+        run: bun scripts/release-manifest.mjs stage
+        env:
+          WRANGLER_COMMAND_OUTPUT: ${{ steps.upload_version.outputs.command-output }}
+
+      - name: Verify candidate version configuration
+        run: bunx wrangler@4.114.0 versions view "${{ steps.candidate.outputs.version_id }}" --json > release/cloudflare-version.json
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 263ad8907dc3ed688838c72e2e9f994f
+
+      - name: Verify candidate HTTP and assets
         run: bun scripts/verify-production-release.mjs
+        env:
+          DEPLOYMENT_ORIGIN: ${{ steps.candidate.outputs.preview_url }}
+          VERIFICATION_OUTPUT_PATH: release/preview-verification.json
 
-      - name: Finalize release manifest
-        if: always() && steps.deploy.outcome == 'success'
-        run: bun scripts/release-manifest.mjs finalize
+      - name: Install Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run candidate browser tests
+        id: candidate_browser
+        run: bun run test:e2e
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: ${{ steps.candidate.outputs.preview_url }}
+
+      - name: Retain candidate browser failure evidence
+        if: failure() && steps.candidate_browser.outcome == 'failure'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: portfolio-preview-browser-failures-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: error
+          include-hidden-files: true
+          compression-level: 6
+          retention-days: 14
+
+      - name: Finalize candidate manifest
+        run: bun scripts/release-manifest.mjs candidate
         env:
           BUILD_ARTIFACT_DIGEST: ${{ needs.build.outputs.artifact_digest }}
           BUILD_ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
           BUILD_ARTIFACT_URL: ${{ needs.build.outputs.artifact_url }}
-          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
-          PRODUCTION_VERIFIED: ${{ steps.production_verify.outcome == 'success' }}
-          WRANGLER_COMMAND_OUTPUT: ${{ steps.deploy.outputs.command-output }}
 
-      - name: Retain release manifest
-        if: always() && steps.deploy.outcome == 'success'
+      - name: Retain promotable candidate
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: portfolio-release-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: portfolio-candidate-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
+            dist
             release/build-manifest.json
-            release/production-verification.json
-            release/release-manifest.json
+            release/candidate-metadata.json
+            release/candidate-manifest.json
+            release/cloudflare-version.json
+            release/preview-verification.json
+            test-results/results.json
           if-no-files-found: error
+          include-hidden-files: true
           compression-level: 9
-          retention-days: 90
+          retention-days: 30

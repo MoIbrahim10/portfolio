@@ -1,0 +1,79 @@
+name: Production Health
+
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+    inputs:
+      simulate_failure:
+        description: Controlled alert-delivery drill
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: production-health
+  cancel-in-progress: true
+
+jobs:
+  health:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out health contract
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Check production routes, assets, headers, and media
+        id: health
+        continue-on-error: true
+        run: bun scripts/check-production-health.mjs
+        env:
+          SIMULATE_FAILURE: ${{ inputs.simulate_failure || false }}
+
+      - name: Open or update production alert
+        if: steps.health.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ALERT_TITLE: '[production] m0code.com health check failing'
+        run: |
+          issue_number="$(gh issue list --state open --search "$ALERT_TITLE in:title" --json number,title --jq '.[] | select(.title == env.ALERT_TITLE) | .number' | head -n 1)"
+          body="Health workflow $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID failed. Follow docs/runbooks/production-release.md."
+          if [ -n "$issue_number" ]; then
+            gh issue comment "$issue_number" --body "$body"
+          else
+            gh issue create --title "$ALERT_TITLE" --body "$body"
+          fi
+
+      - name: Close recovered production alert
+        if: steps.health.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ALERT_TITLE: '[production] m0code.com health check failing'
+        run: |
+          issue_number="$(gh issue list --state open --search "$ALERT_TITLE in:title" --json number,title --jq '.[] | select(.title == env.ALERT_TITLE) | .number' | head -n 1)"
+          if [ -n "$issue_number" ]; then
+            gh issue close "$issue_number" --comment "Recovered in $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID."
+          fi
+
+      - name: Retain manual or failed health evidence
+        if: github.event_name == 'workflow_dispatch' || steps.health.outcome == 'failure'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: portfolio-health-${{ github.run_id }}-${{ github.run_attempt }}
+          path: release/health-check.json
+          if-no-files-found: error
+          compression-level: 9
+          retention-days: 30
+
+      - name: Fail unhealthy run after alert delivery
+        if: steps.health.outcome == 'failure'
+        run: exit 1
