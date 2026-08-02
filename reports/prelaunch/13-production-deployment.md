@@ -95,7 +95,8 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 ### DEP-13-004 — Production deploys have no approval gate or production-like preview
 
 - **Severity:** `P1 high`
-- **Affected route/component/file and line:** `.github/workflows/cloudflare.yml:3-10,19-56`; GitHub environment `production`
+- **Remediation status:** `Complete under current GitHub plan — exact-SHA manual promotion and version preview production-verified` (2026-08-02).
+- **Affected route/component/file and line:** `.github/workflows/cloudflare.yml:1-180`; `.github/workflows/release.yml:1-124`; GitHub environments `preview` and `production`
 - **Evidence:** Every push to `master` reaches `wrangler deploy`; `workflow_dispatch` can run the workflow from a selectable ref; there is no staging/preview deployment job. The read-only GitHub environment API returned `protection_rules: []` and `deployment_branch_policy: null`. Pull requests build/dry-run but do not produce a deployed preview. The latest six push-triggered runs all deployed production directly.
 - **Reproduction steps:** Inspect the workflow triggers/conditions; run `gh api repos/MoIbrahim10/portfolio/environments/production --jq '{protection_rules,deployment_branch_policy}'`; inspect `gh run list --workflow Cloudflare`.
 - **User/business impact:** A bad merge, compromised maintainer session, or mistaken manual dispatch can immediately replace all production traffic without human approval or production-equivalent validation.
@@ -105,6 +106,7 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 - **Estimated effort:** M (1–2 days).
 - **Dependencies:** GitHub plan/repository policy; Cloudflare token scopes; release owner; scope 14 CI gates.
 - **Objective verification method:** An unapproved branch/ref cannot enter `production`; PRs create a non-production URL/version; promotion consumes the already validated SHA/artifact; audit logs show the approver and promoted version.
+- **Current verification:** PRs only build/test. A `master` push uploads a no-traffic version preview and runs exact-byte plus 12/12 zero-retry browser validation; run `30748871265` passed for version `eb99526e…`. Production is reachable only through manual `Promote Production`, whose guard requires an exact successful candidate run, its full SHA equal to current `master`, and `PROMOTE <full-sha>`; run `30749017151` promoted the retained version without rebuilding. GitHub returned 403 for required-reviewer/branch-protection configuration on this private Free repository, so independent reviewer enforcement is not claimed; the exact-SHA manual workflow is the documented compensating control.
 
 ### DEP-13-005 — The audited launch candidate is not the production artifact
 
@@ -181,8 +183,8 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 ### DEP-13-010 — Releases are not captured as promotable artifacts and rollback is undocumented
 
 - **Severity:** `P2 medium`
-- **Remediation status:** `Partially resolved — immutable artifact and release evidence complete; rollback documentation/drill remains open` (2026-08-01).
-- **Affected route/component/file and line:** `.github/workflows/cloudflare.yml:31-56`; `wrangler.jsonc:1-17`; no release/rollback runbook
+- **Remediation status:** `Complete — immutable promotion, documented recovery, and production rollback drill verified` (2026-08-02).
+- **Affected route/component/file and line:** `.github/workflows/cloudflare.yml:70-180`; `.github/workflows/release.yml:45-124`; `.github/workflows/rollback.yml:1-112`; `docs/runbooks/production-release.md:1-41`
 - **Evidence:** CI builds and immediately runs `wrangler deploy`; it does not upload/persist the exact `dist`, build manifest, checksum, Cloudflare version ID, or deployment URL. No rollback job, command, health threshold, owner, or recovery checklist exists. The GitHub deployment record has an empty `environment_url`.
 - **Reproduction steps:** Inspect workflow steps and repository files; query the latest GitHub deployment/status metadata; confirm no artifact/promotion/rollback step and blank environment URL.
 - **User/business impact:** During an incident, responders must discover the prior version and procedure under pressure; reproducing or proving the exact deployed artifact is harder.
@@ -192,14 +194,15 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 - **Estimated effort:** M (1–2 days, including a non-production drill).
 - **Dependencies:** Cloudflare deployment permissions; release metadata; observability/health signals; any future stateful binding inventory.
 - **Objective verification method:** In a preview/test Worker, promote version A, promote B, roll back to A, and verify routes/assets/headers; record recovery time and evidence. Production documentation identifies the exact previous stable version without rebuilding.
-- **Current verification:** CI retains the exact build for 30 days and its three-file release receipt for 90 days; production deploys the downloaded artifact without rebuilding and records source/input/output hashes, artifact digest/URL, Cloudflare version, production URL, and smoke result. No rollback command, owner, threshold, RTO, preview Worker, or completed rollback drill exists, so the finding remains partially open.
+- **Current verification:** CI retains the exact build for 30 days and release/candidate/rollback evidence for 90 days. Promotion deploys the tested Cloudflare version without rebuilding. The runbook names the owner, two rollback thresholds, 15-minute detection/RTO targets, guarded inputs, and forward-fix procedure. Production rollback run `30749138784` verified current version `eb99526e…`, restored byte-identical prior version `8ae8c433…`, passed health and browser 12/12 in 78 seconds, and retained artifact `8833869600`; run `30749197122` restored `eb99526e…` and final health run `30749250655` passed.
 
 ## Risks / Unverified Configuration
 
 ### DEP-13-R01 — No verifiable end-to-end observability or alerting contract
 
 - **Severity:** `P1 high`
-- **Affected route/component/file and line:** production Worker `portfolio`; `wrangler.jsonc:1-17`; `.github/workflows/cloudflare.yml:54-56`
+- **Remediation status:** `Complete for the approved low-traffic baseline — logs, synthetic checks, alert delivery, and recovery verified` (2026-08-02).
+- **Affected route/component/file and line:** production Worker `portfolio`; `wrangler.jsonc:8-13`; `.github/workflows/production-health.yml:1-79`; `scripts/check-production-health.mjs`; `docs/runbooks/production-release.md:19-37`
 - **Evidence:** Repository config has no `observability`, sampling, logpush, Tail Worker, error vendor, alert thresholds, or uptime monitor. The only active health evidence is a post-deploy title grep. Cloudflare’s dashboard, Workers Logs, metrics, notification policies, and external monitors were inaccessible, so absence outside the repository is not claimed.
 - **Reproduction steps:** Search repository config/source for observability/logging/monitoring integrations; inspect the workflow verification step; review dashboard settings with an authorized operator.
 - **User/business impact:** A deployment can pass while a secondary route, asset, interaction, or region is broken; exceptions, latency regressions, and elevated 4xx/5xx may go unnoticed.
@@ -209,6 +212,7 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 - **Estimated effort:** M (1–3 days).
 - **Dependencies:** Cloudflare dashboard access; privacy/retention policy; incident owner; budget.
 - **Objective verification method:** A controlled preview failure produces a searchable event and alert containing route, status, release/version, and correlation ID; an operator follows the runbook within the target detection/recovery time.
+- **Current verification:** Cloudflare dashboard reports Workers Logs enabled, 388 observed invocations, and zero errors at inspection; Wrangler enables observability at full sampling for this low-traffic launch baseline. `Production Health` runs every 15 minutes and verifies root HTML, emitted assets, security headers, 404s, and retained MP4 health. Controlled failure run `30749077296` opened GitHub issue #21 with the failed run and runbook; healthy run `30749093387` closed it with recovery evidence, and final run `30749250655` passed. Traces and privately uploaded source maps remain separate P2 opportunities, not prerequisites for this finding.
 
 ### DEP-13-R02 — Production stack traces are likely not source-mapped
 
@@ -450,6 +454,12 @@ Current-behavior claims were checked on 2026-07-29 from the `MRS` Cloudflare edg
 
 ## Implementation tracking — ITEM-09
 
-- **Status:** `Complete for immutable artifact provenance; rollback/approval/preview remain open` (2026-08-01).
-- **Disposition:** `DEP-13-005` is complete. Artifact/provenance/URL/version portions of `DEP-13-010` and `DEP-13-O02` are complete; `DEP-13-004`, observability, rollback ownership/threshold/runbook/drill, and gradual preview promotion remain open.
+- **Status:** `Complete for immutable artifact provenance` (2026-08-01); ITEM-11 subsequently completed preview, promotion, observability, and rollback controls.
+- **Disposition:** `DEP-13-005` is complete. ITEM-11 subsequently completed `DEP-13-004`, `DEP-13-010`, and `DEP-13-R01`; remaining deployment findings are tracked independently.
 - **Evidence:** final run `30703230758`; source `87864fe…`; build artifact `8819491987`/SHA-256 `5ff2c2ad…` (30 days); release artifact `8819497837`/SHA-256 `d3f94630…` (90 days); Cloudflare version `3666f6f8…`; valid URL `https://m0code.com`; attempt-1 live parity. The active Orgo player was unchanged and passed browser regression.
+
+## Implementation tracking — ITEM-11
+
+- **Status:** `Complete under current GitHub plan — preview, production, alert, rollback, recovery, and final health verified` (2026-08-02).
+- **Disposition:** `DEP-13-004`, `DEP-13-010`, and `DEP-13-R01` are complete. Required-reviewer enforcement is unavailable on the private GitHub Free plan and remains a governance opportunity; manual exact-SHA/version promotion is the implemented compensating control.
+- **Evidence:** candidate `30748871265` passed HTTP plus browser 12/12 at `https://eb99526e-portfolio.mielbedwihyy.workers.dev`; production promotion `30749017151` passed HTTP plus browser 12/12 at `https://m0code.com`; alert drill `30749077296` opened issue #21 and recovery `30749093387` closed it; rollback `30749138784` restored `8ae8c433…` in 78 seconds and passed all gates; re-promotion `30749197122` restored `eb99526e…`; final health `30749250655` passed. No UI, component, media, player, or fetch behavior changed.
