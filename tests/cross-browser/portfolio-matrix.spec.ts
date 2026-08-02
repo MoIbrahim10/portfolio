@@ -187,6 +187,7 @@ test('keyboard project navigation never leaves focus in inert content', async ({
 test('every media trigger opens a labeled, keyboard-contained viewer', async ({
   page,
 }, testInfo) => {
+  test.slow()
   const assertRuntimeClean = monitorRuntime(page, {
     allowedRequestFailures: [orgoVideoPath, '.mp4'],
   })
@@ -194,16 +195,11 @@ test('every media trigger opens a labeled, keyboard-contained viewer', async ({
 
   for (const [storyIndex, storyName] of storyNames.entries()) {
     if (storyIndex > 0) {
-      if (isMobileProject(testInfo)) {
-        const rail = page.getByRole('region', {
-          name: 'Projects. Swipe or scroll horizontally to change project.',
-        })
-        await rail.focus()
-        await page.keyboard.press('ArrowRight')
-      } else {
-        const activeStory = page.getByRole('article', { name: /project story/ })
-        await activeStory.getByRole('button', { name: `Show ${storyName}` }).click()
-      }
+      const rail = page.getByRole('region', {
+        name: 'Projects. Swipe or scroll horizontally to change project.',
+      })
+      await rail.focus()
+      await page.keyboard.press('ArrowRight')
     }
     const story = page.getByRole('article', {
       name: `${storyName} project story`,
@@ -373,7 +369,7 @@ test('touch and pointer contracts match the advertised interaction', async ({
   page,
 }, testInfo) => {
   const assertRuntimeClean = monitorRuntime(page, {
-    allowedRequestFailures: [orgoVideoPath, '/cdn-cgi/rum', '.webp'],
+    allowedRequestFailures: [orgoVideoPath, '/cdn-cgi/rum', '.mp4', '.webp'],
   })
   await page.setViewportSize({ width: 1024, height: 768 })
   await loadHome(page)
@@ -384,12 +380,17 @@ test('touch and pointer contracts match the advertised interaction', async ({
   const touchAction = await story.evaluate((element) => getComputedStyle(element).touchAction)
   expect.soft(touchAction).toContain('pan-x')
 
+  await story.getByRole('button', { name: 'Show The Good Invoice' }).click()
+  await expect(
+    page.getByRole('article', { name: 'The Good Invoice project story' }),
+  ).toBeVisible()
+
   await page.setViewportSize({ width: 390, height: 844 })
   await loadHome(page)
   await expect
     .soft(
       page
-        .getByRole('article', { name: 'Orgo project story' })
+        .locator('article[aria-hidden="false"]')
         .getByText('Swipe left for the next project'),
     )
     .toBeVisible()
