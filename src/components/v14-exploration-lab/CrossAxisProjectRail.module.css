@@ -247,7 +247,7 @@
   scroll-padding-top: clamp(7.5rem, 14vw, 10rem);
   scroll-snap-type: y proximity;
   scrollbar-width: none;
-  touch-action: pan-y;
+  touch-action: pan-x pan-y;
 }
 
 .verticalStory::-webkit-scrollbar {
@@ -259,13 +259,22 @@
   z-index: 20;
   top: 0;
   right: 0;
-  width: 10px;
+  width: 24px;
   height: 100%;
   overflow: hidden;
   color: var(--story-foreground);
-  background: color-mix(in srgb, var(--story-foreground) 10%, transparent);
+  background: transparent;
   cursor: pointer;
   touch-action: none;
+}
+
+.stableScrollbar::before {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 10px;
+  background: color-mix(in srgb, var(--story-foreground) 10%, transparent);
+  content: '';
+  pointer-events: none;
 }
 
 .stableScrollbar[data-scrollable='false'] {

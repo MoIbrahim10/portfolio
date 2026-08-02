@@ -240,3 +240,11 @@ These are implementation/artifact checks, not visual cross-browser passes:
 - **Verified subset:** Desktop Chrome and Pixel 7 emulation now gate hydration, keyboard rail selection, modal/video controls, Escape/focus return, reduced motion, media failure fallback, and both 404 routes. The public-origin matrix passed 12/12.
 - **Defects fixed:** reduced-motion fresh load no longer emits mismatched SSR/client autoplay/motion attributes, and modal focus restoration no longer races inert cleanup. Normal non-reduced autoplay remains after hydration; reduced-motion media remains paused.
 - **Remaining scope:** real touch swipes/devices, WebKit, Firefox, orientation, zoom/reflow, forced colors, hybrid input, browser Back, offline/throttled states, and the full breakpoint matrix remain open. Release evidence: `ebcd8b1…`, Actions `30706793536`, Cloudflare `5c861a15…`.
+
+## Implementation tracking — ITEM-12
+
+- **Status:** `RESP-11-002 through RESP-11-007 and RESP-11-010 resolved locally; release verification pending` (2026-08-02).
+- **Fixes:** cue direction, tablet/hybrid pan-axis permission, post-commit keyboard focus, WebKit modal Tab containment, inactive-story accessibility exposure, and desktop scrollbar target size. Hybrid video controls remain visible/operable after tapping without changing their visual design.
+- **Matrix:** Desktop Chromium/Firefox/WebKit, Pixel 7, iPhone 13/WebKit, and hybrid desktop touch; 320×844, 390×844, 768×1024, 844×390, 1024×768, and 1440×1000; text spacing, 200% text, reduced motion, forced colors, keyboard, touch, semantic snapshots, modal/media, and 404s.
+- **Evidence:** 56/56 applicable cases passed with four documented mobile skips and no retries. The prior 42-failure production baseline independently reproduced the six fixed defects before implementation.
+- **Remaining opportunities:** RESP-11-008 safe-area testing on physical notched devices and RESP-11-009 browser-history modal behavior remain open P3 items; NVDA/JAWS/TalkBack and physical-device certification are unclaimed.

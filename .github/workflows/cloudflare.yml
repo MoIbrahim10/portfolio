@@ -47,20 +47,25 @@ jobs:
       - name: Validate Worker bundle
         run: bunx wrangler@4.114.0 deploy --dry-run
 
-      - name: Install Chromium
-        run: bunx playwright install --with-deps chromium
+      - name: Install browser engines
+        run: bunx playwright install --with-deps chromium firefox webkit
 
       - name: Run browser product tests
         id: browser_tests
         run: bun run test:e2e
 
+      - name: Run cross-browser acceptance matrix
+        id: cross_browser_tests
+        run: bun run test:cross-browser
+
       - name: Retain browser failure evidence
-        if: failure() && steps.browser_tests.outcome == 'failure'
+        if: failure() && (steps.browser_tests.outcome == 'failure' || steps.cross_browser_tests.outcome == 'failure')
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: portfolio-browser-failures-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             playwright-report
+            playwright-cross-browser-report
             test-results
           if-no-files-found: error
           include-hidden-files: true
@@ -149,8 +154,8 @@ jobs:
           DEPLOYMENT_ORIGIN: ${{ steps.candidate.outputs.preview_url }}
           VERIFICATION_OUTPUT_PATH: release/preview-verification.json
 
-      - name: Install Chromium
-        run: bunx playwright install --with-deps chromium
+      - name: Install browser engines
+        run: bunx playwright install --with-deps chromium firefox webkit
 
       - name: Run candidate browser tests
         id: candidate_browser
@@ -158,13 +163,20 @@ jobs:
         env:
           PLAYWRIGHT_TEST_BASE_URL: ${{ steps.candidate.outputs.preview_url }}
 
+      - name: Run candidate cross-browser acceptance matrix
+        id: candidate_cross_browser
+        run: bun run test:cross-browser
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: ${{ steps.candidate.outputs.preview_url }}
+
       - name: Retain candidate browser failure evidence
-        if: failure() && steps.candidate_browser.outcome == 'failure'
+        if: failure() && (steps.candidate_browser.outcome == 'failure' || steps.candidate_cross_browser.outcome == 'failure')
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: portfolio-preview-browser-failures-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             playwright-report
+            playwright-cross-browser-report
             test-results
           if-no-files-found: error
           include-hidden-files: true
@@ -189,6 +201,7 @@ jobs:
             release/candidate-manifest.json
             release/cloudflare-version.json
             release/preview-verification.json
+            test-results/cross-browser-results.json
             test-results/results.json
           if-no-files-found: error
           include-hidden-files: true
