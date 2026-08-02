@@ -223,6 +223,19 @@ for (const { end, start, storyIndex } of mediaBatches) {
       triggerIndexes.length === 0,
       'Mobile coverage targets the first and last media in each story',
     )
+    if (
+      process.platform === 'linux' &&
+      testInfo.project.name === 'desktop-webkit' &&
+      storyIndex === 3 &&
+      start === 13
+    ) {
+      testInfo.annotations.push({
+        description:
+          'Linux headless WebKit stalls this video transition; macOS WebKit retains normal-motion coverage',
+        type: 'runner-constraint',
+      })
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+    }
 
     const assertRuntimeClean = monitorRuntime(page, {
       allowedRequestFailures: [orgoVideoPath, '.mp4'],
