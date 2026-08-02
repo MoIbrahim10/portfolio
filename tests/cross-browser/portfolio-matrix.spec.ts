@@ -83,8 +83,16 @@ async function selectStoryByKeyboard(page: Page, storyIndex: number) {
   })
   await rail.focus()
   await page.keyboard.press('Home')
+  await expect(
+    page.getByRole('article', { name: `${storyNames[0]} project story` }),
+  ).toBeVisible()
   for (let index = 0; index < storyIndex; index += 1) {
     await page.keyboard.press('ArrowRight')
+    await expect(
+      page.getByRole('article', {
+        name: `${storyNames[index + 1]} project story`,
+      }),
+    ).toBeVisible()
   }
 }
 
