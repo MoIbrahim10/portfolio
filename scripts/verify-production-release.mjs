@@ -4,8 +4,12 @@ import { createHash } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
-const ORIGIN = 'https://m0code.com'
-const OUTPUT_PATH = 'release/production-verification.json'
+const ORIGIN = new URL(
+  process.env.DEPLOYMENT_ORIGIN?.trim() || 'https://m0code.com',
+).origin
+const OUTPUT_PATH =
+  process.env.VERIFICATION_OUTPUT_PATH?.trim() ||
+  'release/production-verification.json'
 const MAX_ATTEMPTS = 12
 const RETRY_DELAY_MS = 5_000
 

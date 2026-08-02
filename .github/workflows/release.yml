@@ -1,0 +1,124 @@
+name: Promote Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_run_id:
+        description: Successful Cloudflare Candidate run ID
+        required: true
+        type: string
+      candidate_sha:
+        description: Full 40-character SHA currently at master
+        required: true
+        type: string
+      confirmation:
+        description: Type PROMOTE followed by the candidate SHA
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: cloudflare-production
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    environment:
+      name: production
+      url: https://m0code.com
+    steps:
+      - name: Check out approved candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.candidate_sha }}
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Verify manual promotion approval
+        run: bun scripts/release-guard.mjs promotion
+        env:
+          CANDIDATE_RUN_ID: ${{ inputs.candidate_run_id }}
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          RELEASE_CONFIRMATION: ${{ inputs.confirmation }}
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Download exact tested candidate
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.candidate_run_id }}
+          pattern: portfolio-candidate-*
+          merge-multiple: true
+          path: .
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Verify retained candidate bytes
+        run: bun scripts/release-manifest.mjs verify
+
+      - name: Verify retained candidate evidence
+        id: candidate
+        run: bun scripts/release-manifest.mjs verify-candidate
+
+      - name: Promote exact Cloudflare version
+        id: deploy
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 263ad8907dc3ed688838c72e2e9f994f
+          packageManager: bun
+          wranglerVersion: 4.114.0
+          command: versions deploy ${{ steps.candidate.outputs.version_id }}@100% --yes
+
+      - name: Verify production HTTP and assets
+        run: bun scripts/verify-production-release.mjs
+
+      - name: Install Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run production browser tests
+        id: production_browser
+        run: bun run test:e2e
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: https://m0code.com
+
+      - name: Retain production browser failure evidence
+        if: failure() && steps.production_browser.outcome == 'failure'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: portfolio-production-browser-failures-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: error
+          include-hidden-files: true
+          compression-level: 6
+          retention-days: 30
+
+      - name: Finalize release manifest
+        run: bun scripts/release-manifest.mjs finalize
+        env:
+          CLOUDFLARE_VERSION_ID: ${{ steps.candidate.outputs.version_id }}
+
+      - name: Retain production release evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: portfolio-release-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            release/build-manifest.json
+            release/candidate-manifest.json
+            release/production-verification.json
+            release/release-manifest.json
+            test-results/results.json
+          if-no-files-found: error
+          compression-level: 9
+          retention-days: 90
