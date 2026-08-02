@@ -10,6 +10,15 @@ const orgoCaption = 'Entrance animation and interactive icon hovers'
 const orgoVideoPath = '/portfolio/projects/orgo/walkthrough.mp4'
 const storyNames = ['Orgo', 'The Good Invoice', 'Lumen', 'Selected Experiments']
 const expectedTriggerCounts = [5, 5, 7, 15]
+const mediaBatches = [
+  { end: 5, start: 0, storyIndex: 0 },
+  { end: 5, start: 0, storyIndex: 1 },
+  { end: 4, start: 0, storyIndex: 2 },
+  { end: 7, start: 4, storyIndex: 2 },
+  { end: 5, start: 0, storyIndex: 3 },
+  { end: 10, start: 5, storyIndex: 3 },
+  { end: 15, start: 10, storyIndex: 3 },
+] as const
 
 async function waitForHydration(page: Page) {
   await page.waitForFunction(() => {
@@ -197,42 +206,36 @@ test('keyboard project navigation never leaves focus in inert content', async ({
   assertRuntimeClean()
 })
 
-test('every media trigger opens a labeled, keyboard-contained viewer', async ({
-  page,
-}, testInfo) => {
-  test.slow()
-  const assertRuntimeClean = monitorRuntime(page, {
-    allowedRequestFailures: [orgoVideoPath, '.mp4'],
-  })
-  await loadHome(page)
+for (const { end, start, storyIndex } of mediaBatches) {
+  const storyName = storyNames[storyIndex]
+  test(`${storyName} media ${start + 1}-${end} opens a labeled, keyboard-contained viewer`, async ({
+    page,
+  }, testInfo) => {
+    const expectedCount = expectedTriggerCounts[storyIndex]
+    const triggerIndexes = isMobileProject(testInfo)
+      ? [...new Set([0, expectedCount - 1])].filter(
+          (index) => index >= start && index < end,
+        )
+      : Array.from({ length: end - start }, (_, index) => start + index)
+    test.skip(
+      triggerIndexes.length === 0,
+      'Mobile coverage targets the first and last media in each story',
+    )
 
-  for (const [storyIndex, storyName] of storyNames.entries()) {
+    const assertRuntimeClean = monitorRuntime(page, {
+      allowedRequestFailures: [orgoVideoPath, '.mp4'],
+    })
+    await loadHome(page)
     await selectStoryForMediaCheck(page, storyIndex)
-    let story = page.getByRole('article', {
+
+    const story = page.getByRole('article', {
       name: `${storyName} project story`,
     })
     await expect(story).toBeVisible()
-    let triggers = story.locator('button[aria-label^="View "]')
-    await expect(triggers).toHaveCount(expectedTriggerCounts[storyIndex])
-    const triggerIndexes = isMobileProject(testInfo)
-      ? [0, expectedTriggerCounts[storyIndex] - 1]
-      : Array.from({ length: expectedTriggerCounts[storyIndex] }, (_, index) => index)
+    const triggers = story.locator('button[aria-label^="View "]')
+    await expect(triggers).toHaveCount(expectedCount)
 
-    for (const triggerIndex of [...new Set(triggerIndexes)]) {
-      if (
-        testInfo.project.name === 'desktop-webkit' &&
-        triggerIndex > 0 &&
-        triggerIndex % 5 === 0
-      ) {
-        const response = await page.reload()
-        await waitForHydration(page)
-        expect(response?.status()).toBe(200)
-        await selectStoryForMediaCheck(page, storyIndex)
-        story = page.getByRole('article', {
-          name: `${storyName} project story`,
-        })
-        triggers = story.locator('button[aria-label^="View "]')
-      }
+    for (const [batchIndex, triggerIndex] of triggerIndexes.entries()) {
       const trigger = triggers.nth(triggerIndex)
       await trigger.scrollIntoViewIfNeeded()
       await trigger.click()
@@ -270,7 +273,7 @@ test('every media trigger opens a labeled, keyboard-contained viewer', async ({
           ),
         )
         .toBe(true)
-      if (storyIndex === 0 && triggerIndex === 0) {
+      if (batchIndex === 0) {
         await page.keyboard.press('Escape')
       } else {
         await closeButton.click()
@@ -278,10 +281,10 @@ test('every media trigger opens a labeled, keyboard-contained viewer', async ({
       await expect(dialog).toBeHidden()
       await expect(trigger).toBeFocused()
     }
-  }
 
-  assertRuntimeClean()
-})
+    assertRuntimeClean()
+  })
+}
 
 test('responsive, landscape, and text-spacing matrix does not overflow', async ({
   page,
