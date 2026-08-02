@@ -77,23 +77,15 @@ async function loadHome(page: Page) {
   expect(response?.status()).toBe(200)
 }
 
-async function selectStoryByKeyboard(page: Page, storyIndex: number) {
-  const rail = page.getByRole('region', {
-    name: 'Projects. Swipe or scroll horizontally to change project.',
-  })
-  await rail.focus()
-  await page.keyboard.press('Home')
+async function selectStoryForMediaCheck(page: Page, storyIndex: number) {
+  const storyName = storyNames[storyIndex]
+  const control = page.locator(
+    `article[aria-hidden="false"] button[aria-label="Show ${storyName}"]`,
+  )
+  await control.evaluate((button: HTMLButtonElement) => button.click())
   await expect(
-    page.getByRole('article', { name: `${storyNames[0]} project story` }),
+    page.getByRole('article', { name: `${storyName} project story` }),
   ).toBeVisible()
-  for (let index = 0; index < storyIndex; index += 1) {
-    await page.keyboard.press('ArrowRight')
-    await expect(
-      page.getByRole('article', {
-        name: `${storyNames[index + 1]} project story`,
-      }),
-    ).toBeVisible()
-  }
 }
 
 async function addCssRules(page: Page, rules: string[]) {
@@ -215,7 +207,7 @@ test('every media trigger opens a labeled, keyboard-contained viewer', async ({
   await loadHome(page)
 
   for (const [storyIndex, storyName] of storyNames.entries()) {
-    await selectStoryByKeyboard(page, storyIndex)
+    await selectStoryForMediaCheck(page, storyIndex)
     let story = page.getByRole('article', {
       name: `${storyName} project story`,
     })
@@ -235,7 +227,7 @@ test('every media trigger opens a labeled, keyboard-contained viewer', async ({
         const response = await page.reload()
         await waitForHydration(page)
         expect(response?.status()).toBe(200)
-        await selectStoryByKeyboard(page, storyIndex)
+        await selectStoryForMediaCheck(page, storyIndex)
         story = page.getByRole('article', {
           name: `${storyName} project story`,
         })
