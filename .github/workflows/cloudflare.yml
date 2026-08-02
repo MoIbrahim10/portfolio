@@ -112,6 +112,15 @@ jobs:
       - name: Verify retained build artifact
         run: bun scripts/release-manifest.mjs verify
 
+      - name: Apply reviewed preview URL setting
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 263ad8907dc3ed688838c72e2e9f994f
+          packageManager: bun
+          wranglerVersion: 4.114.0
+          command: triggers deploy
+
       - name: Upload immutable candidate version
         id: upload_version
         uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4
