@@ -123,7 +123,8 @@ The local branch is one commit ahead of `origin/master`. The existing local buil
 ### CI14-002 — Production deployment is not protected by review, branch, or environment policy
 
 - **Severity:** `P1 high`
-- **Affected:** `.github/workflows/cloudflare.yml:3-22`, `.github/workflows/cloudflare.yml:44-56`; GitHub `master` branch; GitHub `production` environment.
+- **Remediation status:** `Complete under current GitHub plan — manual exact-SHA/version promotion replaces push-to-production` (2026-08-02).
+- **Affected:** `.github/workflows/cloudflare.yml:1-180`; `.github/workflows/release.yml:1-124`; GitHub `master`, `preview`, and `production` environments.
 - **Evidence:** GitHub reports the only branch as `{"name":"master","protected":false}`. Branch-protection and ruleset APIs return HTTP 403 because the private repository/account tier does not enable those features. The `production` environment has `protection_rules: []`, `deployment_branch_policy: null`, and `can_admins_bypass: true`. Every push to `master` deploys automatically. `workflow_dispatch` is enabled and the deploy condition excludes only pull requests, so a manual run from another ref is not blocked by an explicit ref condition or environment branch policy. Six observed runs were direct push deployments; the repository has no pull-request history.
 - **Reproduction steps:** (1) Run `gh api repos/MoIbrahim10/portfolio/branches`; observe `protected:false`. (2) Run `gh api repos/MoIbrahim10/portfolio/environments`; inspect `production` and observe no protection rules or branch policy. (3) Inspect workflow lines 3-10 and 44-56; observe push and manual triggers with no production approval or explicit `github.ref` deploy guard.
 - **User/business impact:** A mistaken, compromised, or insufficiently reviewed commit can proceed from source to production using only compile/build checks. Manual dispatch can select an unintended ref. There is no enforced human checkpoint for a portfolio whose interactions and media are not automatically tested.
@@ -133,12 +134,13 @@ The local branch is one commit ahead of `origin/master`. The existing local buil
 - **Estimated effort:** `M` — 0.5-2 days for workflow separation and policy setup; plan/procurement time excluded.
 - **Dependencies:** Repository owner decision on visibility/plan; reviewer ownership; environment permission design; Cloudflare secret placement; release-branch or tag policy.
 - **Objective verification method:** Attempt a direct push or manual dispatch from a non-approved branch in a safe test repository/ref and confirm production deployment is blocked. A reviewed PR with all required checks should be the only path to an approved release SHA, and GitHub should display required reviewers and allowed deployment branches/tags for `production`.
+- **Current verification:** `cloudflare.yml` has no production deployment; PRs build/test only and `master` pushes create validated no-traffic version previews. `release.yml` is manual-only and rejects anything except the exact current `master` SHA from a successful `master`-push candidate run with typed confirmation, then promotes that retained version without rebuilding. Run `30749017151` proves the guarded path. GitHub’s API returned 403 because required reviewers/branch protection are unavailable for this private Free repository, so that stronger control is explicitly not claimed.
 
 ### CI14-003 — The post-deploy smoke test can pass despite a materially broken application
 
 - **Severity:** `P1 high`
-- **Remediation status:** `Partially resolved — HTTP structure and exact asset/media parity are automated; browser hydration/interactions and controlled broken-release proof remain open` (2026-08-01).
-- **Affected:** `.github/workflows/cloudflare.yml:54-56`; `/`; `/video-player-lab`; all client chunks, media, hydration, navigation, and interactions.
+- **Remediation status:** `Complete — preview and production HTTP/browser gates verified with zero retries` (2026-08-02).
+- **Affected:** `.github/workflows/cloudflare.yml:124-180`; `.github/workflows/release.yml:82-124`; `/`; retired `/video-player-lab`; client chunks, media, hydration, navigation, and interactions.
 - **Evidence:** The only post-deploy assertion is `curl ... https://m0code.com | grep -aFq '<title>MO — Portfolio</title>'`. It proves only that the root request is below HTTP 400 and contains one static title string. It does not request `/video-player-lab`, parse or fetch referenced CSS/JS, launch a browser, wait for hydration, inspect console/network errors, exercise controls, validate 404/500 behavior, or confirm that the response belongs to the just-deployed commit. The title is defined globally at `src/routes/__root.tsx:22`, so the same sentinel is not route-specific.
 - **Reproduction steps:** (1) Inspect workflow lines 54-56. (2) Compare the command’s single URL/string with the two routes in `src/routes/index.tsx:5` and `src/routes/video-player-lab.tsx:5-7`. (3) Observe that no workflow step starts a browser or requests the HTML-referenced asset URLs.
 - **User/business impact:** CI may report a successful production release when a JavaScript chunk is missing, hydration crashes, media cannot load, the lab route is down, or every interactive control is unusable. This creates a high-confidence false green at the most consequential gate.
@@ -148,7 +150,7 @@ The local branch is one commit ahead of `origin/master`. The existing local buil
 - **Estimated effort:** `M` — 1-3 days including deployment URL plumbing and stable smoke assertions.
 - **Dependencies:** Browser runner approval; stable selectors; a deployment/build identifier; preview or version URL from Cloudflare; expected console-error allowlist (preferably empty).
 - **Objective verification method:** In a nonproduction deployment, intentionally omit a referenced chunk or throw during hydration and confirm the smoke gate fails. A healthy release must show both routes loaded and hydrated, zero unexpected console/page errors, all critical requests successful, correct 404 status, one successful keyboard/pointer journey, and an exact expected build SHA.
-- **Current verification:** production smoke now asserts homepage `200`, title, one H1, identity text, four project groups, five emitted JS/CSS assets byte-for-byte, unknown-route `404` recovery, retired-lab `404`, brand hash, and retained Orgo MP4 hash. Final run `30703230758` passed on attempt 1. It remains HTTP/fetch-based and does not prove hydration or interaction inside CI.
+- **Current verification:** candidate run `30748871265` verified exact build bytes, homepage structure, emitted assets, brand/media, generic and retired-route 404s, then passed 12/12 desktop/mobile Chromium tests with zero retries on the version URL. Production run `30749017151` promoted that exact version and reran the same HTTP and 12/12 browser suite against `m0code.com`, including hydration, keyboard project selection, modal/video controls, reduced motion, failure fallback, Escape/focus return, and strict console/page/request monitoring.
 
 ### CI14-004 — The audited local release candidate has not passed the remote release pipeline and is not the live artifact
 
@@ -169,8 +171,8 @@ The local branch is one commit ahead of `origin/master`. The existing local buil
 ### CI14-005 — Build provenance, immutable promotion, and rollback evidence are absent
 
 - **Severity:** `P2 medium`
-- **Remediation status:** `Partially resolved — build provenance and immutable production consumption complete; rollback evidence remains open` (2026-08-01).
-- **Affected:** `.github/workflows/cloudflare.yml:19-56`; GitHub Actions artifacts/releases/tags; GitHub deployment `5655911137`; Cloudflare production Worker.
+- **Remediation status:** `Complete — immutable version promotion and production rollback/recovery drill verified` (2026-08-02).
+- **Affected:** `.github/workflows/cloudflare.yml:70-180`; `.github/workflows/release.yml:45-124`; `.github/workflows/rollback.yml:1-112`; GitHub artifacts; Cloudflare production Worker.
 - **Evidence:** Build, dry-run, deploy, and smoke execute in one job/workspace. GitHub reports zero Actions artifacts, zero releases, and no tags. The deployment record identifies the source SHA but its `environment_url` is empty and no bundle checksum or Cloudflare Worker version is recorded in the repository. No rollback command, rollback selection rule, owner, or drill evidence exists.
 - **Reproduction steps:** (1) Inspect workflow lines 19-56; observe one job with no upload/download or attestation step. (2) Run the GitHub artifacts API; observe `total_count:0`. (3) run `gh release list` and `git tag --list`; observe no output. (4) inspect deployment `5655911137`; observe source SHA and success but no environment URL or artifact checksum.
 - **User/business impact:** A later rebuild of the same source may resolve mutable dependencies or tooling differently, and responders cannot prove which bytes are live. Rollback becomes an improvised dashboard/CLI action under incident pressure rather than a tested restoration of a known-good artifact.
@@ -180,12 +182,13 @@ The local branch is one commit ahead of `origin/master`. The existing local buil
 - **Estimated effort:** `M` — 1-3 days for artifact flow, manifest, retention, and rollback rehearsal.
 - **Dependencies:** Cloudflare version/deployment capabilities and retention policy validation by specialist 13; artifact retention decision; release ownership; optional provenance/attestation tooling review by specialist 04.
 - **Objective verification method:** From a clean runner, deploy the retained candidate artifact without rebuilding and compare its checksum/version to production. In a nonproduction environment, deploy release N+1, roll back to retained release N, and prove the expected SHA, assets, and smoke journeys are restored within the target recovery time.
-- **Current verification:** separate build/deploy jobs retain, download, and byte-verify `dist`; manifest input hashes include the lock, workflow, scripts, package metadata, Bun version file, and Wrangler config. Final receipt binds artifact digest/URL, Cloudflare version, production URL, and smoke evidence. A copied-artifact tamper test failed as required. No rollback drill has been performed.
+- **Current verification:** separate jobs retain, download, and byte-verify `dist`; candidate and release receipts bind source/input/output hashes, artifact identity, Cloudflare version/preview, production URL, and HTTP/browser results. Promotion run `30749017151` deployed version `eb99526e…` without rebuilding. Guarded rollback run `30749138784` restored byte-identical version `8ae8c433…`, verified serving identity and health plus browser 12/12 in 78 seconds, and retained artifact `8833869600`; run `30749197122` restored `eb99526e…` and passed the full production gate.
 
 ### CI14-006 — In-progress obsolete releases cannot be superseded
 
 - **Severity:** `P2 medium`
-- **Affected:** `.github/workflows/cloudflare.yml:15-17`; all push/manual deployment runs.
+- **Remediation status:** `Complete — cancelable candidates and non-cancelable guarded production mutations are separated` (2026-08-02).
+- **Affected:** `.github/workflows/cloudflare.yml:17-19`; `.github/workflows/release.yml:23-25,45-80`; `.github/workflows/rollback.yml:26-28,49-79`.
 - **Evidence:** All production work shares `group: cloudflare-production` and explicitly sets `cancel-in-progress: false`. Validation and production deployment are one job, so a newer commit cannot cancel a currently running older build before that older job reaches the deployment step. The six observed pushes each produced a production deployment.
 - **Reproduction steps:** (1) Inspect workflow lines 15-17 and 19-56. (2) Observe that the same job performs validation and deployment. (3) Compare the deployment list; each observed push SHA has a production deployment record.
 - **User/business impact:** During rapid fixes, an already superseded commit may still finish and reach production before the newest candidate, creating an unnecessary transient release and delaying the intended fix. A bad in-progress release cannot be stopped automatically by a correcting push.
@@ -195,6 +198,7 @@ The local branch is one commit ahead of `origin/master`. The existing local buil
 - **Estimated effort:** `S` — 0.5-1 day after artifact/job separation is designed.
 - **Dependencies:** CI14-005 artifact split; release ordering policy; explicit handling for intentional older-version rollback.
 - **Objective verification method:** In a nonproduction concurrency test, dispatch candidate A, then supersede it with B before A deploys. A must not reach the environment, B must deploy once, and the deployment record must show only the approved artifact SHA. Separately verify that an intentional rollback artifact can bypass the “latest commit” rule through a documented approval path.
+- **Current verification:** candidate work uses ref-scoped `cancel-in-progress: true` and never reaches production. Promotion and rollback share non-cancelable `cloudflare-production` serialization. Immediately before promotion, the guard requires the submitted SHA to equal current `master` and the referenced candidate run to be a successful `master` push for that SHA. Rollback uses an explicit expected-current-version guard and a separate typed-confirmation path, demonstrated by run `30749138784`.
 
 ## Risks / Unverified
 
@@ -364,7 +368,7 @@ These are narrow evidence-backed passes, not substitutes for the absent tests:
 
 ### Current decision
 
-**Block launch sign-off for the remaining tests/CI/release-readiness controls** until approval/preview and post-deploy-browser portions of CI14-002/CI14-003 plus CI14-005/CI14-006 are resolved. CI14-001 and CI14-004 are complete.
+**ITEM-11 release-safety sign-off is complete under the current GitHub-plan controls.** CI14-001 through CI14-006 are complete; independent required reviewers remain a documented platform/governance opportunity. Wider browser, unit/component coverage, generated-route drift, runner/timeouts, and other P2 risks remain separate backlog items.
 
 ### Required release sequence
 
@@ -394,25 +398,31 @@ These are narrow evidence-backed passes, not substitutes for the absent tests:
 
 - **Status:** `Complete — verified in production` (2026-07-31).
 - **Local gates passed:** route generation, `bun run check`, `bun run build`, SSR assertions (`/` `200`, retired path `404`), absence of lab strings/chunks, retained-file hash comparison, and focused retained-video browser smoke.
-- **Disposition:** the release route matrix is now `/` plus a required `/video-player-lab` negative assertion and generic 404 coverage. ITEM-09 subsequently completed `CI14-004` and partially completed `CI14-003`/`CI14-005`; ITEM-10 completed `CI14-001` and candidate browser CI. Rollback proof and broader release controls remain open.
+- **Disposition:** the release route matrix is now `/` plus a required `/video-player-lab` negative assertion and generic 404 coverage. ITEM-09 completed `CI14-004`; ITEM-10 completed `CI14-001`; ITEM-11 subsequently completed release promotion, production browser, rollback, and monitoring controls.
 - **Production evidence:** PR #1 validation passed; merge SHA `c273f81…` passed Actions run `30657215155` and deployed as Cloudflare version `b8c0dab8…`. Public `404`, homepage assets, retained-video playback, and console health passed independent checks.
 
 ## Implementation tracking — ITEM-02
 
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Focused gates passed:** active-rule inspection; one-hop `308` assertions for HTML, missing-path/query, fingerprinted JS, POST, and MP4; exact HTTPS `Strict-Transport-Security: max-age=300` assertions on `200`, `404`, JS, and MP4; cache-busted HTTP header-negative checks; TLS 1.2/1.3 handshakes; homepage and retained-video browser smoke; removed-route browser smoke; zero observed console warnings/errors.
-- **Tracking limit:** these were manual production acceptance checks and did not close the test findings at the time. ITEM-10 later completed `CI14-001`; automated post-deploy browser execution in `CI14-003`, `CI14-005`, and transport/header regression gates remain open.
+- **Tracking limit:** these were manual production acceptance checks and did not close the test findings at the time. ITEM-10 later completed `CI14-001`, and ITEM-11 automated preview/production browser and HTTP execution for `CI14-003`/`CI14-005`.
 
 ## Implementation tracking — ITEM-09
 
 - **Status:** `Complete for immutable release identity and artifact consumption` (2026-08-01).
-- **Disposition:** `CI14-004`, `CI14-R01`, `CI14-R02`, and `CI14-O02` are complete. ITEM-10 subsequently completed `CI14-001` and candidate browser CI. `CI14-003` and `CI14-005` remain partially resolved; approval/preview, rollback proof, generated-route drift, timeouts/runner pinning, observability, and `CI14-R05` remain open.
+- **Disposition:** `CI14-004`, `CI14-R01`, `CI14-R02`, and `CI14-O02` are complete. ITEM-10 completed `CI14-001`; ITEM-11 subsequently completed `CI14-002`, `CI14-003`, `CI14-005`, and `CI14-006`. Generated-route drift, timeouts/runner pinning, and `CI14-R05` remain separate lower-priority items.
 - **Evidence:** PRs #12/#13 passed validation with deploy skipped. ITEM-09 implementation run `30703230758` built, retained, downloaded, byte-verified, deployed, smoke-verified, finalized, and retained the release receipt. A copied-artifact tamper test failed as designed. Implementation release `87864fe…` maps to artifact `8819491987`/SHA-256 `5ff2c2ad…` and Cloudflare `3666f6f8…`. The later reports-only run `30703726121` produced an identical 130-file application hash list under its own source/release receipt.
 
 ## Implementation tracking — ITEM-10
 
-- **Status:** `CI14-001 complete; CI14-003 further resolved but still lacks automated post-deploy execution` (2026-08-01).
+- **Status:** `CI14-001 complete; ITEM-11 subsequently completed automated preview and post-deploy execution` (2026-08-02).
 - **CI gate:** after frozen install, type-check, build, and Worker dry-run, CI installs only Chromium and executes desktop/mobile product tests with zero retries before the immutable artifact is created. A failure prevents deployment and retains trace, screenshot, video, HTML, and JSON artifacts for 14 days. PR deploy remains skipped; master deploy remains conditional on the passing build job.
 - **Coverage/evidence:** 12 cases cover SSR/hydration, keyboard rail selection, Orgo modal/video readiness and controls, Escape/focus return, reduced motion, deterministic media failure/poster fallback, generic 404, and retired-route 404. Local CI and production each passed 12/12. PR #16 run `30706719944` passed in 1m35s; merge `ebcd8b1…` passed run `30706793536` and deployed as Cloudflare version `5c861a15…`.
-- **Remaining controls:** browser tests currently target the candidate dev server in CI; production execution was an independent acceptance run, not a workflow step. WebKit/Firefox, unit/component coverage, generated-route drift, job timeouts/runner pinning, approval/preview, observability, and rollback remain tracked separately.
+- **Remaining controls:** WebKit/Firefox, unit/component coverage, generated-route drift, job timeouts/runner pinning, and other P2 risks remain tracked separately; preview, exact-version production promotion, observability, and rollback are complete under ITEM-11.
 - **Flake audit:** master run `30707264417` exposed a first-attempt mobile dialog failure that a retry concealed. Completion was held, retries were set to zero, and the test was corrected to reproduce the actual hover-to-controls pointer sequence. The corrected suite then passed three consecutive local CI matrices (36/36) and production 12/12 without retries.
+
+## Implementation tracking — ITEM-11
+
+- **Status:** `Complete under current GitHub plan — release controls verified end to end` (2026-08-02).
+- **Disposition:** `CI14-002`, `CI14-003`, `CI14-005`, and `CI14-006` are complete. GitHub Free/private cannot enforce independent required reviewers; exact-current-master SHA, successful candidate-run, immutable version, manual dispatch, and typed confirmation are the implemented compensating controls.
+- **Evidence:** candidate run `30748871265` passed build/manifest/preview HTTP and browser 12/12; production run `30749017151` promoted `eb99526e…` without rebuilding and passed HTTP plus browser 12/12; alert drill/recovery runs `30749077296`/`30749093387` opened and closed issue #21; rollback run `30749138784` restored `8ae8c433…` and passed in 78 seconds; re-promotion `30749197122` restored `eb99526e…`; final health `30749250655` passed. No UI, component, media, player, or media-fetch behavior changed.
