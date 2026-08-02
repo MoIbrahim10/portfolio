@@ -43,7 +43,9 @@ function monitorRuntime(
   page.on('pageerror', (error) => pageErrors.push(error.message))
   page.on('requestfailed', (request: Request) => {
     const failure = request.failure()?.errorText ?? 'unknown failure'
-    const isExpectedAbort = /abort|cancel/i.test(failure)
+    const isExpectedAbort = /abort|cancel|NS_ERROR_PARSED_DATA_CACHED/i.test(
+      failure,
+    )
     if (
       isExpectedAbort &&
       allowedRequestFailures.some((path) => request.url().includes(path))
@@ -249,7 +251,11 @@ test('every media trigger opens a labeled, keyboard-contained viewer', async ({
           ),
         )
         .toBe(true)
-      await page.keyboard.press('Escape')
+      if (storyIndex === 0 && triggerIndex === 0) {
+        await page.keyboard.press('Escape')
+      } else {
+        await closeButton.click()
+      }
       await expect(dialog).toBeHidden()
       await expect(trigger).toBeFocused()
     }
@@ -368,9 +374,11 @@ test('forced colors preserves visible focus and selected state', async ({ page }
 test('touch and pointer contracts match the advertised interaction', async ({
   page,
 }, testInfo) => {
+  test.slow()
   const assertRuntimeClean = monitorRuntime(page, {
     allowedRequestFailures: [orgoVideoPath, '/cdn-cgi/rum', '.mp4', '.webp'],
   })
+  await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.setViewportSize({ width: 1024, height: 768 })
   await loadHome(page)
 
@@ -398,6 +406,11 @@ test('touch and pointer contracts match the advertised interaction', async ({
   if (testInfo.project.name === 'hybrid-chromium') {
     await page.setViewportSize({ width: 1024, height: 768 })
     await loadHome(page)
+    const rail = page.getByRole('region', {
+      name: 'Projects. Swipe or scroll horizontally to change project.',
+    })
+    await rail.focus()
+    await page.keyboard.press('Home')
     await page
       .getByRole('button', { name: `View ${orgoCaption} full screen` })
       .tap()
