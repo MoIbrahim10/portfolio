@@ -17,7 +17,9 @@ const mediaBatches = [
   { end: 7, start: 4, storyIndex: 2 },
   { end: 5, start: 0, storyIndex: 3 },
   { end: 10, start: 5, storyIndex: 3 },
-  { end: 15, start: 10, storyIndex: 3 },
+  { end: 13, start: 10, storyIndex: 3 },
+  { end: 14, start: 13, storyIndex: 3 },
+  { end: 15, start: 14, storyIndex: 3 },
 ] as const
 
 async function waitForHydration(page: Page) {
