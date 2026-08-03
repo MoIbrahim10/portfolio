@@ -38,8 +38,8 @@ async function verifyPromotion() {
 
   assert(/^\d+$/.test(runId), 'Candidate run ID must be numeric')
   assert(SHA.test(candidateSha), 'Candidate SHA must be a full 40-character SHA')
-  assert(process.env.GITHUB_REF === 'refs/heads/master', 'Promotion must run from master')
-  assert(process.env.GITHUB_SHA === candidateSha, 'Candidate must be current master')
+  assert(process.env.GITHUB_REF === 'refs/heads/main', 'Promotion must run from main')
+  assert(process.env.GITHUB_SHA === candidateSha, 'Candidate must be current main')
   assert(
     confirmation === `PROMOTE ${candidateSha}`,
     'Promotion confirmation does not match the candidate SHA',
@@ -61,8 +61,8 @@ async function verifyPromotion() {
   const run = await response.json()
 
   assert(run.name === 'Cloudflare Candidate', 'Run is not the candidate workflow')
-  assert(run.event === 'push', 'Candidate was not created by a master push')
-  assert(run.head_branch === 'master', 'Candidate did not run on master')
+  assert(run.event === 'push', 'Candidate was not created by a main push')
+  assert(run.head_branch === 'main', 'Candidate did not run on main')
   assert(run.head_sha === candidateSha, 'Candidate run SHA differs')
   assert(run.conclusion === 'success', 'Candidate run did not succeed')
   console.log(`Approved candidate run ${runId} at ${candidateSha}`)
@@ -76,7 +76,7 @@ async function verifyRollbackBefore() {
   const status = await readJson('release/rollback-before.json')
   const targetDetails = await readJson('release/rollback-target.json')
 
-  assert(process.env.GITHUB_REF === 'refs/heads/master', 'Rollback must run from master')
+  assert(process.env.GITHUB_REF === 'refs/heads/main', 'Rollback must run from main')
   assert(UUID.test(current), 'Expected current version is not a UUID')
   assert(UUID.test(target), 'Rollback target version is not a UUID')
   assert(current !== target, 'Rollback target equals the current version')

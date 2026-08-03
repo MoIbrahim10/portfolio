@@ -284,3 +284,10 @@ Release posture: **not functionally cleared**. No source, dependency, build, con
 - **Strictness:** unexpected console errors, uncaught page errors, and failed requests fail the test, with retries disabled. Only the deliberately aborted Orgo request is scoped as expected in media-state tests; the two 404s are isolated so Cloudflare RUM navigation cancellation is not hidden. CI retains failure trace, screenshot, video, HTML, and JSON artifacts.
 - **Defects fixed:** reduced-motion hydration mismatch and modal focus-return timing. No UI, CSS, media file, source URL, or player control was removed or redesigned.
 - **Evidence:** three consecutive zero-retry local CI matrices passed 36/36; public production passed 12/12; PR #16 run `30706719944`; merge/release `ebcd8b1…` / run `30706793536` / Cloudflare `5c861a15…`. Exhaustive 32-trigger, touch gesture, offline/Slow 3G, 500, external-action, and cross-engine testing remain open under their existing findings.
+
+## Implementation tracking — ITEM-12
+
+- **Status:** `R-FQA-001 resolved locally; release verification pending` (2026-08-02).
+- **Coverage:** all 32 desktop media triggers open a labeled viewer, render visible image/video content, contain Tab focus, close by Escape, and restore the exact trigger. Mobile checks first/last media per story; keyboard story changes, dot activation, scrollbar keys, hybrid taps, reduced motion, forced colors, responsive/text scaling, and both 404 recovery paths are also covered.
+- **Strictness:** zero retries; unexpected console errors, page exceptions, and request failures fail the run. Only verified navigation/media cancellations are scoped as expected aborts; non-abort failures remain fatal.
+- **Evidence:** existing regression suite 12/12 plus cross-browser 56/56 applicable, four intentional mobile-only skips, and zero unexpected failures.

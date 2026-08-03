@@ -289,3 +289,10 @@ The live root SSR referenced 53 unique internal URLs and the live video-lab SSR 
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Disposition:** `INV-C01` is complete. The approved master SHA, retained 130-file artifact, deployment version, live generated assets, brand mark, and Orgo MP4 are now bound by one release receipt rather than inferred from filenames.
 - **Evidence:** Actions run `30703230758`; build artifact `8819491987`/SHA-256 `5ff2c2ad…`; release artifact `8819497837`; Cloudflare version `3666f6f8…`; production smoke passed on attempt 1. Asset ownership/removal decisions in `INV-R02` remain open.
+
+## Implementation tracking — ITEM-12
+
+- **Status:** `INV-R01 resolved locally; release verification pending` (2026-08-02).
+- **Coverage:** all four project stories, 32 media triggers, project controls, horizontal and vertical rails, scrollbar, modal/image/video states, contact links, portrait control, homepage landmarks, generic 404, and retired-lab 404 are represented in the checked-in six-project matrix.
+- **Evidence:** final zero-retry execution passed 56/56 applicable cases with four intentional mobile skips for desktop-only dots/scrollbar; Safari’s native accessibility tree exposed only the active story. No route, story, media asset, or current player was removed.
+- **Boundary:** physical-device gestures and NVDA/JAWS/TalkBack speech output were not available and remain explicitly unclaimed.

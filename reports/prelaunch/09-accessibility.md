@@ -366,3 +366,11 @@ These are source/SSR-level passes unless noted; direct multi-browser/AT behavior
 - **Disposition:** desktop/mobile tests now prove reduced-motion fresh loads keep inline and modal Orgo video paused, the dialog initially focuses Close, Escape dismisses it, and focus returns to the exact media trigger after background inertness clears. This does not close real screen-reader, Safari/Firefox, captions/media-alternatives, or exhaustive keyboard findings.
 - **Defects fixed:** hydration now begins from a conservative motion-free state before applying the client preference, eliminating the observed React mismatch; focus restoration waits until the trigger is outside an inert subtree. No visual styling or player controls changed.
 - **Evidence:** local CI and public production each passed all 12 tests with zero unexpected console/page/request failures. Release `ebcd8b1…`, Actions `30706793536`, Cloudflare `5c861a15…`.
+
+## Implementation tracking — ITEM-12
+
+- **Status:** `09-R-03 and 09-R-04 resolved locally; release verification pending` (2026-08-02).
+- **Fixes:** inactive stories use `aria-hidden` with `inert`; keyboard project selection focuses the committed active story; the modal owns Tab traversal and excludes its invisible backdrop; the custom scrollbar has a 24px interactive width while retaining its 10px visual track.
+- **Verification:** Chromium, Firefox, WebKit, mobile Chromium/WebKit, and hybrid touch passed semantic snapshots, modal containment/return, keyboard routing, reduced motion, forced colors, 320px reflow, landscape, WCAG text-spacing overrides, and 200% text. All 32 media triggers were checked on desktop; first/last per story were checked on mobile.
+- **Assistive-technology evidence:** with macOS VoiceOver enabled, Safari’s native tree exposed one active Orgo story, H1/H2 hierarchy, named toggle buttons, links, media actions, regions, and scrollbar value; inactive stories were absent. VoiceOver was returned to its previous off state.
+- **Boundary:** no NVDA, JAWS, TalkBack, rotor-output transcript, or physical-device certification is claimed.

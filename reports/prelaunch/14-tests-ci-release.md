@@ -426,3 +426,11 @@ These are narrow evidence-backed passes, not substitutes for the absent tests:
 - **Status:** `Complete under current GitHub plan — release controls verified end to end` (2026-08-02).
 - **Disposition:** `CI14-002`, `CI14-003`, `CI14-005`, and `CI14-006` are complete. GitHub Free/private cannot enforce independent required reviewers; exact-current-master SHA, successful candidate-run, immutable version, manual dispatch, and typed confirmation are the implemented compensating controls.
 - **Evidence:** candidate run `30748871265` passed build/manifest/preview HTTP and browser 12/12; production run `30749017151` promoted `eb99526e…` without rebuilding and passed HTTP plus browser 12/12; alert drill/recovery runs `30749077296`/`30749093387` opened and closed issue #21; rollback run `30749138784` restored `8ae8c433…` and passed in 78 seconds; re-promotion `30749197122` restored `eb99526e…`; final health `30749250655` passed. No UI, component, media, player, or media-fetch behavior changed.
+
+## Implementation tracking — ITEM-12
+
+- **Status:** `CI14-O01 implemented and locally verified; remote gates pending` (2026-08-02).
+- **Gate:** `bun run test:cross-browser` executes 60 cases across six projects with zero retries after frozen install/type-check/build. PR, immutable candidate, and exact-version production stages install Chromium, Firefox, and WebKit, run the baseline and cross-browser suites, and retain HTML/JSON/trace/screenshot/video evidence on failure.
+- **Coverage:** semantics, all desktop media triggers, representative mobile media, keyboard, touch/hybrid input, responsive/landscape/text scaling, reduced motion, forced colors, scrollbar input, generic 404, and retired-lab 404.
+- **Local evidence:** type-check, production build, dependency audit, secrets/console scan, baseline 12/12, and cross-browser 56/56 applicable with four intentional mobile skips and zero unexpected/flaky results.
+- **Acceptance:** final completion requires the PR build and immutable preview matrix to pass, followed by promotion of the same version and an identical production matrix.

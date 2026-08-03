@@ -1150,40 +1150,43 @@ function MediaViewerContent({
     document.body.style.overflow = 'hidden'
     siblings.forEach(({ element }) => element.setAttribute('inert', ''))
 
+    const handleDocumentKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        onClose(true)
+        return
+      }
+
+      if (event.key !== 'Tab') return
+
+      const focusable = Array.from(
+        viewer.querySelectorAll<HTMLElement>(
+          'button:not([disabled]):not([tabindex="-1"]), input:not([disabled]):not([tabindex="-1"]), a[href]:not([tabindex="-1"]), [tabindex]:not([tabindex="-1"])',
+        ),
+      )
+      if (focusable.length === 0) return
+
+      const activeIndex = focusable.indexOf(document.activeElement as HTMLElement)
+      const destination = event.shiftKey
+        ? activeIndex <= 0
+          ? focusable.length - 1
+          : activeIndex - 1
+        : activeIndex === -1 || activeIndex === focusable.length - 1
+          ? 0
+          : activeIndex + 1
+      event.preventDefault()
+      focusable[destination].focus()
+    }
+    document.addEventListener('keydown', handleDocumentKeyDown, true)
+
     return () => {
+      document.removeEventListener('keydown', handleDocumentKeyDown, true)
       document.body.style.overflow = previousOverflow
       siblings.forEach(({ element, inert }) => {
         if (!inert) element.removeAttribute('inert')
       })
     }
   }, [])
-
-  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (event.key === 'Escape') {
-      event.preventDefault()
-      onClose(true)
-      return
-    }
-
-    if (event.key !== 'Tab') return
-
-    const focusable = Array.from(
-      event.currentTarget.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
-      ),
-    )
-    if (focusable.length === 0) return
-
-    const first = focusable[0]
-    const last = focusable[focusable.length - 1]
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault()
-      last.focus()
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault()
-      first.focus()
-    }
-  }
 
   return (
     <div
@@ -1192,7 +1195,6 @@ function MediaViewerContent({
       aria-modal="true"
       className={styles.mediaViewer}
       data-media-viewer=""
-      onKeyDown={handleKeyDown}
       ref={viewerRef}
       role="dialog"
       style={{
@@ -1203,11 +1205,13 @@ function MediaViewerContent({
     >
       <motion.button
         animate={{ opacity: 1 }}
+        aria-hidden="true"
         aria-label="Close full-screen media"
         className={styles.viewerBackdrop}
         exit={{ opacity: 0 }}
         initial={{ opacity: 0 }}
         onClick={() => onClose(false)}
+        tabIndex={-1}
         transition={{ duration: instant ? 0 : 0.2, ease: EASE }}
         type="button"
       />
@@ -1355,6 +1359,7 @@ function ProjectStorySlide({
 }) {
   return (
     <article
+      aria-hidden={!active}
       aria-label={`${story.title} project story`}
       className={styles.projectSlide}
       inert={!active}
@@ -1406,7 +1411,7 @@ function ProjectStorySlide({
         <footer className={styles.storyEnd}>
           <p className={styles.nextCue}>
             {index < STORIES.length - 1
-              ? 'Swipe right for the next project'
+              ? 'Swipe left for the next project'
               : 'End of selected work'}
           </p>
         </footer>
@@ -1675,6 +1680,12 @@ export function CrossAxisProjectRail({
       behavior: reducedMotion || source === 'keyboard' ? 'auto' : 'smooth',
       left: slide.offsetLeft,
     })
+
+    if (source === 'keyboard') {
+      requestAnimationFrame(() => {
+        storyRefs.current[nextIndex]?.focus({ preventScroll: true })
+      })
+    }
   }
 
   function nearestProjectIndex(viewport: HTMLDivElement) {
@@ -1755,7 +1766,6 @@ export function CrossAxisProjectRail({
     if (destination === null) return
     event.preventDefault()
     goTo(destination, 'keyboard')
-    storyRefs.current[destination]?.focus({ preventScroll: true })
   }
 
   function openMedia(
