@@ -292,7 +292,7 @@ The live root SSR referenced 53 unique internal URLs and the live video-lab SSR 
 
 ## Implementation tracking — ITEM-12
 
-- **Status:** `INV-R01 resolved locally; release verification pending` (2026-08-02).
+- **Status:** `Complete — INV-R01 verified in preview and production` (2026-08-03).
 - **Coverage:** all four project stories, 32 media triggers, project controls, horizontal and vertical rails, scrollbar, modal/image/video states, contact links, portrait control, homepage landmarks, generic 404, and retired-lab 404 are represented in the checked-in six-project matrix.
-- **Evidence:** final zero-retry execution passed 56/56 applicable cases with four intentional mobile skips for desktop-only dots/scrollbar; Safari’s native accessibility tree exposed only the active story. No route, story, media asset, or current player was removed.
-- **Boundary:** physical-device gestures and NVDA/JAWS/TalkBack speech output were not available and remain explicitly unclaimed.
+- **Evidence:** candidate run `30820151411` and production run `30822250655` each passed the baseline 12/12 and cross-browser 98/98 applicable cases with 10 intentional applicability skips, zero retries, zero unexpected results, and zero flaky results. Final SHA `27ba445f…` is deployed as Cloudflare version `91a275a8…`; no route, story, media asset, or current player was removed.
+- **Boundary:** two Linux headless WebKit decoder-stall cases use a known-good MP4 fixture after the original preview videos passed macOS WebKit; physical-device gestures and NVDA/JAWS/TalkBack speech output remain explicitly unclaimed.
