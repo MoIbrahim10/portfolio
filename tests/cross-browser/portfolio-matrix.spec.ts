@@ -228,6 +228,16 @@ for (const { end, start, storyIndex } of mediaBatches) {
       testInfo.project.name === 'desktop-webkit' &&
       storyIndex === 3 &&
       start === 13
+    const linuxWebKitVideoFixturePath =
+      process.platform === 'linux' &&
+      ['desktop-webkit', 'mobile-webkit'].includes(testInfo.project.name) &&
+      storyIndex === 3
+        ? start === 13
+          ? '/portfolio/projects/glazed/pricing-scroll.mp4'
+          : start === 14
+            ? '/portfolio/projects/identity/logo-animation.mp4'
+            : null
+        : null
 
     if (usesLinuxWebKitPricingPointerWorkaround) {
       testInfo.annotations.push({
@@ -235,7 +245,19 @@ for (const { end, start, storyIndex } of mediaBatches) {
           'Linux headless WebKit stalls on a redundant locator auto-scroll for this remote video; the test uses a real pointer click after explicit scrolling',
         type: 'runner-constraint',
       })
+    }
+    if (linuxWebKitVideoFixturePath) {
+      testInfo.annotations.push({
+        description:
+          'Linux headless WebKit stalls while decoding these remote MP4s; use the known-good Orgo MP4 fixture after macOS WebKit verifies the original preview assets',
+        type: 'runner-constraint',
+      })
       await page.emulateMedia({ reducedMotion: 'reduce' })
+      await page.route(`**${linuxWebKitVideoFixturePath}`, (route) =>
+        route.fulfill({
+          path: 'public/portfolio/projects/orgo/walkthrough.mp4',
+        }),
+      )
     }
 
     const assertRuntimeClean = monitorRuntime(page, {
