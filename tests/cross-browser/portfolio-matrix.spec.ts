@@ -223,15 +223,16 @@ for (const { end, start, storyIndex } of mediaBatches) {
       triggerIndexes.length === 0,
       'Mobile coverage targets the first and last media in each story',
     )
-    if (
+    const usesLinuxWebKitPricingPointerWorkaround =
       process.platform === 'linux' &&
       testInfo.project.name === 'desktop-webkit' &&
       storyIndex === 3 &&
       start === 13
-    ) {
+
+    if (usesLinuxWebKitPricingPointerWorkaround) {
       testInfo.annotations.push({
         description:
-          'Linux headless WebKit stalls this video transition; macOS WebKit retains normal-motion coverage',
+          'Linux headless WebKit stalls on a redundant locator auto-scroll for this remote video; the test uses a real pointer click after explicit scrolling',
         type: 'runner-constraint',
       })
       await page.emulateMedia({ reducedMotion: 'reduce' })
@@ -253,7 +254,16 @@ for (const { end, start, storyIndex } of mediaBatches) {
     for (const [batchIndex, triggerIndex] of triggerIndexes.entries()) {
       const trigger = triggers.nth(triggerIndex)
       await trigger.scrollIntoViewIfNeeded()
-      await trigger.click()
+      if (usesLinuxWebKitPricingPointerWorkaround) {
+        const bounds = await trigger.boundingBox()
+        if (!bounds) throw new Error('Pricing media trigger has no clickable bounds')
+        await page.mouse.click(
+          bounds.x + bounds.width / 2,
+          bounds.y + bounds.height / 2,
+        )
+      } else {
+        await trigger.click()
+      }
       const dialog = page.getByRole('dialog')
       const closeButton = dialog.getByRole('button', {
         exact: true,
