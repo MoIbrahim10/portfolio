@@ -9,12 +9,12 @@ Rollback target: restore a known-good version within 15 minutes
 ## Candidate and promotion
 
 1. Merge only after the `Cloudflare Candidate / build` pull-request job passes.
-2. Wait for the resulting `master` push run to upload a version preview and pass HTTP plus 12 zero-retry desktop/mobile browser checks.
+2. Wait for the resulting `main` push run to upload a version preview and pass HTTP plus the zero-retry browser acceptance matrices.
 3. Record the successful candidate run ID, full SHA, preview URL, and version ID from its retained candidate manifest.
-4. Dispatch `Promote Production` from `master`. Enter that run ID and SHA, then type `PROMOTE <full-sha>` exactly.
+4. Dispatch `Promote Production` from `main`. Enter that run ID and SHA, then type `PROMOTE <full-sha>` exactly.
 5. Production must promote the retained Cloudflare version without rebuilding, pass byte-level HTTP verification, and pass the same browser suite against `m0code.com`.
 
-The private GitHub Free plan cannot enforce required reviewers or branch protection. Production therefore never deploys on push: an authenticated operator must manually dispatch an exact-current-master SHA whose candidate run succeeded.
+Production never deploys on push: an authenticated operator must manually dispatch an exact-current-main SHA whose candidate run succeeded.
 
 ## Monitoring and incident threshold
 

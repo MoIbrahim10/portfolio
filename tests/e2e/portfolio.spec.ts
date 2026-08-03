@@ -70,7 +70,7 @@ test('SSR hydrates and project selection remains interactive', async ({
   await expect(
     page.getByRole('heading', {
       level: 1,
-      name: 'Mo Ibrahim — Design Engineer',
+      name: 'Mo Ibrahim — Product Engineer',
     }),
   ).toBeVisible()
   await expect(page.locator('button[aria-label^="Show "]')).toHaveCount(16)

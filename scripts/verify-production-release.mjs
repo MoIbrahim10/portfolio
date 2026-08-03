@@ -67,7 +67,7 @@ async function verifyProduction(manifest, attempt) {
   assert(home.includes('<title>MO — Portfolio</title>'), 'Homepage title differs')
   assert(countMatches(home, /<h1(?:\s|>)/g) === 1, 'Homepage H1 count differs')
   assert(home.includes('Mo Ibrahim — '), 'Homepage identity heading differs')
-  assert(home.includes('Design Engineer'), 'Homepage role heading differs')
+  assert(home.includes('Product Engineer'), 'Homepage role heading differs')
   assert(
     countMatches(home, /role="group"/g) === 4,
     'Homepage project-group count differs',

@@ -347,7 +347,7 @@ function HeroStage({
             className={`${styles.role} ${styles.entranceItem}`}
           >
             <span className={styles.visuallyHidden}>Mo Ibrahim — </span>
-            Design Engineer
+            Product Engineer
           </h1>
           <p
             className={`${styles.bio} ${styles.entranceItem}`}

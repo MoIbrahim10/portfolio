@@ -3,9 +3,11 @@ name: Cloudflare Candidate
 on:
   pull_request:
     branches:
+      - main
       - master
   push:
     branches:
+      - main
       - master
 
 permissions:
@@ -28,7 +30,7 @@ jobs:
       artifact_url: ${{ steps.upload.outputs.artifact-url }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
@@ -60,7 +62,7 @@ jobs:
 
       - name: Retain browser failure evidence
         if: failure() && (steps.browser_tests.outcome == 'failure' || steps.cross_browser_tests.outcome == 'failure')
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: portfolio-browser-failures-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
@@ -77,7 +79,7 @@ jobs:
 
       - name: Retain immutable build artifact
         id: upload
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ env.BUILD_ARTIFACT_NAME }}
           path: |
@@ -89,7 +91,7 @@ jobs:
           retention-days: 30
 
   candidate:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -98,7 +100,7 @@ jobs:
       url: ${{ steps.candidate.outputs.preview_url }}
     steps:
       - name: Check out candidate configuration
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
@@ -109,7 +111,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Download retained build artifact
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: ${{ env.BUILD_ARTIFACT_NAME }}
           path: .
@@ -171,7 +173,7 @@ jobs:
 
       - name: Retain candidate browser failure evidence
         if: failure() && (steps.candidate_browser.outcome == 'failure' || steps.candidate_cross_browser.outcome == 'failure')
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: portfolio-preview-browser-failures-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
@@ -191,7 +193,7 @@ jobs:
           BUILD_ARTIFACT_URL: ${{ needs.build.outputs.artifact_url }}
 
       - name: Retain promotable candidate
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: portfolio-candidate-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |

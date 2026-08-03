@@ -125,7 +125,7 @@ test('semantic surface exposes one active story and named controls', async ({
   await expect(
     page.getByRole('heading', {
       level: 1,
-      name: 'Mo Ibrahim — Design Engineer',
+      name: 'Mo Ibrahim — Product Engineer',
     }),
   ).toBeVisible()
   await expect(page.getByRole('navigation', { name: 'Contact links' })).toBeVisible()
@@ -323,7 +323,7 @@ test('responsive, landscape, and text-spacing matrix does not overflow', async (
     await expect(
       page.getByRole('heading', {
         level: 1,
-        name: 'Mo Ibrahim — Design Engineer',
+        name: 'Mo Ibrahim — Product Engineer',
       }),
     ).toBeVisible()
     await expect(page.getByRole('heading', { level: 2, name: 'Orgo' })).toBeVisible()
