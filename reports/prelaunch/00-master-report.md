@@ -264,7 +264,7 @@ The following must be resolved or explicitly disproved against one immutable rel
 - **Alternatives/tradeoffs:** one site-wide image is simpler but less relevant; if lab is non-public, noindex/protect it instead of creating promotional metadata.
 - **Effort/dependencies:** `M`, 0.5–1 day plus image production; copy, route intent, canonical policy.
 - **Objective verification:** every indexable route has one unique title/description/canonical/OG object; social image returns correct MIME/dimensions; platform debuggers report no critical warnings.
-- **Current disposition:** the 404 metadata portion (`08-META-004`) is complete under ITEM-08. Homepage canonical, Open Graph/Twitter, social-image, favicon-platform, and structured-data work remains open, so `M-C15` is not closed.
+- **Current disposition:** the 404 metadata portion (`08-META-004`) is complete under ITEM-08. ITEM-13 locally resolves the homepage title/description, canonical, Open Graph/Twitter, approved social image, and dark-mode favicon contrast; immutable-preview and production verification remain required before `M-C15` closes. Square/Apple icon coverage and optional structured data remain separate P3 work.
 
 ### M-C16 — Media failure recovery is incomplete
 
@@ -831,3 +831,12 @@ Key constraints:
 - **Objective evidence:** candidate and production each passed HTTP/asset verification, baseline 12/12, and cross-browser 98/98 applicable with 10 intentional applicability skips, zero retries, zero unexpected results, and zero flaky results. Production verification passed on attempt 1; the live H1 is “Mo Ibrahim — Product Engineer”; the retained Orgo player/video hash remains `66ad8576…`.
 - **Runner boundary:** Linux headless WebKit uses the known-good Orgo MP4 fixture for two Selected Experiments decoder-stall cases while preserving real pointer/dialog/focus/close assertions. The original immutable-preview MP4s passed three applicable macOS WebKit cases and both live URLs return `200 video/mp4`. Physical-device, NVDA, JAWS, and TalkBack certification remains unclaimed.
 - **Finding disposition:** `M-R01`, `INV-R01`, `R-FQA-001`, `RESP-11-002` through `RESP-11-007`, `RESP-11-010`, `09-R-03`, `09-R-04`, and `CI14-O01` are complete. `RESP-11-008` and `RESP-11-009` remain separate P3 opportunities.
+
+## Implementation progress — ITEM-13 enhance homepage metadata and dark-mode favicon
+
+- **Status:** `Implementation and local acceptance complete; immutable-preview and production verification pending` (2026-08-03).
+- **Implemented scope:** replaced the generic homepage title/description; added one absolute HTTPS canonical, complete Open Graph/Twitter large-image metadata, author/site identity, and the owner-supplied 2994×1498 PNG copied byte-for-byte. A favicon-only SVG preserves the existing light palette and swaps navy/red to cream/coral under `prefers-color-scheme: dark`; the visible homepage/404 logo keeps the untouched source asset.
+- **Objective evidence:** type-check and production build pass; raw built SSR returns `Mo Ibrahim — Product Engineer`, the reviewed description, `https://m0code.com/`, the absolute social image, `summary_large_image`, and `/brand/mo-favicon.svg`. Unknown routes remain hard `404` with `Page Not Found — MO` and no home canonical. The full browser regression passes 14/14 with zero retries, including computed light/dark favicon colors plus the retained Orgo player, reduced motion, media failure, and both 404 paths.
+- **Asset evidence:** source and public social PNG SHA-256 both equal `c0acbf4890e5416105372b3afc0d8765828a51b1c886fef40f8e065f13fd401b`; declared type/dimensions are `image/png`, 2994×1498. Both favicon SVGs parse as XML; only `/brand/mo-favicon.svg` contains the dark-mode palette.
+- **Finding disposition:** `08-META-001` homepage SSR-canonical remainder, `08-META-002`, and `08-META-003` are locally resolved pending release evidence. `08-RISK-002` is partially improved for dark-tab contrast; its square/Apple coverage remains open. `08-OPP-001` JSON-LD and `08-OPP-002` manifest/installability remain intentionally unchanged.
+- **Release boundary:** changes are local and unpushed because Git branch/merge approval operations are unavailable after the approval service reached its usage limit. No production or social-debugger success is claimed.

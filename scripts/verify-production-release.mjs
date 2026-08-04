@@ -7,6 +7,10 @@ import path from 'node:path'
 const ORIGIN = new URL(
   process.env.DEPLOYMENT_ORIGIN?.trim() || 'https://m0code.com',
 ).origin
+const SITE_DESCRIPTION =
+  'Product engineer crafting thoughtful digital products, polished interfaces, and design systems where every detail matters.'
+const SOCIAL_IMAGE_PATH = '/social/mo-ibrahim-product-engineer.png'
+const SOCIAL_IMAGE_URL = `https://m0code.com${SOCIAL_IMAGE_PATH}`
 const OUTPUT_PATH =
   process.env.VERIFICATION_OUTPUT_PATH?.trim() ||
   'release/production-verification.json'
@@ -64,7 +68,20 @@ async function verifyProduction(manifest, attempt) {
   const home = await homeResponse.text()
 
   assert(homeResponse.status === 200, `Homepage returned ${homeResponse.status}`)
-  assert(home.includes('<title>MO — Portfolio</title>'), 'Homepage title differs')
+  assert(
+    home.includes('<title>Mo Ibrahim — Product Engineer</title>'),
+    'Homepage title differs',
+  )
+  assert(home.includes(SITE_DESCRIPTION), 'Homepage description differs')
+  assert(
+    home.includes('rel="canonical" href="https://m0code.com/"'),
+    'Homepage canonical differs',
+  )
+  assert(home.includes(SOCIAL_IMAGE_URL), 'Homepage social image differs')
+  assert(
+    home.includes('name="twitter:card" content="summary_large_image"'),
+    'Homepage Twitter card differs',
+  )
   assert(countMatches(home, /<h1(?:\s|>)/g) === 1, 'Homepage H1 count differs')
   assert(home.includes('Mo Ibrahim — '), 'Homepage identity heading differs')
   assert(home.includes('Product Engineer'), 'Homepage role heading differs')
@@ -119,6 +136,19 @@ async function verifyProduction(manifest, attempt) {
   assert(brand, 'Brand mark is absent from the build manifest')
   await assertDeployedFile(`${ORIGIN}${brandPath}`, brand, 'image/svg+xml')
 
+  const faviconPath = '/brand/mo-favicon.svg'
+  const favicon = files.get(`client${faviconPath}`)
+  assert(favicon, 'Adaptive favicon is absent from the build manifest')
+  await assertDeployedFile(`${ORIGIN}${faviconPath}`, favicon, 'image/svg+xml')
+
+  const socialImage = files.get(`client${SOCIAL_IMAGE_PATH}`)
+  assert(socialImage, 'Social image is absent from the build manifest')
+  await assertDeployedFile(
+    `${ORIGIN}${SOCIAL_IMAGE_PATH}`,
+    socialImage,
+    'image/png',
+  )
+
   const videoPath = '/portfolio/projects/orgo/walkthrough.mp4'
   const video = files.get(`client${videoPath}`)
   assert(video, 'Retained Orgo video is absent from the build manifest')
@@ -130,6 +160,8 @@ async function verifyProduction(manifest, attempt) {
     retiredLabStatus: retiredResponse.status,
     generatedAssets: assetPaths,
     brandSha256: brand.sha256,
+    faviconSha256: favicon.sha256,
+    socialImageSha256: socialImage.sha256,
     orgoVideoSha256: video.sha256,
   }
 }
