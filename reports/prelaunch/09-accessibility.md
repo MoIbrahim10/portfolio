@@ -356,7 +356,7 @@ These are source/SSR-level passes unless noted; direct multi-browser/AT behavior
 
 - **Status:** `Complete — verified in production` (2026-08-01).
 - **Disposition:** `09-C-03`, `09-C-05`, and `09-C-06` are complete for the retained site. The lab portion of `09-C-05` was retired under ITEM-01; homepage control semantics and all listed 404 requirements are now satisfied.
-- **Semantics evidence:** SSR and hydrated accessibility trees expose one “Mo Ibrahim — Design Engineer” H1, four H2 project headings, and four labeled project groups with no false project-navigation landmarks. Unknown URLs expose `main`, one H1, explanatory copy, and a clearly named home link under the unique error title.
+- **Semantics evidence:** SSR and hydrated accessibility trees expose one “Mo Ibrahim — Product Engineer” H1, four H2 project headings, and four labeled project groups with no false project-navigation landmarks. Unknown URLs expose `main`, one H1, explanatory copy, and a clearly named home link under the unique error title.
 - **Interaction/layout evidence:** keyboard focus and Enter activation pass; the focused recovery link has a 3 px outline. Checks at 320, 390, 768, and 1440 CSS px plus 200% text show no horizontal overflow; both recovery targets meet the 44 CSS px advisory size and the action is 48 px high.
 - **Audit/regression evidence:** production desktop/mobile Lighthouse snapshots score Accessibility 100 with zero failed audits. The homepage role block retains its exact pre-change rectangle and computed styling, and the existing Orgo modal/video remains operable with no console/page errors. Real NVDA/JAWS/VoiceOver and non-Chromium coverage remain open under the existing risks.
 
@@ -369,8 +369,8 @@ These are source/SSR-level passes unless noted; direct multi-browser/AT behavior
 
 ## Implementation tracking — ITEM-12
 
-- **Status:** `09-R-03 and 09-R-04 resolved locally; release verification pending` (2026-08-02).
+- **Status:** `Complete — 09-R-03 and 09-R-04 verified in preview and production` (2026-08-03).
 - **Fixes:** inactive stories use `aria-hidden` with `inert`; keyboard project selection focuses the committed active story; the modal owns Tab traversal and excludes its invisible backdrop; the custom scrollbar has a 24px interactive width while retaining its 10px visual track.
-- **Verification:** Chromium, Firefox, WebKit, mobile Chromium/WebKit, and hybrid touch passed semantic snapshots, modal containment/return, keyboard routing, reduced motion, forced colors, 320px reflow, landscape, WCAG text-spacing overrides, and 200% text. All 32 media triggers were checked on desktop; first/last per story were checked on mobile.
+- **Verification:** candidate run `30820151411` and production run `30822250655` each passed 12/12 baseline plus 98/98 applicable cross-browser cases with 10 intentional skips, zero retries, zero unexpected results, and zero flaky results. Coverage includes semantic snapshots, modal containment/return, keyboard routing, reduced motion, forced colors, 320px reflow, landscape, WCAG text-spacing overrides, 200% text, all 32 desktop media triggers, and first/last mobile media per story.
 - **Assistive-technology evidence:** with macOS VoiceOver enabled, Safari’s native tree exposed one active Orgo story, H1/H2 hierarchy, named toggle buttons, links, media actions, regions, and scrollbar value; inactive stories were absent. VoiceOver was returned to its previous off state.
 - **Boundary:** no NVDA, JAWS, TalkBack, rotor-output transcript, or physical-device certification is claimed.

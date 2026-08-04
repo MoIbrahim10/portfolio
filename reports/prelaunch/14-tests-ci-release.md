@@ -264,6 +264,7 @@ The local branch is one commit ahead of `origin/master`. The existing local buil
 
 ### CI14-R05 — P3 low — Pinned official actions still declare a deprecated Node 20 runtime
 
+- **Remediation status:** `Complete for the Node 20 runtime warning — production verified` (2026-08-03). The evidence below preserves the original finding.
 - **Affected:** `.github/workflows/cloudflare.yml`; pinned `actions/checkout`, `actions/upload-artifact`, and `actions/download-artifact`; GitHub-hosted runner behavior.
 - **Evidence:** successful runs `30703077662` and `30703230758` emit GitHub annotations that these pinned actions target Node.js 20 and are being forced to run on Node.js 24. Download/upload action logs also emit `Buffer()`, `punycode`, and `url.parse()` deprecation warnings. No step failed and the final build/deploy/verification receipts are valid, so this is a forward-compatibility risk rather than a current release failure.
 - **Reproduction steps:** Open either run's annotations and the artifact download/upload logs; confirm the Node 20-to-24 compatibility warning and deprecated API messages.
@@ -274,6 +275,7 @@ The local branch is one commit ahead of `origin/master`. The existing local buil
 - **Estimated effort:** `S` — 1–3 hours once suitable upstream releases exist.
 - **Dependencies:** upstream official releases; controlled action-update owner; retained artifact verification fixture.
 - **Objective verification method:** the same workflow completes on the supported runner with no Node-runtime or deprecated-action annotation; the downloaded artifact digest, 130-file verification, production smoke, and final receipt remain identical in contract.
+- **Current verification:** official Node 24-native `actions/checkout@v7.0.1`, `actions/upload-artifact@v7.0.1`, and `actions/download-artifact@v8.0.1` are pinned to full SHAs in every workflow. PR run `30811726096`, candidate run `30820151411`, and production run `30822250655` passed; the exact Node 20/forced-Node-24 warning is absent. `download-artifact@v8.0.1` still emits an upstream `Buffer()` DEP0005 log warning, which is not the retired Node 20 action-runtime warning and remains an upstream low-risk observation.
 
 ## Opportunities
 
@@ -424,13 +426,13 @@ These are narrow evidence-backed passes, not substitutes for the absent tests:
 ## Implementation tracking — ITEM-11
 
 - **Status:** `Complete under current GitHub plan — release controls verified end to end` (2026-08-02).
-- **Disposition:** `CI14-002`, `CI14-003`, `CI14-005`, and `CI14-006` are complete. GitHub Free/private cannot enforce independent required reviewers; exact-current-master SHA, successful candidate-run, immutable version, manual dispatch, and typed confirmation are the implemented compensating controls.
+- **Disposition:** `CI14-002`, `CI14-003`, `CI14-005`, and `CI14-006` are complete. The default/release branch is now `main`. GitHub Free/private still rejects branch protection and rulesets with HTTP 403; exact-current-main SHA, successful candidate-run, immutable version, manual dispatch, and typed confirmation are the implemented compensating controls.
 - **Evidence:** candidate run `30748871265` passed build/manifest/preview HTTP and browser 12/12; production run `30749017151` promoted `eb99526e…` without rebuilding and passed HTTP plus browser 12/12; alert drill/recovery runs `30749077296`/`30749093387` opened and closed issue #21; rollback run `30749138784` restored `8ae8c433…` and passed in 78 seconds; re-promotion `30749197122` restored `eb99526e…`; final health `30749250655` passed. No UI, component, media, player, or media-fetch behavior changed.
 
 ## Implementation tracking — ITEM-12
 
-- **Status:** `CI14-O01 implemented and locally verified; remote gates pending` (2026-08-02).
-- **Gate:** `bun run test:cross-browser` executes 60 cases across six projects with zero retries after frozen install/type-check/build. PR, immutable candidate, and exact-version production stages install Chromium, Firefox, and WebKit, run the baseline and cross-browser suites, and retain HTML/JSON/trace/screenshot/video evidence on failure.
+- **Status:** `Complete — CI14-O01 verified in immutable preview and production` (2026-08-03).
+- **Gate:** `bun run test:cross-browser` executes 108 cases across six projects with zero retries after frozen install/type-check/build. PR, immutable candidate, and exact-version production stages install Chromium, Firefox, and WebKit, run the baseline and cross-browser suites, and retain HTML/JSON/trace/screenshot/video evidence on failure.
 - **Coverage:** semantics, all desktop media triggers, representative mobile media, keyboard, touch/hybrid input, responsive/landscape/text scaling, reduced motion, forced colors, scrollbar input, generic 404, and retired-lab 404.
-- **Local evidence:** type-check, production build, dependency audit, secrets/console scan, baseline 12/12, and cross-browser 56/56 applicable with four intentional mobile skips and zero unexpected/flaky results.
-- **Acceptance:** final completion requires the PR build and immutable preview matrix to pass, followed by promotion of the same version and an identical production matrix.
+- **Release evidence:** PRs #23–#25 culminated in `main` SHA `27ba445f4bf12c46c0d16015e94da510cb9a9d81`. Candidate run `30820151411` passed build and preview HTTP, baseline 12/12, and cross-browser 98/98 applicable with 10 intentional skips. Production run `30822250655` promoted the same Cloudflare version `91a275a8-558f-4430-ba4c-a09a313c10d5` without rebuilding and repeated 12/12 plus 98/98 with zero unexpected/flaky results.
+- **Runner boundary:** Linux headless WebKit deterministically substitutes the known-good Orgo MP4 for two Selected Experiments decoder-stall cases while preserving real pointer/dialog/focus/close checks. The original preview MP4s passed three applicable macOS WebKit cases; their production URLs return `200 video/mp4`.

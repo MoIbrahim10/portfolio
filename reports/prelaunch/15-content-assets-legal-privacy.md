@@ -17,7 +17,7 @@ Disposition: evidence and recommendations only; no legal conclusions and no sour
 
 | Surface | Content inventoried | State | Evidence/result |
 |---|---|---|---|
-| `/` identity/contact | MO mark, “Design Engineer,” bio, portrait reveal, Schedule a call, X, email, GitHub | Visible | `src/components/v14-exploration-lab/V14ExplorationLab.tsx:10-24,107-129,322-376`; present in production SSR |
+| `/` identity/contact | MO mark, “Product Engineer,” bio, portrait reveal, Schedule a call, X, email, GitHub | Visible | `src/components/v14-exploration-lab/V14ExplorationLab.tsx:10-24,107-129,322-376`; present in production SSR |
 | `/` project stories | Orgo (5 chapters), The Good Invoice (5), Lumen (7), Selected Experiments (15: Bits n Pixels 3, Stepper 4, Folders 2, Glazed 5, MO identity 1) | Visible | `CrossAxisProjectRail.tsx:94-386`; 32 chapters present in production SSR |
 | Project descriptions/data | Good Invoice, Lumen, Calm AI Studio, Bits n Pixels, Glazed, Folders, Orgo, Stepper | One dormant | `portfolio-data.ts:35-320`; Calm AI Studio is defined but not included in `STORIES` |
 | Collaboration credits | Fay website and X credit on Good Invoice, Bits n Pixels, and Glazed | Visible | `portfolio-data.ts:38-43,131-136,169-174`; rendering at `CrossAxisProjectRail.tsx:521-548,829-856` |

@@ -2,6 +2,10 @@ import { expect, test, type Page, type Request } from '@playwright/test'
 
 const orgoCaption = 'Entrance animation and interactive icon hovers'
 const orgoVideoPath = '/portfolio/projects/orgo/walkthrough.mp4'
+const siteDescription =
+  'Product engineer crafting thoughtful digital products, polished interfaces, and design systems where every detail matters.'
+const socialImageUrl =
+  'https://m0code.com/social/mo-ibrahim-product-engineer.png'
 
 async function waitForHydration(page: Page) {
   await page.waitForFunction(() => {
@@ -66,7 +70,31 @@ test('SSR hydrates and project selection remains interactive', async ({
   await waitForHydration(page)
 
   expect(response?.status()).toBe(200)
-  await expect(page).toHaveTitle('MO — Portfolio')
+  await expect(page).toHaveTitle('Mo Ibrahim — Product Engineer')
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    'content',
+    siteDescription,
+  )
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    'href',
+    'https://m0code.com/',
+  )
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+    'content',
+    socialImageUrl,
+  )
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+    'content',
+    'summary_large_image',
+  )
+  await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
+    'content',
+    socialImageUrl,
+  )
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute(
+    'href',
+    '/brand/mo-favicon.svg',
+  )
   await expect(
     page.getByRole('heading', {
       level: 1,
@@ -90,6 +118,31 @@ test('SSR hydrates and project selection remains interactive', async ({
   ).toHaveCount(4)
 
   assertRuntimeClean()
+})
+
+test('favicon preserves its light palette and increases dark contrast', async ({
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: 'light' })
+  const response = await page.goto('/brand/mo-favicon.svg')
+  expect(response?.status()).toBe(200)
+
+  const navyShape = page.locator('[fill="#122b3d"]').first()
+  const redShape = page.locator('[fill="#9c1e1b"]').first()
+  await expect
+    .poll(() => navyShape.evaluate((element) => getComputedStyle(element).fill))
+    .toBe('rgb(18, 43, 61)')
+  await expect
+    .poll(() => redShape.evaluate((element) => getComputedStyle(element).fill))
+    .toBe('rgb(156, 30, 27)')
+
+  await page.emulateMedia({ colorScheme: 'dark' })
+  await expect
+    .poll(() => navyShape.evaluate((element) => getComputedStyle(element).fill))
+    .toBe('rgb(255, 244, 220)')
+  await expect
+    .poll(() => redShape.evaluate((element) => getComputedStyle(element).fill))
+    .toBe('rgb(255, 118, 109)')
 })
 
 test('Orgo video viewer controls, Escape, and focus return work', async ({

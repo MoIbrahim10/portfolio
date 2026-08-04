@@ -4,6 +4,10 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 const ORIGIN = 'https://m0code.com'
+const SITE_DESCRIPTION =
+  'Product engineer crafting thoughtful digital products, polished interfaces, and design systems where every detail matters.'
+const SOCIAL_IMAGE_URL =
+  'https://m0code.com/social/mo-ibrahim-product-engineer.png'
 const OUTPUT_PATH =
   process.env.HEALTH_OUTPUT_PATH?.trim() || 'release/health-check.json'
 
@@ -30,7 +34,20 @@ async function runChecks() {
   const home = await homeResponse.text()
 
   assert(homeResponse.status === 200, `Homepage returned ${homeResponse.status}`)
-  assert(home.includes('<title>MO — Portfolio</title>'), 'Homepage title differs')
+  assert(
+    home.includes('<title>Mo Ibrahim — Product Engineer</title>'),
+    'Homepage title differs',
+  )
+  assert(home.includes(SITE_DESCRIPTION), 'Homepage description differs')
+  assert(
+    home.includes('rel="canonical" href="https://m0code.com/"'),
+    'Homepage canonical differs',
+  )
+  assert(home.includes(SOCIAL_IMAGE_URL), 'Homepage social image differs')
+  assert(
+    home.includes('name="twitter:card" content="summary_large_image"'),
+    'Homepage Twitter card differs',
+  )
   assert(home.includes('Mo Ibrahim — '), 'Homepage identity is missing')
   assert([...home.matchAll(/role="group"/g)].length === 4, 'Project groups differ')
 

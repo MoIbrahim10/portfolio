@@ -287,7 +287,8 @@ Release posture: **not functionally cleared**. No source, dependency, build, con
 
 ## Implementation tracking — ITEM-12
 
-- **Status:** `R-FQA-001 resolved locally; release verification pending` (2026-08-02).
+- **Status:** `Complete — R-FQA-001 verified in preview and production` (2026-08-03).
 - **Coverage:** all 32 desktop media triggers open a labeled viewer, render visible image/video content, contain Tab focus, close by Escape, and restore the exact trigger. Mobile checks first/last media per story; keyboard story changes, dot activation, scrollbar keys, hybrid taps, reduced motion, forced colors, responsive/text scaling, and both 404 recovery paths are also covered.
 - **Strictness:** zero retries; unexpected console errors, page exceptions, and request failures fail the run. Only verified navigation/media cancellations are scoped as expected aborts; non-abort failures remain fatal.
-- **Evidence:** existing regression suite 12/12 plus cross-browser 56/56 applicable, four intentional mobile-only skips, and zero unexpected failures.
+- **Evidence:** immutable candidate `30820151411` and production promotion `30822250655` each passed baseline 12/12 plus cross-browser 98/98 applicable, 10 intentional applicability skips, zero retries, zero unexpected results, and zero flaky results. Production HTTP verification passed on attempt 1 against Cloudflare version `91a275a8…`.
+- **Runner boundary:** Linux headless WebKit uses the known-good Orgo MP4 for two deterministic decoder-stall checks; the original Pricing and logo MP4s passed the immutable preview on macOS WebKit and return `200 video/mp4` in production. Application, media URLs, and player code are unchanged by the fixture.

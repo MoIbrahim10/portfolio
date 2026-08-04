@@ -243,8 +243,9 @@ These are implementation/artifact checks, not visual cross-browser passes:
 
 ## Implementation tracking — ITEM-12
 
-- **Status:** `RESP-11-002 through RESP-11-007 and RESP-11-010 resolved locally; release verification pending` (2026-08-02).
+- **Status:** `Complete — RESP-11-002 through RESP-11-007 and RESP-11-010 verified in preview and production` (2026-08-03).
 - **Fixes:** cue direction, tablet/hybrid pan-axis permission, post-commit keyboard focus, WebKit modal Tab containment, inactive-story accessibility exposure, and desktop scrollbar target size. Hybrid video controls remain visible/operable after tapping without changing their visual design.
 - **Matrix:** Desktop Chromium/Firefox/WebKit, Pixel 7, iPhone 13/WebKit, and hybrid desktop touch; 320×844, 390×844, 768×1024, 844×390, 1024×768, and 1440×1000; text spacing, 200% text, reduced motion, forced colors, keyboard, touch, semantic snapshots, modal/media, and 404s.
-- **Evidence:** 56/56 applicable cases passed with four documented mobile skips and no retries. The prior 42-failure production baseline independently reproduced the six fixed defects before implementation.
+- **Evidence:** candidate run `30820151411` and production run `30822250655` each passed 98/98 applicable cases with 10 documented applicability skips, zero retries, zero unexpected results, and zero flaky results; their paired baseline suites passed 12/12. The prior 42-failure production baseline independently reproduced the six fixed defects before implementation.
+- **Runner boundary:** two Linux headless WebKit video-decoder cases use a known-good MP4 fixture; the original immutable-preview videos passed macOS WebKit. This constraint is annotated and does not alter the application, current player, media URLs, or non-Linux-WebKit coverage.
 - **Remaining opportunities:** RESP-11-008 safe-area testing on physical notched devices and RESP-11-009 browser-history modal behavior remain open P3 items; NVDA/JAWS/TalkBack and physical-device certification are unclaimed.
