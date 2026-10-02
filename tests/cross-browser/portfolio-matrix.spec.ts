@@ -23,15 +23,15 @@ const mediaBatches = [
 ] as const
 
 async function waitForHydration(page: Page) {
-  await page.waitForFunction(() => {
-    const trigger = document.querySelector(
-      'button[aria-label="Mo — reveal portrait"]',
-    )
-    return (
-      trigger &&
-      Object.keys(trigger).some((key) => key.startsWith('__reactProps$'))
-    )
-  })
+  const trigger = page.getByRole('button', { name: 'Mo — reveal portrait' })
+  await expect
+    .poll(async () => {
+      await trigger.press('Enter')
+      return trigger.getAttribute('aria-expanded')
+    })
+    .toBe('true')
+  await trigger.evaluate((button: HTMLButtonElement) => button.blur())
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false')
 }
 
 function monitorRuntime(
