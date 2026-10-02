@@ -38,8 +38,8 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     collaborators: [
       {
         name: 'Fay',
-        socialHref: 'https://x.com/faydesignsstuff',
-        websiteHref: 'https://faydakrouri.com/',
+        socialHref: 'https://x.com/faydkr',
+        websiteHref: 'https://faydkr.com/',
       },
     ],
     description: 'A focused invoice builder with live preview and a carefully tuned creation flow.',
@@ -131,8 +131,8 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     collaborators: [
       {
         name: 'Fay',
-        socialHref: 'https://x.com/faydesignsstuff',
-        websiteHref: 'https://faydakrouri.com/',
+        socialHref: 'https://x.com/faydkr',
+        websiteHref: 'https://faydkr.com/',
       },
     ],
     description: 'A design and engineering studio site made to feel precise, quiet, and assured.',
@@ -169,8 +169,8 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     collaborators: [
       {
         name: 'Fay',
-        socialHref: 'https://x.com/faydesignsstuff',
-        websiteHref: 'https://faydakrouri.com/',
+        socialHref: 'https://x.com/faydkr',
+        websiteHref: 'https://faydkr.com/',
       },
     ],
     description: 'A visual design practice shaped around honest, useful, and polished product work.',
