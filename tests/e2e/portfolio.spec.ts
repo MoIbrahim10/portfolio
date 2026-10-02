@@ -9,9 +9,8 @@ const socialImageUrl =
 
 async function waitForHydration(page: Page) {
   const trigger = page.getByRole('button', { name: 'Mo — reveal portrait' })
-  await trigger.click()
+  await trigger.focus()
   await expect(trigger).toHaveAttribute('aria-expanded', 'true')
-  await page.mouse.move(0, 0)
   await trigger.evaluate((button: HTMLButtonElement) => button.blur())
   await expect(trigger).toHaveAttribute('aria-expanded', 'false')
 }
