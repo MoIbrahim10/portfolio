@@ -34,7 +34,33 @@ Roll back when either condition is met:
 5. After rollback it verifies the serving version, production health, and all 12 browser checks; retain the 90-day evidence artifact.
 6. If rollback verification fails, keep the incident open and promote a separately tested forward fix. Do not rebuild an old commit during an incident.
 
-This Worker currently has no application database or stateful binding. Cloudflare rollback restores Worker code and static assets, not future external data or binding state; reassess this runbook before adding state.
+This Worker binds `FEEDBACK_DB` to the private `portfolio-feedback` D1 database and uses `FEEDBACK_RATE_LIMITER` for submissions. Cloudflare rollback restores Worker code and static assets, but does not roll back postcards or D1 schema. Keep the feedback table when rolling back to a version without feedback support.
+
+## Feedback storage and local preview
+
+The `/feedback` page submits to `POST /api/feedback`. Only a successful D1 insert triggers the delivered state. Postcards contain the message, category, optional name, UUID, creation time, and visibility. Visibility defaults to `private` for existing records and clients that omit it. The page currently sends every postcard privately; there is no visibility control or public wall in the interface. IP addresses are used for rate limiting, not stored in D1.
+
+`GET /api/feedback/public` returns only public records as `{ postcards, nextCursor }`, with up to 24 postcards containing `id`, `kind`, `message`, `name`, and `created_at`. Results sort by creation time and UUID descending. Pass the opaque `nextCursor` as the `cursor` query parameter to retrieve older cards; `null` means the end of the wall. This endpoint never selects private records and returns uncached results so newly published postcards can appear immediately. Repeating a submission UUID preserves its original message and visibility.
+
+The cloud database and initial table have been provisioned. Before promoting the feedback feature, apply the pending migrations with `bunx wrangler@4.114.0 d1 migrations apply portfolio-feedback --remote`. The first migration is safe to apply to the already-created table. The second adds visibility with a private default and an index for public wall pagination. Apply it before the new Worker version; the added column remains compatible with retained versions that only insert the original fields. Cloud schema changes require operator approval.
+
+For a working local preview, run:
+
+```sh
+bun run build
+bunx wrangler@4.114.0 d1 migrations apply portfolio-feedback --local
+bunx wrangler@4.114.0 dev --local --port 8787
+```
+
+Open `http://localhost:8787/feedback`. Local D1 saves persist in `.wrangler/state`; they are separate from the cloud database. The Vite-only development server does not provide Cloudflare bindings, so use the Worker preview to test delivery.
+
+Run the postcard UI and local storage tests against that preview:
+
+```sh
+PLAYWRIGHT_TEST_BASE_URL=http://localhost:8787 PLAYWRIGHT_FEEDBACK_STORAGE=1 bun run test:e2e tests/e2e/feedback.spec.ts
+```
+
+The storage test is opt-in and restricted to localhost, so normal candidate and production browser tests never insert test postcards. To inspect real feedback privately, use the D1 dashboard or `bunx wrangler@4.114.0 d1 execute portfolio-feedback --remote --command "SELECT kind, message, name, visibility, created_at FROM feedback ORDER BY created_at DESC LIMIT 50"`.
 
 ## Drills
 

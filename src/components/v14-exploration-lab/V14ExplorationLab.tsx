@@ -125,6 +125,12 @@ function ContactActions() {
         <SocialLink href={LINKS.x} label="X profile" name="x" />
         <SocialLink href={LINKS.email} label="Email Mo" name="email" />
         <SocialLink href={LINKS.github} label="GitHub profile" name="github" />
+        <CutCornerButton className={styles.feedbackLink} href="/feedback" variant="paper">
+          <svg aria-hidden="true" viewBox="0 0 24 18" fill="none">
+            <path d="M1 1h22v16H1zM15 4v10M4 6h7M4 9h7M4 12h4M18 4h2v3h-2z" />
+          </svg>
+          Leave a note
+        </CutCornerButton>
       </nav>
     </div>
   )

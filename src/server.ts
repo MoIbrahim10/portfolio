@@ -2,6 +2,8 @@ import handler, {
   createServerEntry,
 } from '@tanstack/react-start/server-entry'
 
+import { handleFeedback, handlePublicFeedback } from './feedback-server'
+
 function createContentSecurityPolicy(nonce: string) {
   return [
     "default-src 'self'",
@@ -27,6 +29,22 @@ function createContentSecurityPolicy(nonce: string) {
 
 export default createServerEntry({
   async fetch(request) {
+    const pathname = new URL(request.url).pathname
+    if (pathname === '/api/feedback' || pathname === '/api/feedback/public') {
+      try {
+        const { env } = await import(/* @vite-ignore */ 'cloudflare:workers')
+        return pathname === '/api/feedback/public'
+          ? handlePublicFeedback(request, env)
+          : handleFeedback(request, env)
+      } catch (error) {
+        console.error('Feedback runtime unavailable', error)
+        return Response.json(
+          { error: 'The mailbox is unavailable. Please try again shortly.' },
+          { status: 503, headers: { 'Cache-Control': 'no-store' } },
+        )
+      }
+    }
+
     if (process.env.NODE_ENV !== 'production') {
       return handler.fetch(request)
     }

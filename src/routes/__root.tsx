@@ -19,8 +19,9 @@ const SOCIAL_IMAGE_ALT =
   'Mo Ibrahim product engineering portfolio featuring The Good Invoice project.'
 
 export const Route = createRootRoute({
-  head: ({ match }) => {
+  head: ({ match, matches }) => {
     const isNotFound = match.globalNotFound
+    const isFeedback = matches.some((route) => String(route.routeId) === '/feedback')
 
     return {
       meta: [
@@ -76,7 +77,7 @@ export const Route = createRootRoute({
           type: 'image/svg+xml',
           sizes: 'any',
         },
-        ...(!isNotFound ? [{ rel: 'canonical', href: SITE_URL }] : []),
+        ...(!isNotFound && !isFeedback ? [{ rel: 'canonical', href: SITE_URL }] : []),
       ],
     }
   },

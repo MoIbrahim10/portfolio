@@ -1,0 +1,90 @@
+.frame { --letter-ink: #102b43; --letter-muted: #697578; --letter-line: #102b4320; --letter-accent: #9f3732; --letter-paper: #fffaf0; --writing-size: 2.2cqw; width: 100%; min-width: 0; container-type: inline-size; }
+.frame[data-letter-kind='idea'] { --letter-paper: #edf1e8; }
+.frame[data-letter-kind='issue'] { --letter-paper: #eaf0f2; }
+.letter { position: relative; isolation: isolate; display: flex; min-width: 0; min-height: 62cqw; overflow: hidden; color: var(--letter-ink); background: #fffaf0; font: 400 1.9cqw/1.5 "Avenir Next", Avenir, sans-serif; text-align: left; }
+.letter *, .letter *::before, .letter *::after { box-sizing: border-box; }
+.letter :is(p, fieldset) { padding: 0; margin: 0; }
+.letter :is(input, textarea) { font: inherit; }
+.letter, .letter :is(input, textarea, em, p, label, legend, small), .address > span, .count { transition: color 350ms cubic-bezier(.22, 1, .36, 1); }
+.letter button:focus-visible { outline: 2px solid #d79d40; outline-offset: 3px; }
+.frame .letter :is(input, textarea):focus-visible { outline: none; }
+.atmosphere { position: absolute; z-index: -1; inset: 0; pointer-events: none; }
+.paperLayer { position: absolute; inset: 0; clip-path: circle(0% at 86% 18%); transition: clip-path 600ms cubic-bezier(.22, 1, .36, 1); }
+.paperLayer[data-active='true'] { z-index: 1; clip-path: circle(150% at 86% 18%); }
+.paperLayer[data-paper='love'] { color: #9f3732; background: #fffaf0; }
+.paperLayer[data-paper='idea'] { color: #4b7065; background: #edf1e8; }
+.paperLayer[data-paper='issue'] { color: #102b43; background: #eaf0f2; }
+.paperLayer svg { position: absolute; right: 0; bottom: 0; width: 37%; height: 100%; opacity: .07; }
+.rail { position: relative; width: 3.2%; flex-shrink: 0; margin-block: -1px; background: radial-gradient(circle at 100% 6px, transparent 3px, #9f3732 3.5px) 0 0 / 100% 12px repeat-y; }
+.writing { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 3cqw; padding: 4cqw 4.5cqw; }
+.body { display: grid; flex: 1; min-width: 0; grid-template-columns: minmax(0, 1fr) 26%; gap: 4cqw; }
+.note { display: flex; min-width: 0; flex-direction: column; }
+.title { display: block; margin: 0 0 2.5cqw; font: 650 5.1cqw/1.04 "Iowan Old Style", "Palatino Linotype", Georgia, serif; letter-spacing: -.055em; }
+.title em { color: var(--letter-accent); font-style: italic; }
+.messageField { position: relative; display: flex; min-width: 0; flex: 1; margin-left: -1.5cqw; padding: 0 0 22px 1.5cqw; border-left: 2px solid transparent; font-size: var(--writing-size); line-height: 1.8; transition: border-color 180ms cubic-bezier(.22, 1, .36, 1); }
+.messageField::before { position: absolute; inset: 0 0 0 1.5cqw; content: ""; background: linear-gradient(to bottom, var(--letter-line) 0 1px, transparent 1px) 0 calc(var(--rule-baseline, 1.3em) - var(--rule-scroll, 0px)) / 100% 1.8em repeat-y; pointer-events: none; }
+.messageField:focus-within { border-left-color: var(--letter-accent); }
+.frame .note textarea { width: 100%; min-height: 14cqw; min-width: 0; flex: 1; padding: 0; border: 0; border-radius: 0; resize: none; color: var(--letter-ink); background: transparent; font: 400 var(--writing-size)/1.8 "Avenir Next", Avenir, sans-serif; }
+.ruleGuide { position: absolute; top: 0; left: 0; visibility: hidden; pointer-events: none; font: 400 var(--writing-size)/1.8 "Avenir Next", Avenir, sans-serif; white-space: nowrap; }
+.ruleGuide > span { display: inline-block; width: 0; height: 0; vertical-align: baseline; }
+.note textarea::placeholder, .signature input::placeholder { color: var(--letter-muted); font: inherit; opacity: 1; }
+.signature { display: flex; align-items: baseline; gap: 1.4cqw; padding-block: 1cqw; margin-top: 2cqw; border-bottom: 1px solid var(--letter-line); transition: border-color 180ms cubic-bezier(.22, 1, .36, 1); }
+.signature:focus-within { border-bottom-color: var(--letter-accent); }
+.signature label, .address > span { color: var(--letter-accent); font: 400 var(--writing-size)/1.8 "Avenir Next", Avenir, sans-serif; }
+.signature label { flex-shrink: 0; }
+.frame .signature > input { width: 100%; min-width: 0; padding: 0; border: 0; border-radius: 0; color: var(--letter-ink); background: transparent; font: 400 var(--writing-size)/1.8 "Avenir Next", Avenir, sans-serif; }
+.count { position: absolute; right: 0; bottom: 0; display: flex; align-items: baseline; gap: 4px; padding: 2px 0 2px 8px; color: var(--letter-muted); background: var(--letter-paper); font: 400 11px/1.4 ui-monospace, Menlo, monospace; font-variant-numeric: tabular-nums; white-space: nowrap; animation: counterEnter 180ms cubic-bezier(.22, 1, .36, 1) both; pointer-events: none; }
+.count strong { font: inherit; }
+.count[data-near-limit='true'], .count[data-near-limit='true'] strong { color: var(--letter-accent); }
+.destination { display: flex; min-width: 0; justify-content: space-between; flex-direction: column; gap: 3cqw; }
+.destinationTop { display: flex; flex-direction: column; align-items: flex-end; gap: 3cqw; }
+.mark { display: block; width: 9cqw; height: auto; padding: 0; }
+.postage { position: relative; display: flex; justify-content: flex-end; padding-top: .7cqw; }
+.affixedStamp { width: 12cqw; transform: rotate(3deg); animation: stampLand 300ms cubic-bezier(.22, 1, .36, 1) both; }
+.affixedStamp svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 2px 1px #102b431a); }
+.postmark { position: absolute; top: 10cqw; right: 2cqw; width: 19cqw; height: auto; color: var(--letter-ink); opacity: .45; transform: rotate(-12deg); }
+.address { display: flex; flex-direction: column; gap: 2px; padding: 0 0 2.5cqw; }
+.address > span { line-height: 1.3; }
+.address strong { font-size: 2.25cqw; font-weight: 650; line-height: 1.35; }
+.address p { color: var(--letter-muted); font-size: 1.7cqw; line-height: 1.4; }
+.delivery { display: flex; align-items: flex-start; justify-content: flex-end; gap: 2cqw; padding-top: 2cqw; border-top: 1px solid var(--letter-line); }
+.send { --face: #9f3732; --edge: #102b43; --ink: #fffaf0; margin-top: 0; min-height: 4.5cqw; padding: 1.2cqw 2cqw; font: 650 1.4cqw/1.5 ui-monospace, Menlo, monospace; letter-spacing: 0; white-space: nowrap; }
+.send > span { display: flex; align-items: center; justify-content: space-between; gap: 2cqw; }
+.frame { --writing-size: max(16px, 2.2cqw); }
+.frame .letter { min-height: 465px; }
+.frame .note textarea { min-height: 125px; }
+.frame .title { font-size: max(30px, 5.1cqw); }
+.frame .address strong { font-size: max(17px, 2.25cqw); }
+.frame .address p { font-size: max(12px, 1.7cqw); }
+.frame .send { min-width: 60px; min-height: 44px; font-size: max(11px, 1.4cqw); }
+@container (max-width: 480px) {
+  .frame .letter { min-height: 550px; }
+  .frame .rail { width: 14px; }
+  .frame .writing { gap: 22px; padding: 22px 18px; }
+  .frame .mark { width: 34px; }
+  .frame .body { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .frame .note textarea { min-height: 140px; }
+  .frame .title { margin-bottom: 18px; }
+  .frame .title br { display: none; }
+  .frame .title em::before { content: " "; }
+  .frame .signature { margin-top: 18px; padding-block: 8px; gap: 10px; }
+  .frame .destination { flex-direction: row-reverse; align-items: center; gap: 16px; }
+  .frame .destinationTop { flex-direction: row; align-items: center; gap: 8px; }
+  .frame .affixedStamp { width: 54px; }
+  .frame .postmark { top: 35px; right: 8px; width: 83px; }
+  .frame .address { padding: 0; }
+  .frame .address p { font-size: 12px; }
+  .frame .delivery { gap: 16px; padding-top: 16px; }
+  .frame .send { margin-top: 0; padding: 12px; }
+}
+@container (max-width: 360px) {
+  .frame .writing { padding-inline: 16px; }
+  .frame .title { font-size: 29px; }
+  .frame .delivery { flex-direction: column; }
+  .frame .send { width: 100%; margin: 0; }
+}
+@keyframes counterEnter { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+@keyframes stampLand { from { opacity: 0; transform: translateY(-8px) rotate(-3deg); } to { opacity: 1; transform: rotate(3deg); } }
+.frame[data-instant='true'] .paperLayer, .frame[data-instant='true'] .affixedStamp { transition: none; animation: none; }
+.frame[data-instant='true'] .letter, .frame[data-instant='true'] .letter :is(input, textarea, em, p, label, legend, small), .frame[data-instant='true'] .address > span, .frame[data-instant='true'] .count { transition: none; }
+@media (prefers-reduced-motion: reduce) { .frame *, .frame *::before, .frame *::after { animation: none !important; transition: none !important; } }

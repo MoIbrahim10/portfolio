@@ -1,0 +1,210 @@
+.page {
+  --navy: #102b43;
+  --beige: #f3e8d3;
+  --paper: #fffaf0;
+  --red: #9f3732;
+  --gold: #d79d40;
+  --gutter: clamp(1.25rem, 4vw, 4rem);
+  min-height: 100svh;
+  color: var(--navy);
+  background: var(--beige);
+  font-family: "Avenir Next", Avenir, "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page a { color: inherit; text-decoration: none; }
+.page input, .page textarea { font: inherit; }
+.page button { cursor: pointer; }
+.page svg { display: block; }
+.page :is(a, button, input, textarea):focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+
+.honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(calc(100% - 2 * var(--gutter)), 1100px);
+  margin-inline: auto;
+  padding-block: 1rem;
+}
+
+.brand { display: block; }
+.brand img { display: block; width: 90px; height: 55px; }
+.navLinks { display: flex; align-items: center; gap: 2rem; }
+.navLinks > a:last-child { color: var(--navy); }
+.navLinks > a:last-child > span { display: flex; align-items: center; gap: 1.2rem; }
+
+.layout {
+  display: grid;
+  width: min(calc(100% - 2 * var(--gutter)), 1100px);
+  margin-inline: auto;
+  padding-block: 0.5rem 1rem;
+}
+
+.heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-bottom: 1.5rem;
+}
+
+.label, .receiptLabel, .footer {
+  font: 500 0.65rem/1.5 ui-monospace, "SFMono-Regular", Menlo, monospace;
+  letter-spacing: 0.06em;
+}
+
+.heading .label { color: var(--red); }
+.heading h1, .delivered h2 {
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-weight: 650;
+  letter-spacing: -0.065em;
+}
+
+.heading h1 { margin: 0.5rem 0 0; font-size: clamp(3.25rem, 5vw, 4.25rem); line-height: 1.05; }
+.heading h1 span { color: var(--red); font-style: italic; }
+.heading > p { flex-shrink: 0; margin: 0 0 0.3rem; color: #53606a; font-size: 0.9rem; line-height: 1.75; }
+
+.experience {
+  display: grid;
+  grid-template-columns: minmax(0, 660px) 190px;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  min-width: 0;
+  padding: clamp(1.5rem, 2vw, 2rem);
+  color: var(--paper);
+  background: var(--navy);
+}
+
+.postcardArea { min-width: 0; width: 100%; max-width: 660px; margin-inline: auto; }
+.cardStage { position: relative; width: 100%; margin-inline: auto; perspective: 1800px; }
+.cardShell { position: relative; }
+.cardStage::before, .cardStage::after {
+  position: absolute;
+  z-index: 0;
+  inset: 4px 0 -4px;
+  border: 1px solid #fffaf026;
+  background: #d8ccb6;
+  box-shadow: 0 22px 35px -18px #030f1bcc;
+  content: "";
+}
+.cardStage::before { transform: rotate(-0.4deg); }
+.cardStage::after { inset: 8px 0 -8px; z-index: -1; background: #c8bba5; transform: rotate(0.4deg); }
+
+.flipper { position: relative; display: grid; width: 100%; aspect-ratio: 1.25; min-height: 465px; transform-style: preserve-3d; }
+.front, .back {
+  position: relative;
+  grid-area: 1 / 1;
+  color: var(--navy);
+  background: var(--paper);
+  box-shadow: 0 1px 0 #ffffff80 inset, 0 2px 4px #030f1b33;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.front { display: flex; flex-direction: column; overflow: hidden; }
+.frontArtwork { flex: 1; min-height: 0; }
+.frontArtwork > div { height: 100%; }
+.another svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 1.5; }
+
+.back { display: flex; flex-direction: column; padding: 0; border: 0; background: var(--paper); transform: rotateY(180deg); }
+.back > div:first-child { flex: 1; display: flex; }
+.back > div:first-child > div { flex: 1; }
+.back [data-letter-kind] > div { height: 100%; min-height: 100%; }
+.error { margin: 0; color: #f2b5a3; font-size: 0.8rem; line-height: 1.5; }
+.error:not(:empty) { padding-top: 1rem; }
+
+.cardTools { display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 1.25rem; }
+.flipButton { --edge: #d2c4ab; width: 220px; min-height: 52px; padding: 0.65rem 1rem; font: 500 0.85rem/1.4 "Avenir Next", Avenir, sans-serif; letter-spacing: 0; }
+.flipButton > span { display: grid; grid-template-columns: 36px minmax(0, 1fr); align-items: center; gap: 1rem; width: 100%; }
+.flipLabel { text-align: left; }
+.flipIcon { display: block; width: 36px; height: 26px; perspective: 120px; }
+.flipMiniature { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateY(-12deg); transition: transform 400ms cubic-bezier(.22, 1, .36, 1); }
+.flipMiniature svg { position: absolute; inset: 0; width: 100%; height: 100%; box-shadow: 0 0 0 1px #102b4326, 0 2px 3px #102b4320; backface-visibility: hidden; }
+.flipWriting { transform: rotateY(180deg); }
+.flipButton[data-side='back'] .flipMiniature { transform: rotateY(168deg); }
+.flipButton:focus-visible { --edge: var(--gold); }
+.flipButton:focus-visible::before { inset: 3px; }
+.flipButton:focus-visible .flipMiniature, .flipButton[data-instant='true'] .flipMiniature { transition: none; }
+.flipButton:focus-visible .flipMiniature { transform: rotateY(180deg); }
+.flipButton[data-side='back']:focus-visible .flipMiniature { transform: rotateY(360deg); }
+@media (hover: hover) and (pointer: fine) {
+  .flipButton:hover:not(:disabled) .flipMiniature { transform: rotateY(180deg); }
+  .flipButton[data-side='back']:hover:not(:disabled) .flipMiniature { transform: rotateY(360deg); }
+}
+.stampTray { min-width: 0; padding-bottom: 3.5rem; }
+.stampTray fieldset > div { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+.stampTray fieldset label { flex-direction: row; align-items: center; padding: 1rem 0.8rem; }
+.stampTray legend { margin-bottom: 1.25rem; }
+
+.experience[data-delivered='true'] { grid-template-columns: minmax(0, 1fr); }
+.delivered { position: relative; min-height: 465px; aspect-ratio: 1.25; padding: 3rem 2.5rem; color: var(--navy); background: var(--paper); }
+.receiptLabel { color: var(--red); }
+.delivered h2 { margin: 2.5rem 0 1.5rem; font-size: clamp(2.8rem, 4vw, 4rem); line-height: 1; }
+.delivered > p { max-width: 24rem; margin: 0; font-size: 0.85rem; line-height: 1.7; }
+.deliveryMark { position: absolute; top: 2.5rem; right: 2rem; padding: 0.75rem; border: 2px solid var(--red); color: var(--red); font: 650 0.7rem/1.6 ui-monospace, Menlo, monospace; text-align: center; transform: rotate(-8deg); }
+.deliveryMark span { display: block; font-size: 0.45rem; }
+.receipt { margin-top: 2rem; color: #53606a; font: 0.6rem/1.5 ui-monospace, Menlo, monospace; }
+.another { display: flex; align-items: center; gap: 1rem; min-height: 44px; width: fit-content; padding: 0; border: 0; color: inherit; background: transparent; font: 600 0.75rem/1.5 "Avenir Next", Avenir, sans-serif; }
+.another { margin-top: 1.5rem; border-bottom: 1px solid var(--navy); }
+.another:hover { color: var(--red); }
+
+.footer { display: flex; justify-content: space-between; gap: 1rem; width: min(calc(100% - 2 * var(--gutter)), 1100px); margin-inline: auto; padding-block: 0.5rem 1rem; color: #53606a; font-size: 0.55rem; }
+
+@media (max-width: 1050px) {
+  .experience { grid-template-columns: minmax(0, 1fr); }
+  .stampTray { width: 100%; max-width: 660px; padding-bottom: 0; margin-inline: auto; }
+  .stampTray fieldset > div { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+  .back { padding: 0; }
+}
+
+@media (max-width: 800px) {
+  .nav { padding-block: 1.25rem; }
+  .brand img { width: 90px; height: 55px; }
+  .navLinks { gap: 1.25rem; color: var(--navy); }
+  .navLinks > a:last-child { min-height: 44px; font-size: 0.6rem; }
+  .navLinks > a:last-child > span { gap: 0.5rem; }
+  .layout { padding-top: 1rem; }
+  .heading { align-items: flex-start; flex-direction: column; gap: 1rem; padding-bottom: 1.75rem; }
+  .heading h1 { font-size: clamp(3.25rem, 8vw, 4rem); }
+  .heading > p { font-size: 0.85rem; }
+  .experience { padding: 1.5rem; gap: 1.75rem; }
+  .back { padding: 0; }
+}
+
+@media (max-width: 480px) {
+  .page { --gutter: 1.25rem; }
+  .nav { padding-block: 1rem; }
+  .navLinks { gap: 0.75rem; }
+  .navLinks > a:last-child { padding-inline: 0.65rem; font-size: 0.52rem; }
+  .brand img { width: 80px; height: 48px; }
+  .heading .label { font-size: 0.55rem; }
+  .heading h1 { max-width: 7ch; font-size: clamp(3.1rem, 11vw, 3.6rem); }
+  .heading > p { max-width: 27ch; }
+  .experience { padding: 1rem; margin-inline: calc(-1 * var(--gutter)); }
+  .postcardArea { display: flex; flex-direction: column; }
+  .cardStage { order: 2; }
+  .cardTools { order: 1; margin: 0 0 1.25rem; }
+  .error { order: 3; }
+  .flipper { min-height: 550px; }
+  .back { padding: 0; border: 0; }
+  .stampTray fieldset label { flex-direction: column; align-items: flex-start; padding: 0.75rem 0.5rem; }
+  .stampTray legend { margin-bottom: 0.75rem; }
+  .delivered { min-height: 550px; padding: 2rem 1.5rem; }
+  .deliveryMark { top: 2rem; right: 1.5rem; font-size: 0.55rem; }
+  .delivered h2 { margin-top: 6rem; }
+  .footer { font-size: 0.45rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flipMiniature { transition: none; }
+  .flipButton:is(:hover, :active) { transform: none; }
+}

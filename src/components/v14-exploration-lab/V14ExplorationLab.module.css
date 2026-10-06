@@ -12,6 +12,20 @@
   font-family: "Avenir Next", Avenir, "Helvetica Neue", sans-serif;
 }
 
+.feedbackLink {
+  --edge: #102b43;
+  --face: #fffaf0;
+  --ink: #102b43;
+  min-height: 48px;
+  padding-inline: 0.75rem;
+  font-size: 0.7rem;
+  letter-spacing: 0;
+}
+
+.feedbackLink > span { display: flex; align-items: center; gap: 0.6rem; }
+.feedbackLink svg { width: 24px; height: 18px; stroke: currentColor; stroke-width: 1.2; }
+.feedbackLink:hover { --edge: #102b43; --face: #eadcc2; }
+
 .page *,
 .page *::before,
 .page *::after {
@@ -129,6 +143,7 @@
 
 .socials {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.45rem;
 }
