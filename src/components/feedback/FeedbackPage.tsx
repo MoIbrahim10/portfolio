@@ -130,6 +130,7 @@ function Postcard() {
                 <motion.div
                   id="feedback-postcard"
                   className={styles.flipper}
+                  initial={false}
                   animate={{ rotateY: side === 'back' ? 180 : 0 }}
                   transition={{ duration: reducedMotion || instantFlip ? 0 : 0.48, ease: [0.22, 1, 0.36, 1] }}
                   onAnimationComplete={() => {
