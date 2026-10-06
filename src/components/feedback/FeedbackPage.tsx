@@ -45,6 +45,7 @@ function Postcard() {
   const [kind, setKind] = useState<Kind>('love')
   const [instantStamp, setInstantStamp] = useState(false)
   const [side, setSide] = useState<'front' | 'back'>('front')
+  const [turning, setTurning] = useState(false)
   const [instantFlip, setInstantFlip] = useState(false)
   const [message, setMessage] = useState('')
   const [name, setName] = useState('')
@@ -59,8 +60,17 @@ function Postcard() {
 
   useEffect(() => { setHydrated(true) }, [])
 
+  useEffect(() => {
+    if (side !== 'back' || turning || !flipFocus.current) return
+    flipFocus.current = false
+    if (document.activeElement === document.body || document.activeElement?.hasAttribute('data-flip')) {
+      note.current?.focus({ preventScroll: true })
+    }
+  }, [side, turning])
+
   function flip(event: MouseEvent<HTMLButtonElement>) {
     setInstantFlip(event.detail === 0)
+    setTurning(!reducedMotion && event.detail !== 0)
     flipFocus.current = side === 'front'
     setSide((current) => current === 'front' ? 'back' : 'front')
   }
@@ -133,21 +143,14 @@ function Postcard() {
                   initial={false}
                   animate={{ rotateY: side === 'back' ? 180 : 0 }}
                   transition={{ duration: reducedMotion || instantFlip ? 0 : 0.48, ease: [0.22, 1, 0.36, 1] }}
-                  onAnimationComplete={() => {
-                    if (side === 'back' && flipFocus.current) {
-                      flipFocus.current = false
-                      if (document.activeElement === document.body || document.activeElement?.hasAttribute('data-flip')) {
-                        note.current?.focus({ preventScroll: true })
-                      }
-                    }
-                  }}
+                  onAnimationComplete={() => setTurning(false)}
                 >
                   <div className={styles.front} inert={side !== 'front'} aria-hidden={side !== 'front'}>
                     <div className={styles.frontArtwork}><PostcardFront /></div>
                   </div>
 
-                  <form className={styles.back} onSubmit={send} inert={side !== 'back'} aria-hidden={side !== 'back'}>
-                    <PostcardLetter kind={kind} instant={instantStamp} message={message} name={name} onMessageChange={setMessage} onNameChange={setName} disabled={status === 'sending'} textareaRef={note} sendLabel={status === 'sending' ? 'Sending…' : 'Send postcard'} />
+                  <form className={styles.back} onSubmit={send} inert={side !== 'back' || turning} aria-hidden={side !== 'back' || turning}>
+                    <PostcardLetter kind={kind} instant={instantStamp} message={message} name={name} onMessageChange={setMessage} onNameChange={setName} disabled={status === 'sending' || turning} textareaRef={note} sendLabel={status === 'sending' ? 'Sending…' : 'Send postcard'} />
                     <div className={styles.honeypot} aria-hidden="true"><label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
                   </form>
                 </motion.div>

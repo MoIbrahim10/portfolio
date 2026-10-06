@@ -31,6 +31,33 @@ test('retired postcard studios return the portfolio 404 page', async ({ page }) 
   }
 })
 
+test('writing controls activate after the postcard finishes turning', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await page.goto('/feedback')
+  const write = page.getByRole('button', { name: 'Write a note', exact: true })
+  await expect(write).toBeEnabled()
+  const turning = page.locator('#feedback-postcard').evaluate((card) => new Promise<boolean[]>((resolve) => {
+    const form = card.querySelector('form')!
+    const send = form.querySelector<HTMLButtonElement>('button[type="submit"]')!
+    const samples: boolean[] = []
+    const observer = new MutationObserver(() => {
+      const angle = Number((card as HTMLElement).style.transform.match(/rotateY\(([\d.]+)deg\)/)?.[1] ?? 0)
+      if (angle > 0 && angle < 180) samples.push(form.inert && send.disabled)
+      if (angle === 180 && !form.inert) {
+        observer.disconnect()
+        resolve(samples)
+      }
+    })
+    observer.observe(card, { attributes: true, subtree: true, attributeFilter: ['style', 'inert'] })
+  }))
+  await write.click()
+  const samples = await turning
+  expect(samples.length).toBeGreaterThan(0)
+  expect(samples.every(Boolean)).toBe(true)
+  await expect(page.getByRole('textbox', { name: 'Your feedback' })).toBeFocused()
+  await expect(page.getByRole('button', { name: 'Send postcard', exact: true })).toBeEnabled()
+})
+
 test('the homepage note button opens the postcard and the flip control keeps a draft', async ({ page }, testInfo) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/')
