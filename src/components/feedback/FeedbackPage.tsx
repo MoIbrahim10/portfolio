@@ -1,5 +1,5 @@
 import { AnimatePresence, MotionConfig, motion, useReducedMotion } from 'motion/react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { FormEvent, MouseEvent } from 'react'
 
 import { PostcardFront } from './PostcardFront'
@@ -41,6 +41,7 @@ function CardTurnIcon() {
 }
 
 function Postcard() {
+  const [hydrated, setHydrated] = useState(false)
   const [kind, setKind] = useState<Kind>('love')
   const [instantStamp, setInstantStamp] = useState(false)
   const [side, setSide] = useState<'front' | 'back'>('front')
@@ -55,6 +56,8 @@ function Postcard() {
   const flipFocus = useRef(false)
   const reducedMotion = useReducedMotion()
   const writeLabel = message || name ? 'Back to your note' : 'Write a note'
+
+  useEffect(() => { setHydrated(true) }, [])
 
   function flip(event: MouseEvent<HTMLButtonElement>) {
     setInstantFlip(event.detail === 0)
@@ -154,14 +157,14 @@ function Postcard() {
 
         {status !== 'sent' && (
           <div className={styles.cardTools}>
-            <CutCornerButton className={styles.flipButton} onClick={flip} disabled={status === 'sending'} aria-controls="feedback-postcard" type="button" variant="paper" data-flip data-side={side} data-instant={instantFlip}><CardTurnIcon /><span className={styles.flipLabel}>{side === 'front' ? writeLabel : 'View artwork'}</span></CutCornerButton>
+            <CutCornerButton className={styles.flipButton} onClick={flip} disabled={!hydrated || status === 'sending'} aria-controls="feedback-postcard" type="button" variant="paper" data-flip data-side={side} data-instant={instantFlip}><CardTurnIcon /><span className={styles.flipLabel}>{side === 'front' ? writeLabel : 'View artwork'}</span></CutCornerButton>
           </div>
         )}
         <p className={styles.error} role="alert">{error}</p>
       </div>
       {status !== 'sent' && (
         <aside className={styles.stampTray} aria-label="Postcard stamps">
-          <StampPicker kind={kind} onChange={setKind} instant={instantStamp} onInstantChange={setInstantStamp} disabled={status === 'sending'} />
+          <StampPicker kind={kind} onChange={setKind} instant={instantStamp} onInstantChange={setInstantStamp} disabled={!hydrated || status === 'sending'} />
         </aside>
       )}
     </section>

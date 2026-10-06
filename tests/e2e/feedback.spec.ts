@@ -1,5 +1,27 @@
 import { expect, test } from '@playwright/test'
 
+test('postcard controls wait for hydration before accepting input', async ({ page }) => {
+  let resume = () => {}
+  const hydration = new Promise<void>((resolve) => { resume = resolve })
+  await page.route('**/*', async (route) => {
+    if (route.request().resourceType() === 'script') await hydration
+    await route.continue()
+  })
+  await page.goto('/feedback', { waitUntil: 'commit' })
+  const write = page.getByRole('button', { name: 'Write a note', exact: true })
+  const stamp = page.getByRole('radio', { name: 'Loved it', exact: true })
+  try {
+    await expect(write).toBeDisabled()
+    await expect(stamp).toBeDisabled()
+  } finally {
+    resume()
+  }
+  await expect(write).toBeEnabled()
+  await expect(stamp).toBeEnabled()
+  await write.press('Enter')
+  await expect(page.getByRole('textbox', { name: 'Your feedback' })).toBeFocused()
+})
+
 test('retired postcard studios return the portfolio 404 page', async ({ page }) => {
   for (const path of ['/postcard-studio', '/postcard-back-studio', '/postcard-front-studio']) {
     const response = await page.goto(path)
@@ -149,7 +171,9 @@ test('flipping preserves the draft and works with reduced motion', async ({ page
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/feedback')
   await expect(page.getByRole('textbox', { name: 'Your feedback' })).toHaveCount(0)
-  await page.getByRole('button', { name: /^(Write a note|Back to your note)$/ }).press('Enter')
+  const write = page.getByRole('button', { name: /^(Write a note|Back to your note)$/ })
+  await expect(write).toBeEnabled()
+  await write.press('Enter')
   const note = page.getByRole('textbox', { name: 'Your feedback' })
   await expect(note).toBeFocused()
   await note.fill('Keep this draft on the back of the postcard.')
