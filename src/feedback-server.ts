@@ -8,6 +8,29 @@ type PublicPostcard = {
   created_at: string
 }
 
+type FeedbackEnv = Env & Partial<Record<'TELEGRAM_BOT_TOKEN' | 'TELEGRAM_CHAT_ID', string>>
+
+async function notifyTelegram(env: FeedbackEnv, kind: string, name: string, message: string) {
+  const token = env.TELEGRAM_BOT_TOKEN
+  const chatId = env.TELEGRAM_CHAT_ID
+  if (!token || !chatId) return
+
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: `New portfolio feedback\nType: ${kind}\nFrom: ${name || 'Anonymous'}\n\n${message}`,
+      }),
+      signal: AbortSignal.timeout(5_000),
+    })
+    if (!response.ok) console.warn('Telegram feedback notification failed', response.status)
+  } catch {
+    console.warn('Telegram feedback notification failed')
+  }
+}
+
 function reply(status: number, body: Record<string, unknown>) {
   return Response.json(body, {
     status,
@@ -61,7 +84,7 @@ export async function handlePublicFeedback(request: Request, env: Env) {
   }
 }
 
-export async function handleFeedback(request: Request, env: Env) {
+export async function handleFeedback(request: Request, env: FeedbackEnv) {
   if (request.method !== 'POST') {
     const response = reply(405, { error: 'Use POST to send a postcard.' })
     response.headers.set('Allow', 'POST')
@@ -138,9 +161,13 @@ export async function handleFeedback(request: Request, env: Env) {
       return response
     }
 
-    await env.FEEDBACK_DB.prepare(
+    const result = await env.FEEDBACK_DB.prepare(
       'INSERT INTO feedback (id, kind, message, name, visibility) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO NOTHING',
     ).bind(id, kind, message.trim(), name.trim(), visibility).run()
+
+    if (result.meta.changes > 0) {
+      await notifyTelegram(env, String(kind), name.trim(), message.trim())
+    }
 
     return reply(201, { id })
   } catch (error) {
