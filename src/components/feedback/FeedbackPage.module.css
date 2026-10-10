@@ -18,6 +18,8 @@
 .page svg { display: block; }
 .page :is(a, button, input, textarea):focus-visible:not([data-cut-corner]) { outline: 2px solid var(--gold); outline-offset: 4px; }
 .page [data-letter-kind] :is(input, textarea):focus-visible:not([data-cut-corner]) { outline: none; }
+.page [data-cut-corner]:focus-visible { --edge: var(--gold); outline: none; }
+.page [data-cut-corner]:focus-visible::before { inset: 3px; }
 
 .honeypot {
   position: absolute;
@@ -255,4 +257,8 @@
   .flipMiniature { transition: none; }
   .stampTray { transition: none; }
   .flipButton:is(:hover, :active) { transform: none; }
+}
+
+@media (forced-colors: active) {
+  .page [data-cut-corner]:focus-visible { outline: 2px solid Highlight; outline-offset: 3px; }
 }

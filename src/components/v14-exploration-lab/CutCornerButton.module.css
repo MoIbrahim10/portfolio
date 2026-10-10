@@ -32,8 +32,7 @@
 
 .control:hover:not(:disabled) { --edge: #d79d40; transform: translateY(-1px); }
 .control:active:not(:disabled) { --edge: #9c1e1b; transform: translateY(1px); }
-.control:focus-visible { --edge: #d79d40; outline: none; }
-.control:focus-visible::before { inset: 3px; }
+.control:focus-visible { outline: 3px solid var(--focus-ring, #102b43); outline-offset: 3px; }
 .control:disabled { cursor: progress; }
 .control[aria-busy='true'] { min-width: 8.5rem; }
 
