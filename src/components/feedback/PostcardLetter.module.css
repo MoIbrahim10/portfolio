@@ -6,7 +6,8 @@
 .letter :is(p, fieldset) { padding: 0; margin: 0; }
 .letter :is(input, textarea) { font: inherit; }
 .letter, .letter :is(input, textarea, em, p, label, legend, small), .address > span, .count { transition: color 350ms cubic-bezier(.22, 1, .36, 1); }
-.letter button:focus-visible { outline: 2px solid #d79d40; outline-offset: 3px; }
+.letter button:focus-visible { --edge: #d79d40; outline: none; }
+.letter button:focus-visible::before { inset: 3px; }
 .frame .letter :is(input, textarea):focus-visible { outline: none; }
 .atmosphere { position: absolute; z-index: -1; inset: 0; pointer-events: none; }
 .paperLayer { position: absolute; inset: 0; clip-path: circle(0% at 86% 18%); transition: clip-path 600ms cubic-bezier(.22, 1, .36, 1); }
@@ -24,6 +25,9 @@
 .messageField { position: relative; display: flex; min-width: 0; flex: 1; margin-left: -1.5cqw; padding: 0 0 22px 1.5cqw; border-left: 2px solid transparent; font-size: var(--writing-size); line-height: 1.8; transition: border-color 180ms cubic-bezier(.22, 1, .36, 1); }
 .messageField::before { position: absolute; inset: 0 0 0 1.5cqw; content: ""; background: linear-gradient(to bottom, var(--letter-line) 0 1px, transparent 1px) 0 calc(var(--rule-baseline, 1.3em) - var(--rule-scroll, 0px)) / 100% 1.8em repeat-y; pointer-events: none; }
 .messageField:focus-within { border-left-color: var(--letter-accent); }
+.messageField:has(textarea[aria-invalid='true']) { border-left-color: var(--letter-accent); }
+.messageField:has(textarea[aria-invalid='true']) textarea::placeholder { color: transparent; }
+.fieldError { position: absolute; top: 0; left: 1.5cqw; color: var(--letter-accent); font: inherit; line-height: inherit; pointer-events: none; }
 .frame .note textarea { width: 100%; min-height: 14cqw; min-width: 0; flex: 1; padding: 0; border: 0; border-radius: 0; resize: none; color: var(--letter-ink); background: transparent; font: 400 var(--writing-size)/1.8 "Avenir Next", Avenir, sans-serif; }
 .ruleGuide { position: absolute; top: 0; left: 0; visibility: hidden; pointer-events: none; font: 400 var(--writing-size)/1.8 "Avenir Next", Avenir, sans-serif; white-space: nowrap; }
 .ruleGuide > span { display: inline-block; width: 0; height: 0; vertical-align: baseline; }

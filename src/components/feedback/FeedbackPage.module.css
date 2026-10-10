@@ -16,7 +16,8 @@
 .page input, .page textarea { font: inherit; }
 .page button { cursor: pointer; }
 .page svg { display: block; }
-.page :is(a, button, input, textarea):focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+.page :is(a, button, input, textarea):focus-visible:not([data-cut-corner]) { outline: 2px solid var(--gold); outline-offset: 4px; }
+.page [data-letter-kind] :is(input, textarea):focus-visible:not([data-cut-corner]) { outline: none; }
 
 .honeypot {
   position: absolute;
@@ -86,7 +87,8 @@
 }
 
 .postcardArea { min-width: 0; width: 100%; max-width: 660px; margin-inline: auto; }
-.cardStage { position: relative; width: 100%; margin-inline: auto; perspective: 1800px; }
+.cardStage { position: relative; display: grid; width: 100%; margin-inline: auto; perspective: 1800px; }
+.cardShell, .delivered { grid-area: 1 / 1; min-width: 0; width: 100%; }
 .cardShell { position: relative; }
 .cardStage::before, .cardStage::after {
   position: absolute;
@@ -119,11 +121,31 @@
 .back > div:first-child { flex: 1; display: flex; }
 .back > div:first-child > div { flex: 1; }
 .back [data-letter-kind] > div { height: 100%; min-height: 100%; }
-.error { margin: 0; color: #f2b5a3; font-size: 0.8rem; line-height: 1.5; }
-.error:not(:empty) { padding-top: 1rem; }
-
 .cardTools { display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 1.25rem; }
-.flipButton { --edge: #d2c4ab; width: 220px; min-height: 52px; padding: 0.65rem 1rem; font: 500 0.85rem/1.4 "Avenir Next", Avenir, sans-serif; letter-spacing: 0; }
+.page .flipButton {
+  --edge: #d2c4ab;
+  width: 220px;
+  min-height: 52px;
+  padding: 0.65rem 1rem;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  background:
+    linear-gradient(var(--edge) 0 0) center / calc(100% - 16px) 100% no-repeat,
+    linear-gradient(var(--edge) 0 0) center / calc(100% - 8px) calc(100% - 8px) no-repeat,
+    linear-gradient(var(--edge) 0 0) center / 100% calc(100% - 16px) no-repeat;
+  clip-path: none;
+  font: 500 0.85rem/1.4 "Avenir Next", Avenir, sans-serif;
+  letter-spacing: 0;
+  transition: color 130ms ease, filter 130ms ease;
+}
+.page .flipButton::before {
+  background:
+    linear-gradient(var(--face) 0 0) center / calc(100% - 16px) 100% no-repeat,
+    linear-gradient(var(--face) 0 0) center / calc(100% - 8px) calc(100% - 8px) no-repeat,
+    linear-gradient(var(--face) 0 0) center / 100% calc(100% - 16px) no-repeat;
+  clip-path: none;
+}
+.page .flipButton:hover:not(:disabled), .page .flipButton:active:not(:disabled) { transform: none; }
 .flipButton > span { display: grid; grid-template-columns: 36px minmax(0, 1fr); align-items: center; gap: 1rem; width: 100%; }
 .flipLabel { text-align: left; }
 .flipIcon { display: block; width: 36px; height: 26px; perspective: 120px; }
@@ -133,6 +155,7 @@
 .flipButton[data-side='back'] .flipMiniature { transform: rotateY(168deg); }
 .flipButton:focus-visible { --edge: var(--gold); }
 .flipButton:focus-visible::before { inset: 3px; }
+.flipButton:active:not(:disabled) { --edge: #d2c4ab; }
 .flipButton:focus-visible .flipMiniature, .flipButton[data-instant='true'] .flipMiniature { transition: none; }
 .flipButton:focus-visible .flipMiniature { transform: rotateY(180deg); }
 .flipButton[data-side='back']:focus-visible .flipMiniature { transform: rotateY(360deg); }
@@ -140,30 +163,49 @@
   .flipButton:hover:not(:disabled) .flipMiniature { transform: rotateY(180deg); }
   .flipButton[data-side='back']:hover:not(:disabled) .flipMiniature { transform: rotateY(360deg); }
 }
-.stampTray { min-width: 0; padding-bottom: 3.5rem; }
+.stampTray { display: grid; grid-template-rows: 1fr; min-width: 0; opacity: 1; transition: grid-template-rows 240ms cubic-bezier(.22, 1, .36, 1), opacity 160ms ease; }
+.stampTray[data-visible='false'] { grid-template-rows: 0fr; opacity: 0; }
+.stampTrayReveal { min-height: 0; overflow: hidden; }
+.stampTrayContent { padding-bottom: 3.5rem; }
 .stampTray fieldset > div { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
 .stampTray fieldset label { flex-direction: row; align-items: center; padding: 1rem 0.8rem; }
 .stampTray legend { margin-bottom: 1.25rem; }
 
-.experience[data-delivered='true'] { grid-template-columns: minmax(0, 1fr); }
-.delivered { position: relative; min-height: 465px; aspect-ratio: 1.25; padding: 3rem 2.5rem; color: var(--navy); background: var(--paper); }
-.receiptLabel { color: var(--red); }
-.delivered h2 { margin: 2.5rem 0 1.5rem; font-size: clamp(2.8rem, 4vw, 4rem); line-height: 1; }
-.delivered > p { max-width: 24rem; margin: 0; font-size: 0.85rem; line-height: 1.7; }
-.deliveryMark { position: absolute; top: 2.5rem; right: 2rem; padding: 0.75rem; border: 2px solid var(--red); color: var(--red); font: 650 0.7rem/1.6 ui-monospace, Menlo, monospace; text-align: center; transform: rotate(-8deg); }
-.deliveryMark span { display: block; font-size: 0.45rem; }
-.receipt { margin-top: 2rem; color: #53606a; font: 0.6rem/1.5 ui-monospace, Menlo, monospace; }
+.delivered { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 465px; aspect-ratio: 1.36; padding: 2.35rem clamp(1.5rem, 5vw, 2.5rem); color: var(--navy); background: var(--paper); }
+.receiptLabel { color: #597360; font: 500 0.65rem/1.5 ui-monospace, "SFMono-Regular", Menlo, monospace; letter-spacing: 0.06em; }
+.delivered[data-state='sending'] .receiptLabel { color: #98722d; }
+.delivered[data-state='failed'] .receiptLabel { color: var(--red); }
+.resultTop img { display: block; width: 66px; height: 41px; object-fit: contain; object-position: left center; }
+.resultBody { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: clamp(1rem, 3vw, 1.5rem); flex: 1; padding-block: 1.35rem; }
+.resultCopy { min-width: 0; }
+.resultCopy h2 { max-width: 12ch; margin: 0.9rem 0 0.65rem; font-size: clamp(2.5rem, 5vw, 3.6rem); line-height: 0.98; }
+.resultCopy > p { max-width: 25rem; margin: 0; color: #53606a; font-size: 0.88rem; line-height: 1.55; }
+.resultStamp { display: grid; place-items: center; align-content: center; gap: 0.2rem; width: 84px; height: 108px; margin-right: 0.25rem; border: 1px solid #597360; border-radius: 1px; outline: 1px dashed #597360; outline-offset: 3px; color: #597360; background: #e8eee6; box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px #59736080, 0 2px 4px #030f1b20; transform: rotate(3deg); transition: color 200ms ease, background-color 200ms ease, transform 240ms cubic-bezier(.2,.8,.2,1); }
+.resultStamp[data-state='failed'] { border-color: var(--red); outline-color: var(--red); color: var(--red); background: #f1e2d8; box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px #9f373280, 0 2px 4px #030f1b20; transform: rotate(-3deg); }
+.resultStamp[data-state='sending'] { border-color: #98722d; outline-color: #98722d; color: #98722d; background: #f3ead4; box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px #98722d80, 0 2px 4px #030f1b20; transform: rotate(0); }
+.resultMark { display: grid; place-items: center; width: 32px; height: 32px; }
+.resultMark svg { width: 100%; height: 100%; }
+.resultSeal { max-width: 62px; padding-top: 0.25rem; border-top: 1px solid currentColor; font: 0.4rem/1.3 ui-monospace, "SFMono-Regular", Menlo, monospace; letter-spacing: 0.045em; text-align: center; }
+.resultFooter { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-top: 0.85rem; border-top: 1px solid #102b4323; }
+.receipt { margin: 0; color: #53606a; font: 0.58rem/1.5 ui-monospace, Menlo, monospace; letter-spacing: 0.035em; }
+.resultActions { display: flex; align-items: center; gap: 1.25rem; }
 .another { display: flex; align-items: center; gap: 1rem; min-height: 44px; width: fit-content; padding: 0; border: 0; color: inherit; background: transparent; font: 600 0.75rem/1.5 "Avenir Next", Avenir, sans-serif; }
-.another { margin-top: 1.5rem; border-bottom: 1px solid var(--navy); }
+.another { border-bottom: 1px solid var(--navy); }
+.resultActions .another { margin: 0; }
 .another:hover { color: var(--red); }
+.another:disabled, .editDraft:disabled { cursor: wait; opacity: 0.6; }
+.editDraft { min-height: 44px; padding: 0; border: 0; border-bottom: 1px solid #102b4340; color: #53606a; background: transparent; font: 500 0.7rem/1.5 "Avenir Next", Avenir, sans-serif; }
+.editDraft:hover { color: var(--red); border-color: var(--red); }
 
 .footer { display: flex; justify-content: space-between; gap: 1rem; width: min(calc(100% - 2 * var(--gutter)), 1100px); margin-inline: auto; padding-block: 0.5rem 1rem; color: #53606a; font-size: 0.55rem; }
 
 @media (max-width: 1050px) {
   .experience { grid-template-columns: minmax(0, 1fr); }
-  .stampTray { width: 100%; max-width: 660px; padding-bottom: 0; margin-inline: auto; }
+  .stampTray { width: 100%; max-width: 660px; margin-inline: auto; }
+  .stampTrayContent { padding-bottom: 0; }
   .stampTray fieldset > div { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
   .back { padding: 0; }
+  .delivered { aspect-ratio: 1.25; }
 }
 
 @media (max-width: 800px) {
@@ -191,20 +233,26 @@
   .heading > p { max-width: 27ch; }
   .experience { padding: 1rem; margin-inline: calc(-1 * var(--gutter)); }
   .postcardArea { display: flex; flex-direction: column; }
-  .cardStage { order: 2; }
-  .cardTools { order: 1; margin: 0 0 1.25rem; }
-  .error { order: 3; }
+  .cardTools { margin: 1.25rem 0 0; }
   .flipper { min-height: 550px; }
   .back { padding: 0; border: 0; }
   .stampTray fieldset label { flex-direction: column; align-items: flex-start; padding: 0.75rem 0.5rem; }
   .stampTray legend { margin-bottom: 0.75rem; }
   .delivered { min-height: 550px; padding: 2rem 1.5rem; }
-  .deliveryMark { top: 2rem; right: 1.5rem; font-size: 0.55rem; }
-  .delivered h2 { margin-top: 6rem; }
+  .resultBody { gap: 0.8rem; }
+  .resultCopy h2 { max-width: none; font-size: clamp(1.85rem, 7.5vw, 2.4rem); }
+  .resultCopy > p { font-size: 0.76rem; }
+  .resultStamp { width: 64px; height: 84px; margin-right: 0.15rem; }
+  .resultMark { width: 26px; height: 26px; }
+  .resultFooter { align-items: flex-start; flex-direction: column; gap: 0.45rem; }
+  .resultActions { gap: 1rem; }
+  .resultActions .another { font-size: 0.68rem; }
+  .editDraft { font-size: 0.65rem; }
   .footer { font-size: 0.45rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .flipMiniature { transition: none; }
+  .stampTray { transition: none; }
   .flipButton:is(:hover, :active) { transform: none; }
 }

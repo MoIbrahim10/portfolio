@@ -6,11 +6,12 @@ import { POSTCARD_STAMPS, StampArt } from './PostcardPostage'
 import type { PostcardKind } from './PostcardPostage'
 import styles from './PostcardLetter.module.css'
 
-export function PostcardLetter({ kind, instant = false, message, name, onMessageChange, onNameChange, disabled = false, textareaRef, sendLabel = 'Send postcard' }: {
+export function PostcardLetter({ kind, instant = false, message, name, messageError, onMessageChange, onNameChange, disabled = false, textareaRef, sendLabel = 'Send postcard' }: {
   kind: PostcardKind
   instant?: boolean
   message: string
   name: string
+  messageError?: string
   onMessageChange: (value: string) => void
   onNameChange: (value: string) => void
   disabled?: boolean
@@ -48,7 +49,7 @@ export function PostcardLetter({ kind, instant = false, message, name, onMessage
         <div className={styles.body}>
           <div className={styles.note}>
             <label className={styles.title} htmlFor={`${instance}-message`}>A few words<br /> for <em>Mo.</em></label>
-            <div className={styles.messageField}><span ref={ruleGuide} className={styles.ruleGuide} aria-hidden="true"><span />Ag</span><textarea ref={textareaRef} id={`${instance}-message`} name="message" aria-label="Your feedback" placeholder={selected.prompt} value={message} onChange={(event) => onMessageChange(event.target.value)} onScroll={(event) => event.currentTarget.parentElement!.style.setProperty('--rule-scroll', `${event.currentTarget.scrollTop}px`)} onFocus={() => setMessageFocused(true)} onBlur={() => setMessageFocused(false)} minLength={3} maxLength={2000} required disabled={disabled} aria-describedby={showCount ? `${instance}-count` : undefined} />{showCount && <span className={styles.count} id={`${instance}-count`} data-near-limit={message.length > 1900} aria-label={`${2000 - message.length} characters left`}><strong>{(2000 - message.length).toLocaleString('en')}</strong>{' '}<span>left</span></span>}</div>
+            <div className={styles.messageField}><span ref={ruleGuide} className={styles.ruleGuide} aria-hidden="true"><span />Ag</span><textarea ref={textareaRef} id={`${instance}-message`} name="message" aria-label="Your feedback" placeholder={selected.prompt} value={message} onChange={(event) => onMessageChange(event.target.value)} onScroll={(event) => event.currentTarget.parentElement!.style.setProperty('--rule-scroll', `${event.currentTarget.scrollTop}px`)} onFocus={() => setMessageFocused(true)} onBlur={() => setMessageFocused(false)} minLength={3} maxLength={2000} required disabled={disabled} aria-invalid={messageError ? true : undefined} aria-describedby={[showCount ? `${instance}-count` : '', messageError ? `${instance}-error` : ''].filter(Boolean).join(' ') || undefined} />{showCount && <span className={styles.count} id={`${instance}-count`} data-near-limit={message.length > 1900} aria-label={`${2000 - message.length} characters left`}><strong>{(2000 - message.length).toLocaleString('en')}</strong>{' '}<span>left</span></span>}{messageError && <span className={styles.fieldError} id={`${instance}-error`} role="alert">{messageError}</span>}</div>
             <div className={styles.signature}><label htmlFor={`${instance}-name`}>From</label><input id={`${instance}-name`} name="name" aria-label="Your name" placeholder="Your name" value={name} onChange={(event) => onNameChange(event.target.value)} maxLength={80} autoComplete="name" disabled={disabled} /></div>
           </div>
           <aside className={styles.destination}>

@@ -35,7 +35,7 @@ export function CutCornerButton(props: CutCornerButtonProps) {
       variant: _variant,
       ...anchorProps
     } = props
-    return <a {...anchorProps} aria-busy={loading || undefined} className={classes} href={href}>{content}</a>
+    return <a {...anchorProps} aria-busy={loading || undefined} className={classes} data-cut-corner href={href}>{content}</a>
   }
 
   const {
@@ -46,5 +46,5 @@ export function CutCornerButton(props: CutCornerButtonProps) {
     variant: _variant,
     ...buttonProps
   } = props as CutCornerNativeButtonProps
-  return <button {...buttonProps} aria-busy={loading || undefined} className={classes} disabled={loading || buttonProps.disabled} type={type}>{content}</button>
+  return <button {...buttonProps} aria-busy={loading || undefined} className={classes} data-cut-corner disabled={loading || buttonProps.disabled} type={type}>{content}</button>
 }
