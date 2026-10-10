@@ -104,10 +104,12 @@ test('the feedback desk fits both card faces and adapts to small screens', async
   const front = page.locator('[data-postcard-front]')
   await expect(front).toBeVisible()
   await expect(front.locator('..').locator('..').locator('..').locator('..')).toHaveCSS('opacity', '1')
+  const write = page.getByRole('button', { name: /^(Write a note|Back to your note)$/ })
+  await expect(write).toBeEnabled()
   await expect(page.getByRole('link', { name: 'Explore the writing side' })).toHaveCount(0)
   const frontSize = (await front.boundingBox())!
   await page.screenshot({ path: `.playwright-mcp/feedback-layout-front-${testInfo.project.name}.png`, fullPage: true })
-  await page.getByRole('button', { name: /^(Write a note|Back to your note)$/ }).press('Enter')
+  await write.press('Enter')
   const note = page.getByRole('textbox', { name: 'Your feedback' })
   await expect(note).toBeFocused()
   const backSize = (await page.locator('[data-letter-kind] > div').boundingBox())!
