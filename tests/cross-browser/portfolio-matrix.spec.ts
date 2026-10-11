@@ -532,9 +532,9 @@ for (const [label, path] of [
     await expect(page).toHaveTitle('Page Not Found — MO')
     await expect(page.getByRole('main')).toHaveCount(1)
     await expect(
-      page.getByRole('heading', { level: 1, name: 'Page not found' }),
+      page.getByRole('heading', { level: 1, name: 'Lost, but not for long.' }),
     ).toBeVisible()
-    const returnHome = page.getByRole('link', { name: 'Return home' })
+    const returnHome = page.getByRole('link', { name: 'Back home ↗' })
     await returnHome.focus()
     await expect(returnHome).toBeFocused()
     await page.keyboard.press('Enter')

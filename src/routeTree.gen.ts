@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FeedbackRouteImport } from './routes/feedback'
+import { Route as StateLabRouteImport } from './routes/state-lab'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const FeedbackRoute = FeedbackRouteImport.update({
   path: '/feedback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StateLabRoute = StateLabRouteImport.update({
+  id: '/state-lab',
+  path: '/state-lab',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/feedback': typeof FeedbackRoute
+  '/state-lab': typeof StateLabRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/feedback': typeof FeedbackRoute
+  '/state-lab': typeof StateLabRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/feedback': typeof FeedbackRoute
+  '/state-lab': typeof StateLabRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/feedback'
+  fullPaths: '/' | '/feedback' | '/state-lab'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/feedback'
-  id: '__root__' | '/' | '/feedback'
+  to: '/' | '/feedback' | '/state-lab'
+  id: '__root__' | '/' | '/feedback' | '/state-lab'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FeedbackRoute: typeof FeedbackRoute
+  StateLabRoute: typeof StateLabRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FeedbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/state-lab': {
+      id: '/state-lab'
+      path: '/state-lab'
+      fullPath: '/state-lab'
+      preLoaderRoute: typeof StateLabRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FeedbackRoute: FeedbackRoute,
+  StateLabRoute: StateLabRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

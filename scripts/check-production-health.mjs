@@ -78,7 +78,7 @@ async function runChecks() {
   const missingResponse = await request(`/__health-missing-${token}`)
   const missing = await missingResponse.text()
   assert(missingResponse.status === 404, 'Unknown route is not a hard 404')
-  assert(missing.includes('Return home'), 'Unknown route recovery is missing')
+  assert(missing.includes('Back home'), 'Unknown route recovery is missing')
 
   const retiredResponse = await request('/video-player-lab')
   assert(retiredResponse.status === 404, 'Retired video lab no longer returns 404')

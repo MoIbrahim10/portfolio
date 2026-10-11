@@ -265,11 +265,23 @@ for (const [label, path] of [
     expect(response?.status(), path).toBe(404)
     await expect(page).toHaveTitle('Page Not Found — MO')
     await expect(
-      page.getByRole('heading', { level: 1, name: 'Page not found' }),
+      page.getByRole('heading', { level: 1, name: 'Lost, but not for long.' }),
     ).toBeVisible()
     await expect(
-      page.getByRole('link', { name: 'Return home' }),
+      page.getByRole('link', { name: 'Back home ↗' }),
     ).toHaveAttribute('href', '/')
+    const compass = page.getByRole('slider', { name: 'Rotate solar compass' })
+    await compass.press('Home')
+    await expect(compass).toHaveAttribute('data-north', 'true')
+    const sound = page.getByRole('button', { name: 'Enable sound' })
+    const soundBox = await sound.boundingBox()
+    const headingBox = await page.getByRole('heading', { level: 1 }).boundingBox()
+    const compassBox = await compass.boundingBox()
+    if (!soundBox || !headingBox || !compassBox) throw new Error('404 content is missing')
+    expect(soundBox.x + soundBox.width).toBeGreaterThan(page.viewportSize()!.width - 60)
+    expect(soundBox.y).toBeLessThan(50)
+    expect(headingBox.y - compassBox.y - compassBox.height).toBeGreaterThanOrEqual(23)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 
     assertRuntimeClean()
   })

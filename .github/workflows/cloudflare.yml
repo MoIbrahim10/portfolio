@@ -48,14 +48,17 @@ jobs:
         run: bunx wrangler@4.114.0 deploy --dry-run
 
       - name: Install browser engines
+        if: github.event_name == 'pull_request'
         run: bunx playwright install --with-deps chromium firefox webkit
 
       - name: Run browser product tests
         id: browser_tests
+        if: github.event_name == 'pull_request'
         run: bun run test:e2e
 
       - name: Run cross-browser acceptance matrix
         id: cross_browser_tests
+        if: github.event_name == 'pull_request'
         run: bun run test:cross-browser
 
       - name: Retain browser failure evidence

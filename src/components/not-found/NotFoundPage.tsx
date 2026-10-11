@@ -1,35 +1,28 @@
 import { CutCornerButton } from '#/components/v14-exploration-lab/CutCornerButton'
+import { Spatial404Artwork } from '#/components/state-lab/Spatial404Artwork'
+import { StateLogo } from '#/components/state-lab/StateLogo'
+import { CONCEPTS } from '#/components/state-lab/state-concepts'
+import compassStyles from '#/components/state-lab/StateExplorationLab.module.css'
 
 import styles from './NotFoundPage.module.css'
 
 export function NotFoundPage() {
   return (
-    <main className={styles.page}>
-      <a aria-label="MO portfolio home" className={styles.logoLink} href="/">
-        <img
-          alt=""
-          className={styles.logo}
-          height="480"
-          src="/brand/mo-mark-v3.svg"
-          width="790"
-        />
-      </a>
-
-      <section aria-labelledby="not-found-title" className={styles.message}>
-        <p className={styles.code}>404 / Lost signal</p>
-        <h1 id="not-found-title">Page not found</h1>
-        <p className={styles.description}>
-          This address doesn&apos;t lead to a portfolio page. Return home to
-          keep exploring.
-        </p>
-        <CutCornerButton className={styles.homeAction} href="/" variant="navy">
-          Return home
-        </CutCornerButton>
+    <main className={`${compassStyles.preview} ${styles.page}`} data-404="compass" data-theme="navy">
+      <header className={compassStyles.previewHeader}>
+        <a aria-label="MO portfolio home" className={compassStyles.previewLogo} href="/">
+          <StateLogo tone="navy" />
+        </a>
+      </header>
+      <section aria-labelledby="not-found-title" className={`${compassStyles.previewBody} ${styles.body}`}>
+        <Spatial404Artwork index={1} />
+        <div className={compassStyles.message}>
+          <h1 id="not-found-title">{CONCEPTS['404'][1].title}</h1>
+          <div className={compassStyles.recoveryActions}>
+            <CutCornerButton href="/" variant="gold">Back home ↗</CutCornerButton>
+          </div>
+        </div>
       </section>
-
-      <p aria-hidden="true" className={styles.footerMark}>
-        MO / Portfolio / Error 404
-      </p>
     </main>
   )
 }

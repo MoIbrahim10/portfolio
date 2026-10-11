@@ -124,7 +124,11 @@ async function verifyProduction(manifest, attempt) {
   )
   assert(missing.includes('<main'), 'Unknown route has no main landmark')
   assert(missing.includes('<h1'), 'Unknown route has no H1')
-  assert(missing.includes('Return home'), 'Unknown route has no recovery link')
+  assert(missing.includes('Back home'), 'Unknown route has no recovery link')
+
+  const explorationResponse = await fetchResponse(`${ORIGIN}/state-lab`)
+  assert(explorationResponse.status === 404, 'State explorations are exposed in production')
+  await explorationResponse.body?.cancel()
 
   const retiredResponse = await fetchResponse(
     `${ORIGIN}/video-player-lab?release-smoke=${token}`,

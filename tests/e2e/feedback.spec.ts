@@ -26,8 +26,8 @@ test('retired postcard studios return the portfolio 404 page', async ({ page }) 
   for (const path of ['/postcard-studio', '/postcard-back-studio', '/postcard-front-studio']) {
     const response = await page.goto(path)
     expect(response?.status()).toBe(404)
-    await expect(page.getByRole('heading', { name: 'Page not found', exact: true })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Return home', exact: true })).toHaveAttribute('href', '/')
+    await expect(page.getByRole('heading', { name: 'Lost, but not for long.', exact: true })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Back home ↗', exact: true })).toHaveAttribute('href', '/')
   }
 })
 

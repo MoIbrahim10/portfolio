@@ -1,0 +1,80 @@
+.artwork { isolation: isolate; }
+.canvas { position: relative; touch-action: pan-y; user-select: none; }
+.canvas[data-dragging="true"], .canvas[data-scene="4"] { touch-action: none; }
+.canvas:focus-visible { outline: 2px dashed var(--focus-ring); outline-offset: 6px; }
+.hit { position: absolute; min-width: 44px; min-height: 44px; transform: translate(-50%, -50%); padding: 0; border: 0; color: inherit; background: transparent; cursor: pointer; touch-action: none; }
+.hit[role="slider"], .canvas[data-scene="0"] .hit { cursor: grab; }
+.canvas[data-dragging="true"] .hit { cursor: grabbing; }
+.hit:disabled { cursor: default; }
+.hit:focus-visible { outline: 2px dashed var(--focus-ring); outline-offset: 2px; }
+.navy { fill: #102b43; }
+.gold { fill: #d79d40; }
+.red { fill: #9f3732; }
+.paper { fill: #fffaf0; }
+.stone { fill: #dfceb0; }
+.sand { fill: #eadcc2; }
+.dune { fill: #dfceb0; opacity: 0.5; }
+.redDark { fill: #8a302c; }
+.line { fill: none; stroke: #d79d40; stroke-width: 1.5; }
+.lightLine { fill: none; stroke: #f7d38e; stroke-width: 1; }
+.paperLine { fill: none; stroke: #fffaf0; stroke-width: 2; }
+.faint { fill: none; stroke: var(--ink); stroke-width: 1; opacity: 0.16; }
+.shadow { fill: #102b43; opacity: 0.1; }
+.far { transform: translate(calc(var(--look-x, 0) * -4px), calc(var(--look-y, 0) * -3px)); transition: transform 180ms ease-out; }
+.canvas:hover .far { transition: none; }
+.goldCable, .redCable, .navyCable, .cableShadow { fill: none; stroke-width: 8; stroke-linecap: round; }
+.goldCable { stroke: #d79d40; }
+.redCable { stroke: #9f3732; }
+.navyCable { stroke: #102b43; }
+.cableShadow { stroke: #102b43; opacity: 0.12; }
+.plug[data-hot="true"] .gold { fill: #efbf6b; }
+.canvas[data-scene="1"]::after { position: absolute; inset: 16% 9% 15%; border-radius: 4%; background: radial-gradient(ellipse at var(--cursor-x, 50%) var(--cursor-y, 50%), rgb(247 211 142 / 10%), transparent 55%); opacity: 0; content: ""; pointer-events: none; transition: opacity 120ms; }
+.canvas[data-scene="1"]:hover::after { opacity: 1; }
+.radioScale { fill: #e3be7e; color: #e3be7e; font-family: "SFMono-Regular", Consolas, monospace; }
+.radioLabel { fill: #bba477; font-family: "SFMono-Regular", Consolas, monospace; }
+.radioKnob[data-hot="true"] .knobShine { opacity: 0.85; }
+.plant { transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1); }
+.leafReveal { animation: leafReveal 450ms cubic-bezier(0.22, 1, 0.36, 1) both; transform-origin: 260px 200px; }
+.water { transition: transform 120ms ease-out; }
+.canvas[data-scene="2"]:has(.hit:hover) .water { transform: translateY(-3px); }
+.rain { animation: waterFall 650ms ease-out both; }
+.sandContour { fill: none; stroke: #c6b48f; stroke-width: 1; }
+.etchedShadow { fill: none; stroke: #fff4d6; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+.etchedLine { fill: none; stroke: #9f3732; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.canvas[data-scene="4"] { cursor: crosshair; }
+.sandCursor { position: absolute; left: var(--cursor-x, 50%); top: var(--cursor-y, 50%); width: 5px; height: 5px; border: 1px solid #9f3732; transform: translate(-50%, -50%) rotate(45deg); opacity: 0; pointer-events: none; }
+.canvas[data-scene="4"]:hover .sandCursor { opacity: 1; }
+.reset { position: absolute; left: 0; bottom: 0; display: grid; width: 44px; height: 44px; place-items: center; border: 0; color: var(--ink); background: transparent; font-size: 1.3rem; cursor: pointer; opacity: 0.55; }
+.reset:hover { opacity: 1; }
+.star { transition: transform 120ms ease-out; }
+.star[data-lit="true"] { transform: scale(1.08); }
+.starLink { fill: none; stroke: #d79d40; stroke-width: 1.5; stroke-dasharray: 220; animation: starLink 400ms ease-out both; }
+.planeShadow { fill: #102b43; opacity: 0.1; }
+.planeFlight { animation: paperFlight 1300ms cubic-bezier(0.45, 0, 0.22, 1) both; transform-origin: 260px 194px; }
+.canvas[data-scene="6"]:has(.hit:hover) .paper { fill: #fff3d6; }
+.tileFace { fill: #f3e8d3; stroke: #d79d40; stroke-width: 1; }
+.tileInset { fill: none; stroke: #102b43; stroke-width: 1; opacity: 0.2; }
+.tileShadow { fill: #742a28; }
+.rhythmTile { transform-box: fill-box; transform-origin: center; }
+.rhythmTile[data-active="true"] { animation: tilePress 280ms ease-out; }
+.rhythmTile[data-active="true"] .tileFace { fill: #f2cd85; }
+.balanceStone { animation: stonePlace 240ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.noteLines { transition: opacity 220ms; }
+.noteLines[data-sealed="true"] { opacity: 0; }
+.noteFlap { opacity: 0; transform: scaleY(0.15); transform-origin: 260px 70px; transition: opacity 180ms, transform 450ms cubic-bezier(0.22, 1, 0.36, 1); }
+.noteFlap[data-sealed="true"] { opacity: 1; transform: scaleY(1); }
+.postcardInput { position: absolute; top: 31%; left: 18%; width: 62%; height: 34%; padding: 0; border: 0; border-radius: 0; color: #102b43; background: transparent; resize: none; user-select: text; font: italic clamp(1rem, 2.2vw, 1.5rem)/1.65 "Iowan Old Style", "Palatino Linotype", Georgia, serif; }
+.postcardInput::placeholder { color: #102b43; opacity: 0.55; }
+.postcardInput:focus-visible { outline: 1px dashed #d79d40; outline-offset: 4px; }
+
+@keyframes leafReveal { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+@keyframes waterFall { 0% { opacity: 0; } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(-13px, 12px); } }
+@keyframes starLink { from { stroke-dashoffset: 220; } to { stroke-dashoffset: 0; } }
+@keyframes paperFlight { 0% { transform: translate(0, 0); opacity: 1; } 48% { transform: translate(245px, -145px) scale(0.65); opacity: 0; } 49% { transform: translate(-170px, 85px) scale(0.65); opacity: 0; } 100% { transform: translate(0, 0); opacity: 1; } }
+@keyframes tilePress { from { transform: scale(0.97); } to { transform: scale(1); } }
+@keyframes stonePlace { from { transform: translateY(-7px); opacity: 0.5; } to { transform: translateY(0); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .far, .plant, .water, .star, .noteLines, .noteFlap, .canvas[data-scene="1"]::after { transition: none; }
+  .leafReveal, .rain, .starLink, .planeFlight, .rhythmTile[data-active="true"], .balanceStone { animation: none; }
+}
