@@ -9,12 +9,16 @@ Rollback target: restore a known-good version within 15 minutes
 ## Candidate and promotion
 
 1. Merge only after the `Cloudflare Candidate / build` pull-request job passes.
-2. Wait for the resulting `main` push run to upload a version preview and pass HTTP plus the zero-retry browser acceptance matrices.
+2. Wait for the resulting `main` push run to upload a version preview and pass HTTP plus the full zero-retry product suite on desktop and mobile Chromium.
 3. Record the successful candidate run ID, full SHA, preview URL, and version ID from its retained candidate manifest.
 4. Dispatch `Promote Production` from `main`. Enter that run ID and SHA, then type `PROMOTE <full-sha>` exactly.
-5. Production must promote the retained Cloudflare version without rebuilding, pass byte-level HTTP verification, and pass the same browser suite against `m0code.com`.
+5. Production must promote the retained Cloudflare version without rebuilding, pass byte-level HTTP verification, and pass six desktop/mobile smoke checks for homepage hydration, compass 404 recovery, and mocked postcard delivery.
 
 Production never deploys on push: an authenticated operator must manually dispatch an exact-current-main SHA whose candidate run succeeded.
+
+The full cross-browser matrix remains required on pull requests. After every successful `main` candidate, `Browser Regression` runs the same matrix independently against that exact version preview. It does not delay promotion. Firefox, Safari, touch, accessibility, and exhaustive media regressions can therefore be reported after publication; review a failed regression run and use the incident thresholds below to decide whether to roll back. Changes to shared rendering, media, runtime, or dependencies should go through the full pull-request checks before promotion.
+
+Browser checks never write to production feedback storage. Candidate checks run the full product suite; production smoke checks intercept postcard delivery locally in the browser. Release artifacts retain the exact SHA, Cloudflare version, HTTP evidence, and browser results. Full matrix results are retained by the separate regression run.
 
 ## Monitoring and incident threshold
 

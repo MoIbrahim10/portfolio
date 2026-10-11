@@ -255,7 +255,7 @@ for (const [label, path] of [
   ['unknown route', '/not-a-real-route'],
   ['retired video lab', '/video-player-lab'],
 ] as const) {
-  test(`${label} returns a useful 404 document`, async ({ page }) => {
+  test(`${label} returns a useful 404 document`, async ({ page, isMobile }) => {
     const expected404 =
       /Failed to load resource: the server responded with a status of 404/
     const assertRuntimeClean = monitorRuntime(page, {
@@ -283,6 +283,22 @@ for (const [label, path] of [
     expect(headingBox.y - compassBox.y - compassBox.height).toBeGreaterThanOrEqual(23)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 
+    await expect(sound).toHaveAttribute('aria-pressed', 'false')
+    await sound.click()
+    const mute = page.getByRole('button', { name: 'Mute sound' })
+    await expect(mute).toHaveAttribute('aria-pressed', 'true')
+    await mute.click()
+    await expect(sound).toHaveAttribute('aria-pressed', 'false')
+
+    if (!isMobile) {
+      await page.mouse.move(compassBox.x + compassBox.width * 0.9, compassBox.y + compassBox.height * 205 / 400)
+      await expect(compass).toHaveAttribute('aria-valuenow', '90')
+    }
+
     assertRuntimeClean()
+
+    await page.getByRole('link', { name: 'Back home ↗' }).click()
+    await expect(page).toHaveURL(/\/$/)
+    await expect(page.getByRole('heading', { level: 1, name: 'Mo Ibrahim — Product Engineer' })).toBeVisible()
   })
 }

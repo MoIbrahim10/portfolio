@@ -22,6 +22,7 @@ const WRANGLER_VERSION = '4.114.0'
 
 const RELEASE_INPUTS = [
   '.bun-version',
+  '.github/workflows/browser-regression.yml',
   '.github/workflows/cloudflare.yml',
   '.github/workflows/production-health.yml',
   '.github/workflows/release.yml',
@@ -29,10 +30,14 @@ const RELEASE_INPUTS = [
   'bun.lock',
   'docs/runbooks/production-release.md',
   'package.json',
+  'playwright.config.ts',
+  'playwright.cross-browser.config.ts',
   'scripts/check-production-health.mjs',
   'scripts/release-guard.mjs',
   'scripts/release-manifest.mjs',
   'scripts/verify-production-release.mjs',
+  'tests/e2e/portfolio.spec.ts',
+  'tests/e2e/feedback.spec.ts',
   'wrangler.jsonc',
 ]
 
@@ -217,9 +222,10 @@ async function verifyBuildManifest() {
 
   assert(manifest.schemaVersion === 2, `Unsupported manifest schema: ${manifest.schemaVersion}`)
 
-  if (process.env.GITHUB_SHA) {
+  const expectedCommit = process.env.RELEASE_SOURCE_SHA ?? process.env.GITHUB_SHA
+  if (expectedCommit) {
     assert(
-      manifest.source.commit === process.env.GITHUB_SHA,
+      manifest.source.commit === expectedCommit,
       'Manifest commit does not match the deployment commit',
     )
   }
@@ -314,7 +320,7 @@ async function finalizeCandidate() {
 
 async function verifyCandidate() {
   const manifest = await readJson(CANDIDATE_MANIFEST_PATH)
-  const expectedCommit = process.env.GITHUB_SHA
+  const expectedCommit = process.env.RELEASE_SOURCE_SHA ?? process.env.GITHUB_SHA
 
   assert(manifest.schemaVersion === 1, 'Unsupported candidate manifest schema')
   if (expectedCommit) {

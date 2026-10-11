@@ -83,28 +83,21 @@ jobs:
         run: bun scripts/verify-production-release.mjs
 
       - name: Install browser engines
-        run: bunx playwright install --with-deps chromium firefox webkit
+        run: bunx playwright install --with-deps chromium
 
-      - name: Run production browser tests
+      - name: Run production smoke checks
         id: production_browser
-        run: bun run test:e2e
-        env:
-          PLAYWRIGHT_TEST_BASE_URL: https://m0code.com
-
-      - name: Run production cross-browser acceptance matrix
-        id: production_cross_browser
-        run: bun run test:cross-browser
+        run: bun run test:smoke
         env:
           PLAYWRIGHT_TEST_BASE_URL: https://m0code.com
 
       - name: Retain production browser failure evidence
-        if: failure() && (steps.production_browser.outcome == 'failure' || steps.production_cross_browser.outcome == 'failure')
+        if: failure() && steps.production_browser.outcome == 'failure'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: portfolio-production-browser-failures-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             playwright-report
-            playwright-cross-browser-report
             test-results
           if-no-files-found: error
           include-hidden-files: true
@@ -125,7 +118,6 @@ jobs:
             release/candidate-manifest.json
             release/production-verification.json
             release/release-manifest.json
-            test-results/cross-browser-results.json
             test-results/results.json
           if-no-files-found: error
           compression-level: 9
