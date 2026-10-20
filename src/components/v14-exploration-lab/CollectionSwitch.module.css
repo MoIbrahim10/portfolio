@@ -1,0 +1,117 @@
+.switch {
+  --cut: polygon(8px 0, calc(100% - 8px) 0, calc(100% - 8px) 4px, calc(100% - 4px) 4px, calc(100% - 4px) 8px, 100% 8px, 100% calc(100% - 8px), calc(100% - 4px) calc(100% - 8px), calc(100% - 4px) calc(100% - 4px), calc(100% - 8px) calc(100% - 4px), calc(100% - 8px) 100%, 8px 100%, 8px calc(100% - 4px), 4px calc(100% - 4px), 4px calc(100% - 8px), 0 calc(100% - 8px), 0 8px, 4px 8px, 4px 4px, 8px 4px);
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 54px;
+  padding: 4px;
+  background: var(--navy);
+  clip-path: var(--cut);
+}
+
+.switch::before {
+  position: absolute;
+  z-index: -2;
+  inset: 2px;
+  background: var(--paper);
+  clip-path: var(--cut);
+  content: '';
+}
+
+.face {
+  position: absolute;
+  z-index: -1;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  background: var(--gold);
+  clip-path: var(--cut);
+  transition: transform 240ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.face::before {
+  position: absolute;
+  inset: 2px;
+  background: var(--navy);
+  clip-path: var(--cut);
+  content: '';
+}
+
+.switch[data-collection='playground'] .face {
+  transform: translateX(100%);
+}
+
+.grip {
+  position: absolute;
+  top: calc(50% - 10px);
+  left: 10px;
+  width: 18px;
+  height: 20px;
+  background: var(--paper);
+  clip-path: polygon(5px 0, 13px 0, 13px 4px, 18px 4px, 18px 16px, 13px 16px, 13px 20px, 5px 20px, 5px 16px, 0 16px, 0 4px, 5px 4px);
+}
+
+.grip::after {
+  position: absolute;
+  inset: 5px 7px;
+  background: var(--gold);
+  content: '';
+}
+
+.switch button {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 4px 0 22px;
+  border: 0;
+  color: var(--navy);
+  background: transparent;
+  cursor: pointer;
+  font: 650 0.75rem/1.2 ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  transition: color 120ms ease;
+}
+
+.switch button[aria-pressed='true'] {
+  color: var(--paper);
+}
+
+.switch button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -5px;
+}
+
+.count {
+  font-size: 0.65rem;
+  opacity: 0.75;
+}
+
+.label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.switch[data-instant='true'] .face,
+.switch[data-instant='true'] button {
+  transition: none;
+}
+
+@media (max-width: 768px) {
+  .switch {
+    height: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .face,
+  .switch button {
+    transition: none;
+  }
+}

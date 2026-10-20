@@ -318,3 +318,50 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     title: 'Stepper',
   },
 ]
+
+export type PortfolioCollection = 'work' | 'playground'
+
+export const PORTFOLIO_PLAYGROUND_PROJECTS: PortfolioProject[] = [
+  {
+    accent: '#d79d40',
+    collaborators: [],
+    description: 'A programmable mechanical music box. Place the pins, turn the cylinder, and make a melody.',
+    id: 'pin',
+    liveHref: 'https://pin.m0code.com/',
+    media: [{
+      alt: 'PIN programmable mechanical music box with its cylinder, pins, and steel tines',
+      height: 740,
+      src: '/portfolio/projects/playground/pin.jpg',
+      width: 1100,
+    }],
+    title: 'PIN',
+  },
+  {
+    accent: '#d79d40',
+    collaborators: [],
+    description: 'Your website just went viral. Keep it alive for 30 seconds in this incident response game.',
+    id: 'alive',
+    liveHref: 'https://alive.m0code.com/',
+    media: [{
+      alt: 'ALIVE incident response game with app CPU, database pressure, and traffic controls',
+      height: 740,
+      src: '/portfolio/projects/playground/alive.jpg',
+      width: 1100,
+    }],
+    title: 'ALIVE',
+  },
+  {
+    accent: '#d79d40',
+    collaborators: [],
+    description: 'An interactive light and shadow study. Move the light, follow a pyramid’s shadow, and wait for totality.',
+    id: 'sunline',
+    liveHref: 'https://sunline.m0code.com/',
+    media: [{
+      alt: 'Sunline interactive eclipse study showing a pyramid and its shadow in warm sunlight',
+      height: 740,
+      src: '/portfolio/projects/playground/sunline.jpg',
+      width: 1100,
+    }],
+    title: 'Sunline',
+  },
+]

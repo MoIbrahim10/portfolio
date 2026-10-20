@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatedLogo } from '#/components/brand/AnimatedLogo'
 
 import { CrossAxisPresentationLab } from './CrossAxisPresentationLab'
+import { CollectionSwitch } from './CollectionSwitch'
+import type { PortfolioCollection } from './portfolio-data'
 import { CutCornerButton } from './CutCornerButton'
 import styles from './V14ExplorationLab.module.css'
 
@@ -330,6 +332,9 @@ function HeroStage({
 }: {
   direction: Direction
 }) {
+  const [collection, setCollection] = useState<PortfolioCollection>('work')
+  const [collectionInstant, setCollectionInstant] = useState(false)
+
   return (
     <article
       aria-label="Mo Ibrahim portfolio"
@@ -347,6 +352,17 @@ function HeroStage({
         >
           <AnimatedLogo className={styles.logo} />
         </a>
+
+        <div className={styles.collectionDock}>
+          <CollectionSwitch
+            collection={collection}
+            instant={collectionInstant}
+            onChange={(next, keyboard) => {
+              setCollectionInstant(keyboard)
+              setCollection(next)
+            }}
+          />
+        </div>
 
         <div className={styles.introduction}>
           <h1
@@ -369,7 +385,7 @@ function HeroStage({
       <div
         className={`${styles.showcasePanel} ${styles.entranceShowcase}`}
       >
-        <CrossAxisPresentationLab />
+        <CrossAxisPresentationLab collection={collection} instant={collectionInstant} />
       </div>
     </article>
   )

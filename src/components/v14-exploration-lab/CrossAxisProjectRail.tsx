@@ -25,6 +25,8 @@ import {
 
 import {
   PORTFOLIO_PROJECTS,
+  PORTFOLIO_PLAYGROUND_PROJECTS,
+  type PortfolioCollection,
   type PortfolioMedia,
   type PortfolioProject,
 } from './portfolio-data'
@@ -71,7 +73,7 @@ interface ProjectStory {
   background: string
   description: string
   foreground: string
-  id: 'orgo' | 'good-invoice' | 'lumen' | 'others'
+  id: string
   projects: PortfolioProject[]
   title: string
   chapters: StoryChapter[]
@@ -394,6 +396,22 @@ const STORIES: ProjectStory[] = [
   },
 ]
 
+const PLAYGROUND_STORIES: ProjectStory[] = PORTFOLIO_PLAYGROUND_PROJECTS.map((project) => ({
+  accent: project.id === 'sunline' ? '#102b43' : project.id === 'alive' ? '#ffb1a7' : project.accent,
+  background: project.id === 'sunline' ? '#d79d40' : project.id === 'alive' ? '#9f3732' : '#0f2636',
+  chapters: project.media.map((media) => ({
+    caption: media.alt,
+    contain: true,
+    media,
+    project,
+  })),
+  description: project.description,
+  foreground: project.id === 'sunline' ? '#102b43' : '#fffaf0',
+  id: project.id,
+  projects: [project],
+  title: project.title,
+}))
+
 const EASE = [0.22, 1, 0.36, 1] as const
 
 interface ConnectionHint {
@@ -419,10 +437,10 @@ function hasConstrainedConnection() {
   )
 }
 
-function storyStyle(story: ProjectStory) {
+function storyStyle(story: ProjectStory, count = STORIES.length) {
   return {
     '--focus-ring': story.foreground,
-    '--story-count': STORIES.length,
+    '--story-count': count,
     '--story-accent': story.accent,
     '--story-background': story.background,
     '--story-foreground': story.foreground,
@@ -506,10 +524,12 @@ function StoryTitle({
   activeIndex,
   onProjectSelect,
   story,
+  stories,
 }: {
   activeIndex: number
   onProjectSelect: (index: number, source: ChangeSource) => void
   story: ProjectStory
+  stories: ProjectStory[]
 }) {
   return (
     <div
@@ -525,6 +545,7 @@ function StoryTitle({
         <ProjectControls
           activeIndex={activeIndex}
           onSelect={onProjectSelect}
+          stories={stories}
         />
       </div>
       <p className={styles.titleDescription}>{story.description}</p>
@@ -563,14 +584,16 @@ function StoryTitle({
 function ProjectControls({
   activeIndex,
   onSelect,
+  stories,
 }: {
   activeIndex: number
+  stories: ProjectStory[]
   onSelect: (index: number, source: ChangeSource) => void
 }) {
   return (
     <div aria-label="Choose a project" className={styles.controls} role="group">
       <div className={styles.projectDots}>
-        {STORIES.map((story, index) => (
+        {stories.map((story, index) => (
           <button
             aria-label={`Show ${story.title}`}
             aria-pressed={activeIndex === index}
@@ -613,12 +636,18 @@ function DeferredPicture({
   const [status, setStatus] = useState<AssetStatus>(
     load ? 'loading' : 'queued',
   )
+  const imageRef = useRef<HTMLImageElement>(null)
   const fallbackSrc = media.fallbackSrc ?? media.src
   const placeholderSrc = PORTFOLIO_PLACEHOLDERS[media.src]
 
   useEffect(() => {
     if (load && status === 'queued') setStatus('loading')
   }, [load, status])
+
+  useEffect(() => {
+    const image = imageRef.current
+    if (load && image?.complete && image.naturalWidth > 0) setStatus('ready')
+  }, [load, fallbackSrc])
 
   return (
     <span
@@ -661,6 +690,7 @@ function DeferredPicture({
                 .catch(() => undefined)
                 .then(() => setStatus('ready'))
             }}
+            ref={imageRef}
             src={fallbackSrc}
             style={objectPosition ? { objectPosition } : undefined}
             width={media.width}
@@ -1337,6 +1367,7 @@ function ProjectStorySlide({
   onVerticalScroll,
   presentation,
   story,
+  stories,
   storyRef,
 }: {
   active: boolean
@@ -1355,6 +1386,7 @@ function ProjectStorySlide({
   onVerticalScroll: (event: UIEvent<HTMLDivElement>, index: number) => void
   presentation: DetailPresentation
   story: ProjectStory
+  stories: ProjectStory[]
   storyRef: (node: HTMLDivElement | null) => void
 }) {
   return (
@@ -1382,6 +1414,7 @@ function ProjectStorySlide({
             activeIndex={activeIndex}
             onProjectSelect={onProjectSelect}
             story={story}
+            stories={stories}
           />
         </div>
 
@@ -1410,9 +1443,11 @@ function ProjectStorySlide({
 
         <footer className={styles.storyEnd}>
           <p className={styles.nextCue}>
-            {index < STORIES.length - 1
+            {index < stories.length - 1
               ? 'Swipe left for the next project'
-              : 'End of selected work'}
+              : stories === PLAYGROUND_STORIES
+                ? 'End of playground'
+                : 'End of selected work'}
           </p>
         </footer>
       </div>
@@ -1420,19 +1455,24 @@ function ProjectStorySlide({
   )
 }
 
-function destinationForKey(key: string, current: number) {
-  if (key === 'ArrowRight') return Math.min(current + 1, STORIES.length - 1)
+function destinationForKey(key: string, current: number, count: number) {
+  if (key === 'ArrowRight') return Math.min(current + 1, count - 1)
   if (key === 'ArrowLeft') return Math.max(current - 1, 0)
   if (key === 'Home') return 0
-  if (key === 'End') return STORIES.length - 1
+  if (key === 'End') return count - 1
   return null
 }
 
 export function CrossAxisProjectRail({
+  active = true,
+  collection = 'work',
   presentation,
 }: {
+  active?: boolean
+  collection?: PortfolioCollection
   presentation: DetailPresentation
 }) {
+  const stories = collection === 'playground' ? PLAYGROUND_STORIES : STORIES
   const [activeIndex, setActiveIndex] = useState(0)
   const [direction, setDirection] = useState<TravelDirection>(1)
   const [changeSource, setChangeSource] =
@@ -1505,7 +1545,7 @@ export function CrossAxisProjectRail({
       observer.disconnect()
       mediaQuery.removeEventListener('change', requestHeightSync)
     }
-  }, [activeIndex, presentation])
+  }, [active, activeIndex, presentation])
 
   useEffect(() => {
     let secondFrame: number | null = null
@@ -1516,7 +1556,7 @@ export function CrossAxisProjectRail({
         const restoredIndex = Math.max(
           0,
           Math.min(
-            STORIES.length - 1,
+            stories.length - 1,
             Math.round(viewport.scrollLeft / viewport.clientWidth),
           ),
         )
@@ -1534,7 +1574,7 @@ export function CrossAxisProjectRail({
     }
   }, [])
 
-  const activeStory = STORIES[activeIndex]
+  const activeStory = stories[activeIndex]
   const instant = Boolean(reducedMotion) || changeSource === 'keyboard'
 
   function syncStableScrollbar(index: number) {
@@ -1629,7 +1669,7 @@ export function CrossAxisProjectRail({
   }
 
   function updateActive(index: number, source: ChangeSource) {
-    const nextIndex = Math.max(0, Math.min(STORIES.length - 1, index))
+    const nextIndex = Math.max(0, Math.min(stories.length - 1, index))
     const previous = activeIndexRef.current
     if (nextIndex === previous) return
 
@@ -1664,7 +1704,7 @@ export function CrossAxisProjectRail({
   }
 
   function goTo(index: number, source: ChangeSource) {
-    const nextIndex = Math.max(0, Math.min(STORIES.length - 1, index))
+    const nextIndex = Math.max(0, Math.min(stories.length - 1, index))
     const slide = slideRefs.current[nextIndex]
     if (!slide) return
 
@@ -1672,14 +1712,28 @@ export function CrossAxisProjectRail({
     const alreadyAtTarget =
       viewport && Math.abs(viewport.scrollLeft - slide.offsetLeft) < 1
 
-    if (reducedMotion || source === 'keyboard' || alreadyAtTarget) {
+    const immediate = reducedMotion || source === 'keyboard' || alreadyAtTarget
+    if (immediate) {
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current)
+      if (snapTimerRef.current !== null) window.clearTimeout(snapTimerRef.current)
+      if (settleFrameRef.current !== null) cancelAnimationFrame(settleFrameRef.current)
+      settlingHorizontalScrollRef.current = true
+      horizontalScrollingRef.current = false
       updateActive(nextIndex, source)
     }
 
     viewport?.scrollTo({
-      behavior: reducedMotion || source === 'keyboard' ? 'auto' : 'smooth',
+      behavior: immediate ? 'instant' : 'smooth',
       left: slide.offsetLeft,
     })
+
+    if (immediate) {
+      settleFrameRef.current = requestAnimationFrame(() => {
+        settlingHorizontalScrollRef.current = false
+        settleFrameRef.current = null
+        syncMobileStoryHeight(nextIndex)
+      })
+    }
 
     if (source === 'keyboard') {
       requestAnimationFrame(() => {
@@ -1762,7 +1816,7 @@ export function CrossAxisProjectRail({
     if (!allowEdgeKeys && event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
       return
     }
-    const destination = destinationForKey(event.key, currentIndex)
+    const destination = destinationForKey(event.key, currentIndex, stories.length)
     if (destination === null) return
     event.preventDefault()
     goTo(destination, 'keyboard')
@@ -1793,13 +1847,14 @@ export function CrossAxisProjectRail({
   }, [])
 
   return (
-    <LayoutGroup id="project-media-viewer">
+    <LayoutGroup id={`project-media-viewer-${collection}`}>
       <section
-        aria-label="Selected projects"
+        aria-label={collection === 'playground' ? 'Playground projects' : 'Selected projects'}
         className={styles.root}
         data-presentation={presentation}
+        data-collection={collection}
         ref={rootRef}
-        style={storyStyle(activeStory)}
+        style={storyStyle(activeStory, stories.length)}
       >
         <BackgroundWipe
           direction={direction}
@@ -1817,7 +1872,7 @@ export function CrossAxisProjectRail({
           tabIndex={0}
         >
           <div className={styles.horizontalTrack}>
-            {STORIES.map((story, index) => (
+            {stories.map((story, index) => (
               <div
                 className={styles.projectStop}
                 key={story.id}
@@ -1826,7 +1881,7 @@ export function CrossAxisProjectRail({
                 }}
               >
                 <ProjectStorySlide
-                  active={index === activeIndex && !mediaSelection}
+                  active={active && index === activeIndex && !mediaSelection}
                   activeIndex={activeIndex}
                   index={index}
                   onHorizontalKey={(event, currentIndex) =>
@@ -1837,6 +1892,7 @@ export function CrossAxisProjectRail({
                   onVerticalScroll={handleVerticalScroll}
                   presentation={presentation}
                   story={story}
+                  stories={stories}
                   storyRef={(node) => {
                     storyRefs.current[index] = node
                   }}

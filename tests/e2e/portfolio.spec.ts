@@ -101,7 +101,7 @@ test('SSR hydrates and project selection remains interactive', async ({
       name: 'Mo Ibrahim — Product Engineer',
     }),
   ).toBeVisible()
-  await expect(page.locator('button[aria-label^="Show "]')).toHaveCount(16)
+  await expect(page.locator('#portfolio-work button[aria-label^="Show "]')).toHaveCount(16)
 
   const projectRail = page.getByRole('region', {
     name: 'Projects. Swipe or scroll horizontally to change project.',
@@ -117,6 +117,85 @@ test('SSR hydrates and project selection remains interactive', async ({
     ),
   ).toHaveCount(4)
 
+  assertRuntimeClean()
+})
+
+test('Work and Playground preserve selection and expose live experiments', async ({ page }) => {
+  const assertRuntimeClean = monitorRuntime(page, {
+    allowedRequestFailures: [orgoVideoPath],
+  })
+  await page.goto('/')
+  await waitForHydration(page)
+
+  const collectionSwitch = page.getByRole('group', { name: 'Portfolio collection' })
+  const work = collectionSwitch.getByRole('button', { name: 'Work', exact: true })
+  const playground = collectionSwitch.getByRole('button', { name: 'Playground 3' })
+  const workPanel = page.locator('#portfolio-work')
+  const playPanel = page.locator('#portfolio-playground')
+  if (page.viewportSize()!.width <= 768) {
+    const bounds = await collectionSwitch.boundingBox()
+    expect(bounds!.height).toBe(48)
+    expect(Math.abs(bounds!.x + bounds!.width / 2 - page.viewportSize()!.width / 2)).toBeLessThan(1)
+  }
+  const workRail = workPanel.getByRole('region', {
+    name: 'Projects. Swipe or scroll horizontally to change project.',
+  })
+  await workRail.focus()
+  await page.keyboard.press('ArrowRight')
+  const invoice = page.locator('#project-story-good-invoice')
+  await expect(invoice.locator('h2')).toHaveText('The Good Invoice')
+  const savedScroll = await invoice.evaluate((element) => {
+    element.scrollTop = 180
+    return element.scrollTop
+  })
+
+  await playground.click()
+  await expect(playground).toHaveAttribute('aria-pressed', 'true')
+  await expect(workPanel).toHaveAttribute('inert', '')
+  await expect(playPanel).not.toHaveAttribute('inert', '')
+  await expect(playPanel.getByRole('heading', { name: 'PIN', exact: true })).toBeVisible()
+  const projectControls = playPanel.getByRole('group', { name: 'Choose a project' })
+  expect(await projectControls.getByRole('button').allTextContents()).toEqual(['', '', ''])
+  const pinTitle = await playPanel.getByRole('heading', { name: 'PIN', exact: true }).boundingBox()
+  const controls = await projectControls.boundingBox()
+  expect(controls!.x).toBeGreaterThan(pinTitle!.x + pinTitle!.width)
+  expect(Math.abs(controls!.y + controls!.height / 2 - pinTitle!.y - pinTitle!.height / 2)).toBeLessThan(1)
+  const background = () => playPanel.locator('section[data-collection="playground"]').evaluate(
+    (element) => getComputedStyle(element).backgroundColor,
+  )
+  const pinBackground = await background()
+  await expect(playPanel.getByRole('link', { name: 'Open project' })).toHaveAttribute(
+    'href', 'https://pin.m0code.com/',
+  )
+
+  await playPanel.getByRole('button', { name: 'Show ALIVE', exact: true }).press('Enter')
+  await expect(playPanel.getByRole('link', { name: 'Open project' })).toHaveAttribute(
+    'href', 'https://alive.m0code.com/',
+  )
+  const aliveBackground = await background()
+  expect(aliveBackground).not.toBe(pinBackground)
+  await playPanel.getByRole('button', { name: 'Show Sunline', exact: true }).press('Enter')
+  await expect(playPanel.getByRole('link', { name: 'Open project' })).toHaveAttribute(
+    'href', 'https://sunline.m0code.com/',
+  )
+  expect([pinBackground, aliveBackground]).not.toContain(await background())
+  await expect.poll(() => playPanel.getByRole('region', {
+    name: 'Projects. Swipe or scroll horizontally to change project.',
+  }).evaluate((element) => Math.round(element.scrollLeft / element.clientWidth))).toBe(2)
+
+  await work.press('Enter')
+  await expect(page.getByRole('heading', { name: 'The Good Invoice', exact: true })).toBeVisible()
+  await expect.poll(() => invoice.evaluate((element) => element.scrollTop)).toBe(savedScroll)
+  await expect(workPanel).toHaveCSS('transition-duration', '0s')
+  await playground.press('Enter')
+  await expect(playPanel.getByRole('heading', { name: 'Sunline', exact: true })).toBeVisible()
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await work.click()
+  await playground.click()
+  await expect(playPanel).toHaveCSS('transform', 'none')
+  await expect(playPanel).toHaveCSS('transition-duration', '0s')
   assertRuntimeClean()
 })
 

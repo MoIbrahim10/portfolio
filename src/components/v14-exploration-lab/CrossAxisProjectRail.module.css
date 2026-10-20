@@ -1937,3 +1937,17 @@
     outline-color: Highlight;
   }
 }
+
+.root[data-collection='playground'] .titleRow {
+  align-items: center;
+  flex-direction: row;
+}
+
+.root[data-collection='playground'] .controls {
+  top: auto;
+  right: auto;
+}
+
+.root[data-collection='playground'] .projectDots {
+  display: flex;
+}
