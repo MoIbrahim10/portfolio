@@ -34,7 +34,6 @@ export function CollectionSwitch({
           type="button"
         >
           {value === 'work' ? 'Work' : 'Playground'}
-          {value === 'playground' ? <span className={styles.count}>3</span> : null}
         </button>
       ))}
     </div>

@@ -4,7 +4,7 @@
   isolation: isolate;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  height: 54px;
+  height: 40px;
   padding: 4px;
   background: var(--navy);
   clip-path: var(--cut);
@@ -45,17 +45,17 @@
 
 .grip {
   position: absolute;
-  top: calc(50% - 10px);
-  left: 10px;
-  width: 18px;
-  height: 20px;
+  top: calc(50% - 7px);
+  left: 9px;
+  width: 12px;
+  height: 14px;
   background: var(--paper);
-  clip-path: polygon(5px 0, 13px 0, 13px 4px, 18px 4px, 18px 16px, 13px 16px, 13px 20px, 5px 20px, 5px 16px, 0 16px, 0 4px, 5px 4px);
+  clip-path: polygon(4px 0, 8px 0, 8px 3px, 12px 3px, 12px 11px, 8px 11px, 8px 14px, 4px 14px, 4px 11px, 0 11px, 0 3px, 4px 3px);
 }
 
 .grip::after {
   position: absolute;
-  inset: 5px 7px;
+  inset: 3px 5px;
   background: var(--gold);
   content: '';
 }
@@ -65,8 +65,8 @@
   min-width: 0;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 4px 0 22px;
+  gap: 5px;
+  padding: 0 4px 0 17px;
   border: 0;
   color: var(--navy);
   background: transparent;
@@ -84,11 +84,6 @@
   outline-offset: -5px;
 }
 
-.count {
-  font-size: 0.65rem;
-  opacity: 0.75;
-}
-
 .label {
   position: absolute;
   width: 1px;
@@ -101,12 +96,6 @@
 .switch[data-instant='true'] .face,
 .switch[data-instant='true'] button {
   transition: none;
-}
-
-@media (max-width: 768px) {
-  .switch {
-    height: 48px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

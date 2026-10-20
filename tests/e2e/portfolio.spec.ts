@@ -129,14 +129,15 @@ test('Work and Playground preserve selection and expose live experiments', async
 
   const collectionSwitch = page.getByRole('group', { name: 'Portfolio collection' })
   const work = collectionSwitch.getByRole('button', { name: 'Work', exact: true })
-  const playground = collectionSwitch.getByRole('button', { name: 'Playground 3' })
+  const playground = collectionSwitch.getByRole('button', { name: 'Playground', exact: true })
   const workPanel = page.locator('#portfolio-work')
   const playPanel = page.locator('#portfolio-playground')
-  if (page.viewportSize()!.width <= 768) {
-    const bounds = await collectionSwitch.boundingBox()
-    expect(bounds!.height).toBe(48)
-    expect(Math.abs(bounds!.x + bounds!.width / 2 - page.viewportSize()!.width / 2)).toBeLessThan(1)
-  }
+  const bounds = await collectionSwitch.boundingBox()
+  const title = await workPanel.getByRole('heading', { name: 'Orgo', exact: true }).boundingBox()
+  expect(bounds!.width).toBe(240)
+  expect(bounds!.height).toBe(40)
+  expect(Math.abs(bounds!.x - title!.x)).toBeLessThan(1)
+  expect(bounds!.y + bounds!.height).toBeLessThan(title!.y)
   const workRail = workPanel.getByRole('region', {
     name: 'Projects. Swipe or scroll horizontally to change project.',
   })

@@ -353,17 +353,6 @@ function HeroStage({
           <AnimatedLogo className={styles.logo} />
         </a>
 
-        <div className={styles.collectionDock}>
-          <CollectionSwitch
-            collection={collection}
-            instant={collectionInstant}
-            onChange={(next, keyboard) => {
-              setCollectionInstant(keyboard)
-              setCollection(next)
-            }}
-          />
-        </div>
-
         <div className={styles.introduction}>
           <h1
             className={`${styles.role} ${styles.entranceItem}`}
@@ -385,6 +374,16 @@ function HeroStage({
       <div
         className={`${styles.showcasePanel} ${styles.entranceShowcase}`}
       >
+        <div className={styles.projectCollectionDock}>
+          <CollectionSwitch
+            collection={collection}
+            instant={collectionInstant}
+            onChange={(next, keyboard) => {
+              setCollectionInstant(keyboard)
+              setCollection(next)
+            }}
+          />
+        </div>
         <CrossAxisPresentationLab collection={collection} instant={collectionInstant} />
       </div>
     </article>
