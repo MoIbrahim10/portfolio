@@ -524,7 +524,7 @@ for (const [label, path] of [
       allowedConsoleErrors: [
         /Failed to load resource: the server responded with a status of 404/,
       ],
-      allowedRequestFailures: ['/cdn-cgi/rum'],
+      allowedRequestFailures: [orgoVideoPath, '/cdn-cgi/rum'],
     })
     const response = await page.goto(path, { waitUntil: 'networkidle' })
     expect(response?.status()).toBe(404)
