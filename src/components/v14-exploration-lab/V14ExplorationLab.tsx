@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatedLogo } from '#/components/brand/AnimatedLogo'
 
 import { CrossAxisPresentationLab } from './CrossAxisPresentationLab'
-import { CollectionSwitch } from './CollectionSwitch'
 import type { PortfolioCollection } from './portfolio-data'
 import { CutCornerButton } from './CutCornerButton'
 import styles from './V14ExplorationLab.module.css'
@@ -374,17 +373,14 @@ function HeroStage({
       <div
         className={`${styles.showcasePanel} ${styles.entranceShowcase}`}
       >
-        <div className={styles.projectCollectionDock}>
-          <CollectionSwitch
-            collection={collection}
-            instant={collectionInstant}
-            onChange={(next, keyboard) => {
-              setCollectionInstant(keyboard)
-              setCollection(next)
-            }}
-          />
-        </div>
-        <CrossAxisPresentationLab collection={collection} instant={collectionInstant} />
+        <CrossAxisPresentationLab
+          collection={collection}
+          instant={collectionInstant}
+          onCollectionChange={(next, keyboard) => {
+            setCollectionInstant(keyboard)
+            setCollection(next)
+          }}
+        />
       </div>
     </article>
   )

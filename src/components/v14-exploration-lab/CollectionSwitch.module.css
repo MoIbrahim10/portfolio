@@ -98,6 +98,25 @@
   transition: none;
 }
 
+@media (max-width: 900px) {
+  .switch[data-embedded='true'] {
+    padding: 0;
+    background: transparent;
+    clip-path: none;
+  }
+
+  .switch[data-embedded='true']::before {
+    display: none;
+  }
+
+  .switch[data-embedded='true'] .face {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .face,
   .switch button {

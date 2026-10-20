@@ -4,10 +4,12 @@ import styles from './CollectionSwitch.module.css'
 
 export function CollectionSwitch({
   collection,
+  embedded = false,
   instant,
   onChange,
 }: {
   collection: PortfolioCollection
+  embedded?: boolean
   instant: boolean
   onChange: (collection: PortfolioCollection, keyboard: boolean) => void
 }) {
@@ -18,6 +20,7 @@ export function CollectionSwitch({
       aria-labelledby={labelId}
       className={styles.switch}
       data-collection={collection}
+      data-embedded={embedded}
       data-instant={instant}
       role="group"
     >

@@ -130,12 +130,12 @@ test('semantic surface exposes one active story and named controls', async ({
   ).toBeVisible()
   await expect(page.getByRole('navigation', { name: 'Contact links' })).toBeVisible()
   await expect(page.getByRole('region', { name: 'Selected project work' })).toBeVisible()
-  await expect(page.locator('article[aria-label$="project story"]')).toHaveCount(4)
+  await expect(page.locator('#portfolio-work article[aria-label$="project story"]')).toHaveCount(4)
   await expect(
-    page.locator('article[aria-label$="project story"][inert]'),
+    page.locator('#portfolio-work article[aria-label$="project story"][inert]'),
   ).toHaveCount(3)
   await expect(
-    page.locator('article[aria-label$="project story"][aria-hidden="true"]'),
+    page.locator('#portfolio-work article[aria-label$="project story"][aria-hidden="true"]'),
   ).toHaveCount(3)
   const ariaSnapshot = await page.locator('main').ariaSnapshot()
   const exposedInactiveStories = storyNames
@@ -146,7 +146,7 @@ test('semantic surface exposes one active story and named controls', async ({
     'aria-expanded',
     'false',
   )
-  await expect(page.locator('button[aria-label^="View "]')).toHaveCount(32)
+  await expect(page.locator('#portfolio-work button[aria-label^="View "]')).toHaveCount(32)
   await expect(page.getByRole('link', { name: 'Schedule a call' })).toHaveAttribute(
     'href',
     'https://cal.com/mo-c0de/30min',
@@ -169,8 +169,7 @@ test('semantic surface exposes one active story and named controls', async ({
 
 test('keyboard project navigation never leaves focus in inert content', async ({
   page,
-}, testInfo) => {
-  test.skip(isMobileProject(testInfo), 'Project dots are intentionally hidden below 620px')
+}) => {
   const assertRuntimeClean = monitorRuntime(page, {
     allowedRequestFailures: [orgoVideoPath],
   })
@@ -186,7 +185,7 @@ test('keyboard project navigation never leaves focus in inert content', async ({
   })
   await expect(goodInvoiceStory).toBeFocused()
 
-  const lumenControl = goodInvoiceStory.getByRole('button', {
+  const lumenControl = page.getByRole('button', {
     name: 'Show Lumen',
   })
   await lumenControl.focus()
@@ -467,7 +466,7 @@ test('touch and pointer contracts match the advertised interaction', async ({
   await expect
     .soft(
       page
-        .locator('article[aria-hidden="false"]')
+        .locator('#portfolio-work article[aria-hidden="false"]')
         .getByText('Swipe left for the next project'),
     )
     .toBeVisible()

@@ -5,9 +5,11 @@ import styles from './CrossAxisPresentationLab.module.css'
 export function CrossAxisPresentationLab({
   collection = 'work',
   instant = false,
+  onCollectionChange,
 }: {
   collection?: PortfolioCollection
   instant?: boolean
+  onCollectionChange: (collection: PortfolioCollection, keyboard: boolean) => void
 }) {
   return (
     <section
@@ -28,6 +30,8 @@ export function CrossAxisPresentationLab({
           <CrossAxisProjectRail
             active={collection === value}
             collection={value}
+            collectionInstant={instant}
+            onCollectionChange={onCollectionChange}
             presentation="editorial"
           />
         </div>

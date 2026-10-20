@@ -32,6 +32,7 @@ import {
 } from './portfolio-data'
 import { PORTFOLIO_PLACEHOLDERS } from './portfolio-placeholders'
 import { CutCornerButton } from './CutCornerButton'
+import { CollectionSwitch } from './CollectionSwitch'
 
 import styles from './CrossAxisProjectRail.module.css'
 
@@ -1428,7 +1429,7 @@ function ProjectStorySlide({
               active={active}
               chapter={chapter}
               compact={story.id === 'orgo'}
-              eager={index === 0 && chapterIndex === 0}
+              eager={active && index === 0 && chapterIndex === 0}
               mediaId={`${story.id}-${chapterIndex}`}
               onOpen={onMediaOpen}
               prewarm={
@@ -1466,10 +1467,14 @@ function destinationForKey(key: string, current: number, count: number) {
 export function CrossAxisProjectRail({
   active = true,
   collection = 'work',
+  collectionInstant,
+  onCollectionChange,
   presentation,
 }: {
   active?: boolean
   collection?: PortfolioCollection
+  collectionInstant: boolean
+  onCollectionChange: (collection: PortfolioCollection, keyboard: boolean) => void
   presentation: DetailPresentation
 }) {
   const stories = collection === 'playground' ? PLAYGROUND_STORIES : STORIES
@@ -1861,6 +1866,28 @@ export function CrossAxisProjectRail({
           instant={instant}
           story={activeStory}
         />
+
+        <div className={styles.sharedNavigation}>
+          <CollectionSwitch
+            collection={collection}
+            embedded
+            instant={collectionInstant}
+            onChange={(next, keyboard) => {
+              onCollectionChange(next, keyboard)
+              if (next === collection) return
+              requestAnimationFrame(() => {
+                document.getElementById(`portfolio-${next}`)
+                  ?.querySelector<HTMLButtonElement>(`button[aria-controls="portfolio-${next}"]`)
+                  ?.focus({ preventScroll: true })
+              })
+            }}
+          />
+          <ProjectControls
+            activeIndex={activeIndex}
+            onSelect={goTo}
+            stories={stories}
+          />
+        </div>
 
         <div
           aria-label="Projects. Swipe or scroll horizontally to change project."

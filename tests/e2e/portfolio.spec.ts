@@ -101,7 +101,7 @@ test('SSR hydrates and project selection remains interactive', async ({
       name: 'Mo Ibrahim — Product Engineer',
     }),
   ).toBeVisible()
-  await expect(page.locator('#portfolio-work button[aria-label^="Show "]')).toHaveCount(16)
+  await expect(page.getByRole('button', { name: /^Show / })).toHaveCount(4)
 
   const projectRail = page.getByRole('region', {
     name: 'Projects. Swipe or scroll horizontally to change project.',
@@ -112,10 +112,8 @@ test('SSR hydrates and project selection remains interactive', async ({
     page.locator('article[aria-label="The Good Invoice project story"]'),
   ).not.toHaveAttribute('inert', '')
   await expect(
-    page.locator(
-      'button[aria-label="Show The Good Invoice"][aria-pressed="true"]',
-    ),
-  ).toHaveCount(4)
+    page.getByRole('button', { name: 'Show The Good Invoice', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true')
 
   assertRuntimeClean()
 })
@@ -134,9 +132,15 @@ test('Work and Playground preserve selection and expose live experiments', async
   const playPanel = page.locator('#portfolio-playground')
   const bounds = await collectionSwitch.boundingBox()
   const title = await workPanel.getByRole('heading', { name: 'Orgo', exact: true }).boundingBox()
-  expect(bounds!.width).toBe(240)
+  const frame = await collectionSwitch.locator('..').boundingBox()
+  expect(bounds!.width).toBe(page.viewportSize()!.width <= 900 ? frame!.width - 8 : 240)
   expect(bounds!.height).toBe(40)
-  expect(Math.abs(bounds!.x - title!.x)).toBeLessThan(1)
+  if (page.viewportSize()!.width <= 900) {
+    const rail = await workPanel.locator('section[data-collection="work"]').boundingBox()
+    expect(Math.abs(frame!.x + frame!.width / 2 - rail!.x - rail!.width / 2)).toBeLessThan(1)
+  } else {
+    expect(Math.abs(bounds!.x - title!.x)).toBeLessThan(1)
+  }
   expect(bounds!.y + bounds!.height).toBeLessThan(title!.y)
   const workControls = workPanel.getByRole('group', { name: 'Choose a project' })
   await expect(workControls).toBeVisible()
@@ -192,6 +196,7 @@ test('Work and Playground preserve selection and expose live experiments', async
   }).evaluate((element) => Math.round(element.scrollLeft / element.clientWidth))).toBe(2)
 
   await work.press('Enter')
+  await expect(work).toBeFocused()
   await expect(page.getByRole('heading', { name: 'The Good Invoice', exact: true })).toBeVisible()
   await expect.poll(() => invoice.evaluate((element) => element.scrollTop)).toBe(savedScroll)
   await expect(workPanel).toHaveCSS('transition-duration', '0s')
@@ -227,6 +232,13 @@ test('mobile project dots and long titles stay separate', async ({ page, isMobil
         const controls = page.getByRole('group', { name: 'Choose a project' })
         await expect(controls.getByRole('button', { name: `Show ${title}`, exact: true })).toHaveAttribute('aria-pressed', 'true')
         const controlsBounds = await controls.boundingBox()
+        const frame = await collectionSwitch.locator('..').boundingBox()
+        const switchBounds = await collectionSwitch.boundingBox()
+        const rail = await collectionSwitch.locator('../..').boundingBox()
+        expect(Math.abs(frame!.x + frame!.width / 2 - rail!.x - rail!.width / 2)).toBeLessThan(1)
+        expect(Math.abs(controlsBounds!.x + controlsBounds!.width / 2 - frame!.x - frame!.width / 2)).toBeLessThan(1)
+        expect(controlsBounds!.y).toBeGreaterThanOrEqual(switchBounds!.y + switchBounds!.height)
+        expect(controlsBounds!.y + controlsBounds!.height).toBeLessThanOrEqual(frame!.y + frame!.height)
         expect(controlsBounds!.y + controlsBounds!.height).toBeLessThanOrEqual(bounds!.y)
         expect(controlsBounds!.x + controlsBounds!.width).toBeLessThanOrEqual(width)
         expect(await heading.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(true)
