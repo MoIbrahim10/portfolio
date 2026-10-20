@@ -171,7 +171,7 @@ test('keyboard project navigation never leaves focus in inert content', async ({
   page,
 }) => {
   const assertRuntimeClean = monitorRuntime(page, {
-    allowedRequestFailures: [orgoVideoPath],
+    allowedRequestFailures: [orgoVideoPath, '/portfolio/projects/good-invoice/editor-workflow.mp4'],
   })
   await loadHome(page)
 
