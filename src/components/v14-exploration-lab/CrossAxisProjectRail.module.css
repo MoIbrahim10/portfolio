@@ -547,6 +547,10 @@
 }
 
 /* Editorial Spread */
+.root[data-presentation='editorial'] .projectSlide {
+  background: transparent;
+}
+
 .root[data-presentation='editorial'] .titleDock {
   min-height: 0;
   padding-top: clamp(1.5rem, 3vw, 2.8rem);
@@ -1673,6 +1677,33 @@
   background: color-mix(in srgb, var(--story-background) 82%, black);
 }
 
+@media (max-width: 900px) {
+  .root[data-presentation='editorial'] .titleDock {
+    padding-top: 0.5rem;
+  }
+
+  .root[data-presentation='editorial'] .titleRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+
+  .root[data-presentation='editorial'] .titleIdentity {
+    grid-row: 2;
+  }
+
+  .root[data-presentation='editorial'] .controls {
+    position: static;
+    grid-row: 1;
+    justify-self: end;
+    margin-left: 0;
+  }
+
+  .root[data-presentation='editorial'] .projectDots {
+    display: flex;
+  }
+}
+
 @media (max-width: 768px) {
   .root {
     --project-inline-gutter: clamp(1.25rem, 4vw, 2.5rem);
@@ -1937,18 +1968,4 @@
   .viewerProgress input:focus-visible {
     outline-color: Highlight;
   }
-}
-
-.root[data-collection='playground'] .titleRow {
-  align-items: center;
-  flex-direction: row;
-}
-
-.root[data-collection='playground'] .controls {
-  top: auto;
-  right: auto;
-}
-
-.root[data-collection='playground'] .projectDots {
-  display: flex;
 }

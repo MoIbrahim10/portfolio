@@ -138,6 +138,9 @@ test('Work and Playground preserve selection and expose live experiments', async
   expect(bounds!.height).toBe(40)
   expect(Math.abs(bounds!.x - title!.x)).toBeLessThan(1)
   expect(bounds!.y + bounds!.height).toBeLessThan(title!.y)
+  const workControls = workPanel.getByRole('group', { name: 'Choose a project' })
+  await expect(workControls).toBeVisible()
+  await expect(workControls.getByRole('button')).toHaveCount(4)
   const workRail = workPanel.getByRole('region', {
     name: 'Projects. Swipe or scroll horizontally to change project.',
   })
@@ -159,8 +162,12 @@ test('Work and Playground preserve selection and expose live experiments', async
   expect(await projectControls.getByRole('button').allTextContents()).toEqual(['', '', ''])
   const pinTitle = await playPanel.getByRole('heading', { name: 'PIN', exact: true }).boundingBox()
   const controls = await projectControls.boundingBox()
-  expect(controls!.x).toBeGreaterThan(pinTitle!.x + pinTitle!.width)
-  expect(Math.abs(controls!.y + controls!.height / 2 - pinTitle!.y - pinTitle!.height / 2)).toBeLessThan(1)
+  if (page.viewportSize()!.width <= 900) {
+    expect(controls!.y + controls!.height).toBeLessThanOrEqual(pinTitle!.y)
+  } else {
+    expect(controls!.x).toBeGreaterThan(pinTitle!.x + pinTitle!.width)
+    expect(Math.abs(controls!.y + controls!.height / 2 - pinTitle!.y - pinTitle!.height / 2)).toBeLessThan(1)
+  }
   const background = () => playPanel.locator('section[data-collection="playground"]').evaluate(
     (element) => getComputedStyle(element).backgroundColor,
   )
@@ -198,6 +205,35 @@ test('Work and Playground preserve selection and expose live experiments', async
   await expect(playPanel).toHaveCSS('transform', 'none')
   await expect(playPanel).toHaveCSS('transition-duration', '0s')
   assertRuntimeClean()
+})
+
+test('mobile project dots and long titles stay separate', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'Narrow-screen project controls')
+  await page.goto('/')
+  await waitForHydration(page)
+
+  const collectionSwitch = page.getByRole('group', { name: 'Portfolio collection' })
+  for (const width of [320, 390, 768, 769]) {
+    await page.setViewportSize({ width, height: 900 })
+    for (const [collection, titles] of [
+      ['Work', ['Orgo', 'The Good Invoice', 'Lumen', 'Selected Experiments']],
+      ['Playground', ['PIN', 'ALIVE', 'Sunline']],
+    ] as const) {
+      await collectionSwitch.getByRole('button', { name: collection, exact: true }).press('Enter')
+      for (const title of titles) {
+        await page.getByRole('button', { name: `Show ${title}`, exact: true }).press('Enter')
+        const heading = page.getByRole('heading', { name: title, exact: true })
+        const bounds = await heading.boundingBox()
+        const controls = page.getByRole('group', { name: 'Choose a project' })
+        await expect(controls.getByRole('button', { name: `Show ${title}`, exact: true })).toHaveAttribute('aria-pressed', 'true')
+        const controlsBounds = await controls.boundingBox()
+        expect(controlsBounds!.y + controlsBounds!.height).toBeLessThanOrEqual(bounds!.y)
+        expect(controlsBounds!.x + controlsBounds!.width).toBeLessThanOrEqual(width)
+        expect(await heading.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(true)
+      }
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  }
 })
 
 test('favicon preserves its light palette and increases dark contrast', async ({
