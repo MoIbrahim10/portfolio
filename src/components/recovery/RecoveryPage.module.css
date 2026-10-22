@@ -1,0 +1,13 @@
+.page[data-offline], .page[data-error] { --navy: #102b43; --paper: #fffaf0; --red: #9f3732; --gold: #d79d40; min-height: 100svh; border: 0; font-family: "Avenir Next", Avenir, "Helvetica Neue", sans-serif; }
+.page[data-offline] .body, .page[data-error] .body { min-height: calc(100svh - 4rem); padding-block: 4rem 1.5rem; }
+.page h1 { margin: 0; font: 500 clamp(2.5rem, 4.3vw, 4.8rem)/0.9 "Iowan Old Style", "Palatino Linotype", Georgia, serif; letter-spacing: -0.055em; text-wrap: balance; }
+.page :where(a, button, summary):focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 4px; }
+.status { min-height: 1.5em; margin: 0.8rem auto 0; font-size: 0.8rem; }
+.credits { max-width: 30rem; margin: 0.3rem auto 0; text-align: center; font-size: 0.7rem; line-height: 1.6; }
+.credits summary { display: inline-flex; min-height: 44px; align-items: center; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; opacity: 0.65; }
+.credits a { color: inherit; }
+.credits ul { padding: 0; list-style: none; }
+@media (max-width: 700px) {
+  .page[data-offline] .body, .page[data-error] .body { min-height: calc(100svh - 2.5rem); padding-block: 4rem 1.5rem; }
+  .page h1 { max-width: 14ch; margin-inline: auto; font-size: clamp(2.6rem, 10vw, 4rem); }
+}

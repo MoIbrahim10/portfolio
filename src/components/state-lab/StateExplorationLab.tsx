@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { CutCornerButton } from '#/components/v14-exploration-lab/CutCornerButton'
 
-import { InteractiveArtwork, StateArtwork } from './StateArtwork'
+import { StateArtwork } from './StateArtwork'
 import { Spatial404Artwork } from './Spatial404Artwork'
 import { OfflineArtwork } from './OfflineArtwork'
+import { ErrorArtwork } from './ErrorArtwork'
 import { StateLogo } from './StateLogo'
 import { CONCEPTS, STATE_LABELS } from './state-concepts'
 import type { StateKind } from './state-concepts'
@@ -22,12 +23,59 @@ export function StateExplorationLab() {
   const [index, setIndex] = useState(0)
   const [fullPage, setFullPage] = useState(false)
   const [replay, setReplay] = useState(0)
-  const [picks, setPicks] = useState<Partial<Record<StateKind, number>>>({})
+  const [picks, setPicks] = useState<Partial<Record<StateKind, number>>>({ offline: 1, error: 0 })
   const [recoveryMessage, setRecoveryMessage] = useState('')
+  const [retrying, setRetrying] = useState(false)
+  const [retryCount, setRetryCount] = useState(0)
+  const retryTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const connectionCheck = useRef<AbortController | null>(null)
   const concept = CONCEPTS[kind][index]
   const count = CONCEPTS[kind].length
   const theme = concept.theme
   const picked = picks[kind] === index
+  const conceptOrder = CONCEPTS[kind].map((_, i) => i)
+
+  useEffect(() => {
+    setRetrying(false)
+    return () => {
+      if (retryTimer.current) { clearTimeout(retryTimer.current); retryTimer.current = null }
+      connectionCheck.current?.abort()
+      connectionCheck.current = null
+    }
+  }, [kind, index, replay])
+
+  async function checkConnection() {
+    if (connectionCheck.current) return
+    const controller = new AbortController()
+    connectionCheck.current = controller
+    setRetrying(true)
+    setRecoveryMessage('')
+    const timeout = setTimeout(() => controller.abort(), 5000)
+    try {
+      const response = await fetch('/', { method: 'HEAD', cache: 'no-store', signal: controller.signal })
+      if (connectionCheck.current !== controller) return
+      if (!response.ok) { setRecoveryMessage('The page is still unavailable. Try again shortly.'); return }
+      window.location.reload()
+    } catch {
+      if (connectionCheck.current === controller) setRecoveryMessage('Still offline. The music can stay.')
+    } finally {
+      clearTimeout(timeout)
+      if (connectionCheck.current === controller) { connectionCheck.current = null; setRetrying(false) }
+    }
+  }
+
+  const retry = useCallback(() => {
+    if (retryTimer.current) return
+    setRetrying(true)
+    setRetryCount(current => current + 1)
+    setRecoveryMessage('Retrying this preview…')
+    retryTimer.current = setTimeout(() => {
+      retryTimer.current = null
+      setRetrying(false)
+      setReplay(current => current + 1)
+      setRecoveryMessage('Preview retried.')
+    }, 800)
+  }, [])
 
   useEffect(() => {
     function readHash() {
@@ -87,8 +135,7 @@ export function StateExplorationLab() {
 
       {!fullPage ? <>
         <div className={styles.labIntroduction} data-kind={kind}>
-          <div>{kind === 'error' ? <p className={styles.eyebrow}>Small interruptions. A little imagination.</p> : null}<h1>{kind === '404' ? 'Two ways to get lost' : kind === 'offline' ? 'Ten ways to take a breath' : <>Even the detours<br />deserve good design</>}<span>.</span></h1></div>
-          {kind === 'error' ? <p>Pick a state. Explore a direction.<br />Play a little. Find your favorite.</p> : null}
+          <div><h1>{kind === '404' ? 'Two ways to get lost' : kind === 'offline' ? 'Ten ways to take a breath' : 'A little room to try again'}<span>.</span></h1></div>
         </div>
         <div className={styles.categoryRow}>
           <div aria-label="Page state" className={styles.categories}>
@@ -97,12 +144,12 @@ export function StateExplorationLab() {
           <span className={styles.categoryNote}>{STATE_LABELS[kind]} / {count} directions</span>
         </div>
         <ol aria-label={`${STATE_LABELS[kind]} concepts`} className={styles.conceptGrid} data-kind={kind}>
-          {CONCEPTS[kind].map((option, i) => <li key={option.name}>
+          {conceptOrder.map(i => { const option = CONCEPTS[kind][i]; return <li key={option.name}>
             <button aria-label={`Preview ${String(i + 1).padStart(2, '0')}: ${option.name}`} aria-pressed={index === i} className={styles.conceptCard} onClick={() => select(kind, i, false)} type="button">
               <span className={styles.thumbnail} data-theme={option.theme}><StateArtwork index={i} kind={kind} /><span className={styles.thumbnailNumber}>{String(i + 1).padStart(2, '0')}</span>{picks[kind] === i ? <span className={styles.pickFlag}>PICK ✓</span> : null}</span>
               <span className={styles.cardCaption}><span>{option.name}</span><span aria-hidden="true">{index === i ? '↘' : '↗'}</span></span>
             </button>
-          </li>)}
+          </li> })}
         </ol>
       </> : null}
 
@@ -117,25 +164,26 @@ export function StateExplorationLab() {
           </div>
         </div>
 
-        <div className={styles.preview} data-404={kind === '404' ? index === 0 ? 'doorway' : 'compass' : undefined} data-offline={kind === 'offline' ? index : undefined} data-layout={concept.layout} data-theme={theme} key={`${kind}-${index}`}>
-          <div className={styles.previewHeader}><a aria-label="MO portfolio home" className={styles.previewLogo} href="/">{kind !== 'error' && theme !== 'paper' ? <StateLogo tone={theme} /> : <img alt="" height="480" src="/brand/mo-mark-v3.svg" width="790" />}</a><span>{kind === '404' ? '404' : kind === 'offline' ? 'NO INTERNET' : 'ERROR / ANOTHER POSSIBILITY'}</span></div>
+        <div className={styles.preview} data-retry-count={kind === 'error' ? retryCount : undefined} data-retrying={kind === 'error' ? retrying : undefined} data-404={kind === '404' ? index === 0 ? 'doorway' : 'compass' : undefined} data-error={kind === 'error' ? index : undefined} data-offline={kind === 'offline' ? index : undefined} data-layout={concept.layout} data-theme={theme} key={`${kind}-${index}`}>
+          <div className={styles.previewHeader}><a aria-label="MO portfolio home" className={styles.previewLogo} href="/">{theme !== 'paper' ? <StateLogo tone={theme} /> : <img alt="" height="480" src="/brand/mo-mark-v3.svg" width="790" />}</a>{kind !== 'error' && !(kind === 'offline' && index === 1) ? <span>{kind === '404' ? '404' : 'NO INTERNET'}</span> : null}</div>
           <div className={styles.previewBody}>
             <div className={styles.message}>
-              {kind === 'error' ? <p className={styles.eyebrow}>A small interruption</p> : null}
               <h3>{concept.title}</h3>
-              {kind === 'error' ? <p className={styles.description}>{concept.description}</p> : null}
-              <div className={styles.recoveryActions}>
-                {kind === '404' ? <CutCornerButton href="/" variant="navy">Back home ↗</CutCornerButton> : <CutCornerButton onClick={() => setRecoveryMessage(kind === 'offline' ? 'Preview only: the live page will check the connection and retry.' : 'Preview only: the live page will retry loading.')} variant="navy">{kind === 'offline' ? 'Check connection ↻' : 'Try again ↻'}</CutCornerButton>}
-                {kind !== '404' ? <a className={styles.quietLink} href="/">Back home ↗</a> : null}
-              </div>
-              {kind !== '404' ? <p aria-live="polite" className={styles.recoveryMessage}>{recoveryMessage}</p> : null}
+              {kind === 'error' && concept.description ? <p className={styles.description}>{concept.description}</p> : null}
+              {kind === 'error' ? <div className={`${styles.recoveryActions} ${styles.errorActions}`}>
+                <CutCornerButton aria-label="Try again" loading={retrying} onClick={retry} variant="navy"><svg aria-hidden="true" viewBox="0 0 20 20"><path d="M15.5 7a6 6 0 1 0 .2 5M15.5 3.5V7H12" /></svg>Try again</CutCornerButton>
+                <CutCornerButton href="/" variant="paper"><svg aria-hidden="true" viewBox="0 0 20 20"><path d="m8 5-5 5 5 5m-5-5h14" /></svg>Back home</CutCornerButton>
+              </div> : <div className={`${styles.recoveryActions} ${kind === 'offline' && index === 1 ? styles.radioActions : ''}`}>
+                {kind === '404' ? <CutCornerButton href="/" variant="navy">Back home ↗</CutCornerButton> : <CutCornerButton loading={kind === 'offline' && index === 1 && retrying} onClick={kind === 'offline' && index === 1 ? checkConnection : () => setRecoveryMessage('Preview only: the live page will check the connection and retry.')} variant="navy">{kind === 'offline' ? 'Check connection ↻' : 'Try again ↻'}</CutCornerButton>}
+                {kind === 'offline' && index === 1 ? <CutCornerButton href="/" variant="paper">← Back home</CutCornerButton> : kind !== '404' ? <a className={styles.quietLink} href="/">Back home ↗</a> : null}
+              </div>}
+              {kind !== '404' ? <p aria-live="polite" className={kind === 'error' ? styles.srOnly : styles.recoveryMessage}>{recoveryMessage}</p> : null}
             </div>
             {kind === '404' && index < 2
               ? <Spatial404Artwork index={index} key={`${kind}-${index}-${replay}`} />
               : kind === 'offline' ? <OfflineArtwork index={index} key={`${kind}-${index}-${replay}`} />
-              : <InteractiveArtwork index={index} key={`${kind}-${index}-${replay}`} kind={kind} />}
+              : <ErrorArtwork index={index} key={`${kind}-${index}`} onSolved={retry} resetKey={replay} />}
           </div>
-          {kind === 'error' ? <div className={styles.previewFooter}><span>MO / MADE WITH A LITTLE CURIOSITY</span><span><i />A little room to try again</span></div> : null}
         </div>
         <div className={styles.decisionRow}><p><span className={styles.hintSymbol} aria-hidden="true">✳</span>{concept.hint}</p><button aria-pressed={picked} className={styles.pickButton} onClick={pick} type="button">{picked ? 'Your pick ✓' : `Pick this ${kind === '404' ? '404' : kind === 'offline' ? 'offline page' : 'error page'} ♡`}</button></div>
       </section>

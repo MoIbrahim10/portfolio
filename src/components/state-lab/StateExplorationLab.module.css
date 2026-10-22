@@ -66,6 +66,9 @@
 .conceptGrid[data-kind="404"] .conceptCard { display: flex; align-items: center; gap: 1rem; }
 .conceptGrid[data-kind="404"] .thumbnail { width: 100px; flex-shrink: 0; aspect-ratio: 1.5; }
 .conceptGrid[data-kind="404"] .cardCaption { width: 100%; padding: 0; font-size: 0.76rem; }
+.conceptGrid[data-kind="error"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.conceptGrid[data-kind="error"] .thumbnail { aspect-ratio: 1.9; }
+.labIntroduction[data-kind="error"] h1 { font-size: clamp(2rem, 4vw, 3.5rem); }
 
 .previewSection { border: 1px solid rgb(16 43 67 / 26%); }
 .previewToolbar { display: flex; min-height: 65px; padding: 0.6rem 1.25rem; align-items: center; justify-content: space-between; gap: 1rem; background: rgb(255 250 240 / 32%); }
@@ -168,11 +171,55 @@
 .preview[data-offline] .message { width: 100%; text-align: center; }
 .preview[data-offline] .message h3 { font-size: clamp(2.5rem, 4.3vw, 4.8rem); letter-spacing: -0.055em; white-space: normal; }
 .preview[data-offline="1"] .message h3 { white-space: pre-line; }
+.preview[data-offline="1"] .interactiveArt { position: static; width: min(100%, 72svh); max-width: 680px; margin-block: 0 clamp(1.5rem, 3vw, 2.5rem); }
+.preview[data-offline="1"] .soundToggle { top: 2rem; right: 2rem; bottom: auto; z-index: 3; }
+.preview[data-offline="1"] .soundToggle[aria-pressed="true"] { color: #9f3732; }
+.preview[data-offline="1"] .radioActions { width: min(100%, 360px); margin-inline: auto; display: grid; grid-template-columns: 1.15fr 1fr; gap: 0.75rem; }
+.preview[data-offline="1"] .radioActions > [data-cut-corner] { width: 100%; min-height: 50px; padding-inline: 0.75rem; font: 650 0.72rem/1.2 ui-monospace, "SFMono-Regular", Menlo, monospace; letter-spacing: 0; }
+.preview[data-offline="1"] .radioActions > a { --face: #f3e8d3; --ink: #102b43; --edge: #102b43; }
 .preview[data-offline] .recoveryActions { justify-content: center; margin-top: 1.5rem; }
 .preview[data-offline][data-theme="navy"] .recoveryActions > :first-child,
 .preview[data-offline][data-theme="red"] .recoveryActions > :first-child { --face: #d79d40; --ink: #102b43; --edge: #fffaf0; }
 .preview[data-offline] .recoveryMessage:empty { display: none; }
 .preview[data-offline] .recoveryMessage { margin-inline: auto; }
+
+.preview[data-error] { display: block; min-height: 740px; padding: 2rem; }
+.preview[data-error] .previewHeader { position: absolute; z-index: 2; inset: 2rem 2rem auto; pointer-events: none; }
+.preview[data-error] .previewLogo { width: 90px; padding: 0; background: transparent; pointer-events: auto; }
+.preview[data-error] .previewBody { display: flex; min-height: 676px; padding: 3rem 0 1rem; flex-direction: column; justify-content: center; gap: 0; }
+.preview[data-error] .interactiveArt { width: min(100%, 64svh); max-width: 650px; order: -1; margin-bottom: 2rem; }
+.preview[data-error] .message { width: 100%; text-align: center; }
+.preview[data-error] .message h3 { font-size: clamp(2.5rem, 4.3vw, 4.8rem); letter-spacing: -0.055em; white-space: normal; }
+.preview[data-error] .description { max-width: none; margin: 1rem auto 1.25rem; font-size: 0.82rem; opacity: 0.72; }
+.preview[data-error] .recoveryActions { justify-content: center; }
+.preview[data-error] .errorActions { display: grid; width: min(100%, 328px); margin: 1.6rem auto 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+.preview[data-error] .errorActions > [data-cut-corner] { width: 100%; min-height: 50px; padding-inline: 0.85rem; font: 650 0.72rem/1.2 ui-monospace, "SFMono-Regular", Menlo, monospace; letter-spacing: 0; }
+.preview[data-error] .errorActions > [data-cut-corner] > span:first-child { display: inline-flex; align-items: center; gap: 0.55rem; }
+.preview[data-error] .errorActions svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.preview[data-error] .errorActions > a { --edge: var(--ink); --face: var(--surface); --ink: inherit; color: var(--ink); }
+.preview[data-error] .errorActions > a:hover { --edge: #d79d40; }
+.preview[data-error][data-retrying="true"] .interactiveArt { opacity: 0.45; pointer-events: none; }
+.preview[data-error] .interactiveArt { transition: opacity 180ms cubic-bezier(0.22, 1, 0.36, 1); }
+.preview[data-error][data-theme="navy"] .recoveryActions > :first-child,
+.preview[data-error][data-theme="red"] .recoveryActions > :first-child { --face: #d79d40; --ink: #102b43; --edge: #fffaf0; }
+.preview[data-error] .recoveryMessage:empty { display: none; }
+.preview[data-error] .recoveryMessage { margin-inline: auto; }
+.preview[data-error] .soundToggle { top: 2rem; right: 2rem; bottom: auto; z-index: 3; }
+.preview[data-error="0"] .interactiveArt { width: min(100%, 72svh); max-width: 680px; margin-block: 0 clamp(1.5rem, 3vw, 2.5rem); }
+.preview[data-error="0"] .previewBody { padding-block: 4rem 1rem; }
+.preview[data-error="0"] .errorActions { width: min(100%, 360px); }
+.preview[data-error="0"] .errorActions > a { --face: #9f3732; --ink: #fffaf0; --edge: #fffaf0; color: #fffaf0; }
+.preview[data-error="0"] .description { color: #fffaf0; opacity: 0.8; }
+
+@media (max-width: 700px) {
+  .conceptGrid[data-kind="error"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .preview[data-error] { min-height: 710px; padding: 1.25rem; }
+  .preview[data-error] .previewHeader { inset: 1.25rem 1.25rem auto; }
+  .preview[data-error] .previewBody { min-height: 660px; padding-block: 5rem 1rem; }
+  .preview[data-error] .interactiveArt { width: min(116%, 520px); margin-bottom: 1.75rem; }
+  .preview[data-error] .message h3 { max-width: 15ch; margin-inline: auto; font-size: clamp(2.6rem, 10vw, 4rem); }
+  .preview[data-error] .soundToggle { top: 1.25rem; right: 1.25rem; }
+}
 
 .interactiveArt { min-width: 0; width: 100%; max-width: 550px; justify-self: center; }
 .interactiveArt[data-spatial] { position: relative; }
@@ -409,9 +456,12 @@
   .preview[data-offline] .interactiveArt { width: 112%; max-width: 450px; margin-bottom: 1rem; }
   .preview[data-offline] .message h3 { max-width: 14ch; margin-inline: auto; font-size: clamp(2.6rem, 10vw, 4rem); }
   .preview[data-offline] .quietLink { font-size: 0.58rem; }
+  .preview[data-offline="1"] .interactiveArt { width: 112%; margin-bottom: 1.75rem; }
+  .preview[data-offline="1"] .soundToggle { top: 1.25rem; right: 1.25rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .preview[data-error] .interactiveArt { transition: none; }
   .doorLeaf, .compassVisual, .compassVisual::after, .compassNeedle, .compassPointer, .compassHub, .compassWatermark, .compassGlint, .compassOrbit, .compassSunSeal, .compassSunSeal .sunWings, .courtyardSun, .courtyardFar, .courtyardFront, .portalLight, .portalSpill, .soundToggle { transition: none; }
   .spatialCanvas[data-open="true"] .courtyardMotes, .compassSunSeal[data-aligned="true"] .sunRays { animation: none; }
   .compassVisual, .spatialCanvas[data-following="true"] .compassVisual { transform: none; }

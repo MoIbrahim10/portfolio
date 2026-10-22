@@ -33,11 +33,14 @@ const RELEASE_INPUTS = [
   'playwright.config.ts',
   'playwright.cross-browser.config.ts',
   'scripts/check-production-health.mjs',
+  'scripts/build-offline-cache.mjs',
   'scripts/release-guard.mjs',
   'scripts/release-manifest.mjs',
   'scripts/verify-production-release.mjs',
   'tests/e2e/portfolio.spec.ts',
   'tests/e2e/feedback.spec.ts',
+  'tests/e2e/recovery.spec.ts',
+  'public/sw.js',
   'wrangler.jsonc',
 ]
 

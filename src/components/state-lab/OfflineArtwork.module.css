@@ -28,8 +28,17 @@
 .navyCable { stroke: #102b43; }
 .cableShadow { stroke: #102b43; opacity: 0.12; }
 .plug[data-hot="true"] .gold { fill: #efbf6b; }
-.canvas[data-scene="1"]::after { position: absolute; inset: 16% 9% 15%; border-radius: 4%; background: radial-gradient(ellipse at var(--cursor-x, 50%) var(--cursor-y, 50%), rgb(247 211 142 / 10%), transparent 55%); opacity: 0; content: ""; pointer-events: none; transition: opacity 120ms; }
-.canvas[data-scene="1"]:hover::after { opacity: 1; }
+.canvas[data-scene="1"]::after { position: absolute; inset: 26% 18% 54% 15%; border-radius: 3px; background: linear-gradient(115deg, transparent 20%, rgb(255 250 240 / 8%) 48%, transparent 75%); opacity: 0; content: ""; pointer-events: none; transition: opacity 120ms; }
+@media (hover: hover) { .canvas[data-scene="1"]:hover::after { opacity: 1; } }
+.tuningNeedle { transform: translateX(var(--tuning-x, 167.28px)); }
+.tuningKnob { transform-origin: 384px 257px; transform: rotate(var(--tuning-angle, -70.2deg)); }
+.powerRocker { transform-origin: 413px 55px; }
+.canvas [data-powered="true"] .powerRocker { transform: skewY(-3deg); }
+@media (prefers-reduced-motion: no-preference) { .powerRocker { transition: transform 120ms cubic-bezier(0.2, 0, 0, 1); } }
+.radioHint { margin: -0.3rem 0 0; text-align: center; font: 600 0.65rem/1.5 ui-monospace, "SFMono-Regular", Menlo, monospace; opacity: 0.6; }
+@media (prefers-reduced-motion: no-preference) {
+  .speakerCloth { transform-origin: 194px 258px; transform: scale(calc(1 + var(--radio-level, 0) * 0.006)); }
+}
 .radioScale { fill: #e3be7e; color: #e3be7e; font-family: "SFMono-Regular", Consolas, monospace; }
 .radioLabel { fill: #bba477; font-family: "SFMono-Regular", Consolas, monospace; }
 .radioKnob[data-hot="true"] .knobShine { opacity: 0.85; }

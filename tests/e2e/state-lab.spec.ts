@@ -15,10 +15,16 @@ async function clickAll(page: Page, label: string, count: number) {
   for (let i = 1; i <= count; i++) await click(page, `${label} ${i}`)
 }
 
-async function slideToEnd(page: Page, name: string) {
-  const slider = page.getByRole('slider', { name })
-  await slider.press('End')
-  await expect(slider).toHaveValue('100')
+async function orientArchPiece(page: Page, i: number) {
+  const piece = page.getByRole('button', { name: `Place arch piece ${i}`, exact: true })
+  for (let n = 0; n < 4 && await piece.getAttribute('data-turn') !== '0'; n++) await piece.press('ArrowLeft')
+}
+
+async function solveArch(page: Page) {
+  for (let i = 1; i <= 6; i++) {
+    await orientArchPiece(page, i)
+    await page.getByRole('button', { name: `Place arch piece ${i}`, exact: true }).press('Enter')
+  }
 }
 
 const exercises: Record<StateKind, Array<{ run: (page: Page) => Promise<void>; result: string }>> = {
@@ -66,16 +72,9 @@ const exercises: Record<StateKind, Array<{ run: (page: Page) => Promise<void>; r
     { run: p => p.getByRole('textbox', { name: 'Your passing thought' }).fill('A little room for curiosity.'), result: 'Just a local doodle. This note isn’t sent or saved.' },
   ],
   error: [
-    { run: async p => { for (let i = 0; i < 3; i++) await click(p, 'Quarter turn ↻') }, result: 'Illustration repaired. Try the page again below.' },
-    { run: p => clickAll(p, 'Place block', 4), result: 'Built again. With a little more character.' },
-    { run: p => slideToEnd(p, 'Rewind the picture'), result: 'Back in alignment. Ready for another take.' },
-    { run: async p => { for (let i = 1; i <= 3; i++) await p.getByRole('switch', { name: `Switch ${i}` }).click() }, result: 'Illustration lit. Try the page again when you’re ready.' },
-    { run: p => click(p, 'Give it a soft landing ↓'), result: 'There’s room for another try.' },
-    { run: p => click(p, 'Turn the key ↻'), result: 'A fresh start. A little room to try again.' },
-    { run: p => clickAll(p, 'Add stitch', 4), result: 'The joins are part of the story.' },
-    { run: p => slideToEnd(p, 'Align the layers'), result: 'A whole new perspective.' },
-    { run: p => click(p, 'A fresh impression ↓'), result: 'Impression 2. Every attempt is a new beginning.' },
-    { run: async p => { for (let i = 0; i < 4; i++) await click(p, 'Erase a little →') }, result: 'A fresh page. Another possibility.' },
+    { run: p => p.getByRole('slider', { name: 'Wind the sun machine' }).press('End'), result: 'Ready. Trying again.' },
+    { run: solveArch, result: 'Ready. Trying again.' },
+    { run: p => p.getByRole('button', { name: 'Give the sun a soft landing' }).press('Enter'), result: 'Ready. Trying again.' },
   ],
 }
 
@@ -103,7 +102,7 @@ for (const kind of ['404', 'offline', 'error'] as const) {
 
     await click(page, 'Restart interaction')
     if (kind === 'offline') await expect(page.getByRole('textbox', { name: 'Your passing thought' })).toHaveValue('')
-    if (kind === 'error') await expect(page.getByRole('button', { name: 'Erase a little →' })).toBeEnabled()
+    if (kind === 'error') await expect(page.getByRole('button', { name: 'Give the sun a soft landing' })).toHaveAttribute('aria-pressed', 'false')
     if (kind === '404') await expect(page.getByRole('slider', { name: 'Rotate solar compass' })).toHaveAttribute('aria-valuenow', '135')
     expect(errors).toEqual([])
   })
@@ -120,7 +119,9 @@ test('picks survive switching states; full-page links, reduced motion and offlin
   await expect(page.getByRole('button', { name: /^Preview \d\d:/ })).toHaveCount(2)
   await click(page, 'Offline 10')
   await click(page, 'Pick this offline page ♡')
-  await click(page, 'Error 10')
+  await click(page, 'Error 3')
+  await expect(page.getByRole('button', { name: 'Your pick ✓', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await click(page, 'Your pick ✓')
   await click(page, 'Pick this error page ♡')
   await click(page, '404 2')
   await expect(page.getByRole('button', { name: 'Your pick ✓', exact: true })).toHaveAttribute('aria-pressed', 'true')
@@ -137,6 +138,216 @@ test('picks survive switching states; full-page links, reduced motion and offlin
   await click(page, 'Check connection ↻')
   await expect(page.getByText('Preview only: the live page will check the connection and retry.', { exact: true })).toBeVisible()
   await context.setOffline(false)
+})
+
+test('refined error pages support gestures, keyboard, sound and reduced motion', async ({ page }) => {
+  await page.goto('/state-lab#error/1/page')
+  const wheel = page.getByRole('slider', { name: 'Wind the sun machine' })
+  await expect(wheel).toBeVisible()
+  const machine = (await page.locator('[data-error-art="0"] > svg').boundingBox())!
+  const machineHeight = await page.locator('[data-error-art="0"] > svg').evaluate(element => (element as SVGSVGElement).viewBox.baseVal.height)
+  const wheelPoint = (angle: number) => ({
+    x: machine.x + (400 + Math.cos(angle) * 45) / 600 * machine.width,
+    y: machine.y + (249 + Math.sin(angle) * 45) / machineHeight * machine.height,
+  })
+  const start = wheelPoint(0)
+  await page.mouse.move(start.x, start.y)
+  await page.mouse.down()
+  for (let i = 1; i <= 48; i++) {
+    const point = wheelPoint(i * Math.PI / 15)
+    await page.mouse.move(point.x, point.y)
+  }
+  await page.mouse.up()
+  await expect(wheel).toHaveAttribute('aria-valuenow', '540')
+  await click(page, 'Enable sound')
+  await expect(page.getByRole('button', { name: 'Mute sound' })).toHaveAttribute('aria-pressed', 'true')
+  await click(page, 'Mute sound')
+  await click(page, 'Try again')
+  await expect(page.getByRole('button', { name: 'Try again', exact: true })).toHaveAttribute('aria-busy', 'true')
+  await expect(page.getByText('Preview retried.', { exact: true })).toBeVisible()
+
+  await page.goto('/state-lab#error/2/page')
+  const piece = page.getByRole('button', { name: 'Place arch piece 1' })
+  await expect(piece).toBeVisible()
+  await orientArchPiece(page, 1)
+  const arch = (await page.locator('[data-error-art="1"] > svg').boundingBox())!
+  const block = (await piece.boundingBox())!
+  await page.mouse.move(block.x + block.width / 2, block.y + block.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(block.x + block.width / 2 + 125 / 600 * arch.width, block.y + block.height / 2 + 5 / 420 * arch.height, { steps: 8 })
+  await page.mouse.up()
+  await expect(piece).toHaveAttribute('aria-disabled', 'true')
+  for (let i = 2; i <= 6; i++) {
+    await orientArchPiece(page, i)
+    await page.getByRole('button', { name: `Place arch piece ${i}` }).press('Enter')
+  }
+  await expect(page.getByText('Ready. Trying again.', { exact: true })).toBeVisible()
+
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/state-lab#error/3/page')
+  const sun = page.getByRole('button', { name: 'Give the sun a soft landing' })
+  await sun.press('Enter')
+  await expect(sun).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByText('Ready. Trying again.', { exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Try again', exact: true })).toBeEnabled()
+})
+
+test('each solved error retries automatically and recovery actions stay aligned', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  for (let i = 0; i < 3; i++) {
+    await page.goto(`/state-lab#error/${i + 1}/page`)
+    const preview = page.locator('[data-error]')
+    await expect(preview).toHaveAttribute('data-error', String(i))
+    await expect(preview.getByRole('heading', { name: 'Something went wrong.', exact: true })).toBeVisible()
+    await expect(preview.getByText('This page couldn’t load. Let’s try again.', { exact: true })).toBeVisible()
+    const retry = page.getByRole('button', { name: 'Try again', exact: true })
+    const home = preview.getByRole('link', { name: 'Back home', exact: true })
+    const r = (await retry.boundingBox())!
+    const h = (await home.boundingBox())!
+    expect(Math.abs(r.y - h.y)).toBeLessThanOrEqual(1)
+    expect(Math.abs(r.height - h.height)).toBeLessThanOrEqual(1)
+    await expect(home).toHaveAttribute('href', '/')
+    const count = Number(await preview.getAttribute('data-retry-count'))
+    await exercises.error[i].run(page)
+    await expect(preview).toHaveAttribute('data-retry-count', String(count + 1))
+    await expect(retry).toHaveAttribute('aria-busy', 'true')
+    await expect(preview).toHaveAttribute('data-retrying', 'false')
+    await expect(page.locator('[data-error-art]')).toHaveAttribute('data-solved', 'false')
+  }
+  await page.getByRole('link', { name: 'Back home', exact: true }).click()
+  await expect(page).toHaveURL(/\/$/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Mo Ibrahim — Product Engineer' })).toBeVisible()
+})
+
+test('six interlocking arch stones need the right orientation with forgiving placement', async ({ page }) => {
+  await page.goto('/state-lab#error/2/page')
+  const piece = (i: number) => page.getByRole('button', { name: `Place arch piece ${i}` })
+  await expect(page.getByRole('button', { name: /^Place arch piece/ })).toHaveCount(6)
+  await piece(1).press('Enter')
+  await expect(piece(1)).toHaveAttribute('aria-disabled', 'false')
+  await expect(page.getByText('Turn this stone to fit.', { exact: true })).toBeVisible()
+  const scene = (await page.locator('[data-error-art="1"] > svg').boundingBox())!
+  const block = (await piece(1).boundingBox())!
+  const from = { x: block.x + block.width / 2, y: block.y + block.height / 2 }
+  await page.mouse.move(from.x, from.y)
+  await page.mouse.down()
+  await page.mouse.move(from.x + 110 / 600 * scene.width, from.y + 5 / 420 * scene.height, { steps: 8 })
+  await page.mouse.up()
+  await expect(piece(1)).toHaveAttribute('aria-disabled', 'false')
+  const position = () => piece(1).locator('g').first().evaluate(element => {
+    const matrix = new DOMMatrix(getComputedStyle(element).transform)
+    return { x: matrix.m41, y: matrix.m42 }
+  })
+  await expect.poll(async () => { const p = await position(); return Math.hypot(p.x - 30, p.y) }).toBeLessThan(0.1)
+  await piece(1).click()
+  await expect(piece(1)).toHaveAttribute('data-turn', '180')
+  await expect(piece(1)).toHaveAttribute('aria-disabled', 'false')
+  await piece(1).click()
+  await piece(1).click()
+  await expect(piece(1)).toHaveAttribute('aria-disabled', 'true')
+  for (const i of [3, 4, 2]) {
+    await orientArchPiece(page, i)
+    await piece(i).press('Enter')
+  }
+  const assembly = page.locator('[data-arch-assembly][data-grounded="true"]')
+  await expect(assembly).toHaveCount(1)
+  expect(Number(await assembly.getAttribute('data-lean'))).toBeGreaterThan(0)
+  for (const i of [5, 6]) {
+    await orientArchPiece(page, i)
+    await piece(i).press('Enter')
+  }
+  await expect(assembly).toHaveAttribute('data-lean', '0')
+  await expect(page.locator('[data-error-art="1"]')).toHaveAttribute('data-solved', 'true')
+})
+
+test('soft landing changes direction after misses and retries, and a real catch retries', async ({ page }) => {
+  await page.addInitScript(() => {
+    const NativeAudioContext = window.AudioContext
+    const probe = { tones: 0, ramps: [] as number[] }
+    Object.defineProperty(window, 'missAudio', { value: probe })
+    window.AudioContext = class extends NativeAudioContext {
+      createOscillator() {
+        probe.tones++
+        const oscillator = super.createOscillator()
+        const ramp = oscillator.frequency.exponentialRampToValueAtTime.bind(oscillator.frequency)
+        oscillator.frequency.exponentialRampToValueAtTime = (value, time) => { probe.ramps.push(value); return ramp(value, time) }
+        return oscillator
+      }
+    }
+  })
+  const audioProbe = () => page.evaluate(() => (window as typeof window & { missAudio: { tones: number; ramps: number[] } }).missAudio)
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await page.goto('/state-lab#error/3/page')
+  const art = page.locator('[data-error-art="2"]')
+  const sun = page.getByRole('button', { name: 'Give the sun a soft landing' })
+  const ball = sun.locator('g').first()
+  await expect(sun).toBeVisible()
+  const scene = (await art.locator(':scope > svg').boundingBox())!
+  const position = () => ball.evaluate(element => {
+    const matrix = new DOMMatrix(getComputedStyle(element).transform)
+    return { x: matrix.m41, y: matrix.m42 }
+  })
+  const moveNet = (x: number) => page.mouse.move(scene.x + x / 600 * scene.width, scene.y + 340 / 420 * scene.height)
+  const directions: number[] = []
+  let mutedTones = 0
+  for (let i = 0; i < 4; i++) {
+    if (i === 1) await click(page, 'Enable sound')
+    if (i === 2) { await click(page, 'Mute sound'); mutedTones = (await audioProbe()).tones }
+    const start = await position()
+    await sun.click()
+    await expect(art).toHaveAttribute('data-phase', 'falling')
+    await expect.poll(async () => Math.abs((await position()).x - start.x)).toBeGreaterThan(20)
+    const direction = Math.sign((await position()).x - start.x)
+    directions.push(direction)
+    await moveNet(direction > 0 ? 175 : 425)
+    await expect(art).toHaveAttribute('data-phase', 'bouncing')
+    await expect(art.locator('[data-stunned="true"]')).toBeVisible()
+    await expect(art).toHaveAttribute('data-solved', 'false')
+    await expect(art).toHaveAttribute('data-phase', 'missed')
+    expect((await position()).x).not.toBe(start.x)
+    if (i === 0) expect(await audioProbe()).toEqual({ tones: 0, ramps: [] })
+    if (i === 1) expect((await audioProbe()).ramps).toEqual([76, 38, 130])
+    if (i >= 2) expect((await audioProbe()).tones).toBe(mutedTones)
+  }
+  for (let i = 1; i < directions.length; i++) expect(directions[i]).toBe(-directions[i - 1])
+
+  const beforeRetry = await position()
+  await click(page, 'Try again')
+  await expect(page.locator('[data-error]')).toHaveAttribute('data-retrying', 'false')
+  expect((await position()).x).not.toBe(beforeRetry.x)
+  const count = Number(await page.locator('[data-error]').getAttribute('data-retry-count'))
+  const beforeCatch = await position()
+  await sun.click()
+  for (let i = 0; i < 18; i++) {
+    await moveNet((await position()).x)
+    await page.waitForTimeout(80)
+  }
+  await expect(art).toHaveAttribute('data-solved', 'true')
+  await expect(page.locator('[data-error]')).toHaveAttribute('data-retry-count', String(count + 1))
+  await expect(page.locator('[data-error]')).toHaveAttribute('data-retrying', 'false')
+  expect((await position()).x).not.toBe(beforeCatch.x)
+})
+
+test('soft landing keeps a touch drag active through the catch', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'Native touch check')
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await page.goto('/state-lab#error/3/page')
+  const sun = page.getByRole('button', { name: 'Give the sun a soft landing' })
+  const ball = sun.locator('g').first()
+  await expect(sun).toBeVisible()
+  const scene = (await page.locator('[data-error-art="2"] > svg').boundingBox())!
+  const clientX = () => ball.evaluate(element => new DOMPoint(0, 0).matrixTransform((element as SVGGraphicsElement).getScreenCTM()!).x)
+  const cdp = await page.context().newCDPSession(page)
+  await sun.tap()
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: scene.x + scene.width / 2, y: scene.y + 340 / 420 * scene.height }] })
+  for (let i = 0; i < 16; i++) {
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: await clientX(), y: scene.y + 340 / 420 * scene.height }] })
+    await page.waitForTimeout(80)
+  }
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+  await expect(page.locator('[data-error-art="2"]')).toHaveAttribute('data-solved', 'true')
+  await expect(page.locator('[data-error]')).toHaveAttribute('data-retry-count', '1')
+  await cdp.detach()
 })
 
 test('doorway and compass respond to direct gestures and keyboard with reduced motion', async ({ page, isMobile }) => {
@@ -398,31 +609,45 @@ test('radio audio is opt-in, tunes static into music offline, and stops on mute 
         if (hz > 1400 && hz < 5000) high += 10 ** (db / 10)
       })
     }
-    return { states: probe.contexts.map(c => c.state), sources: probe.sources.length, energy: low + high, warmth: low / high }
+    return { states: probe.contexts.map(c => c.state), sources: probe.sources.filter(source => source.loop).length, energy: low + high, warmth: low / high }
   })
   const errors: string[] = []
   page.on('pageerror', error => errors.push(error.message))
   await page.goto('/state-lab#offline/2/page')
   const dial = page.getByRole('slider', { name: 'Tune the radio' })
-  await expect(page.getByRole('heading', { level: 3 })).toHaveText('No internet.\nStill a little music.')
+  await expect(page.getByRole('heading', { level: 3 })).toHaveText('No internet.\nStill on the air.')
   await expect(dial).toBeVisible()
   await context.setOffline(true)
   await dial.press('Home')
   expect((await audio()).states).toEqual([])
-  await click(page, 'Enable sound')
+  await click(page, 'Turn radio on')
+  await expect(page.getByRole('button', { name: 'Mute sound', exact: true })).toHaveAttribute('aria-pressed', 'true')
   await expect.poll(async () => (await audio()).states).toEqual(['running'])
   await expect.poll(async () => (await audio()).energy).toBeGreaterThan(0.0000001)
   await expect.poll(async () => (await audio()).warmth).toBeLessThan(1.2)
   const staticWarmth = (await audio()).warmth
   for (let i = 0; i < 56; i++) await dial.press('ArrowRight')
-  await expect(dial).toHaveAttribute('aria-valuetext', '99.2 FM. Music is clear.')
-  await expect(page.getByText('TUNED', { exact: true })).toBeVisible()
+  await expect(dial).toHaveAttribute('aria-valuetext', '99.2 FM. Solar Radio. piano lounge.')
+  await expect(page.getByText('SOLAR RADIO', { exact: true })).toBeVisible()
   await expect.poll(async () => (await audio()).warmth).toBeGreaterThan(staticWarmth * 2)
-  expect((await audio()).sources).toBe(2)
+  expect((await audio()).sources).toBe(4)
+  await click(page, 'Check connection ↻')
+  await expect(page.getByText('Still offline. The music can stay.', { exact: true })).toBeVisible()
+  await expect(dial).toHaveAttribute('aria-valuenow', '56')
+  expect((await audio()).states).toEqual(['running'])
+  expect((await audio()).sources).toBe(4)
+  for (const station of [{ value: 22, label: 'DUNE FM' }, { value: 84, label: 'FUTURE FM' }]) {
+    await dial.press('Home')
+    for (let i = 0; i < station.value; i++) await dial.press('ArrowRight')
+    await expect(page.getByText(station.label, { exact: true })).toBeVisible()
+    await expect.poll(async () => (await audio()).energy).toBeGreaterThan(0.0000001)
+    expect((await audio()).sources).toBe(4)
+  }
   await dial.press('End')
   await expect.poll(async () => (await audio()).warmth).toBeLessThan(1.2)
-  expect((await audio()).sources).toBe(2)
-  await click(page, 'Mute sound')
+  expect((await audio()).sources).toBe(4)
+  await click(page, 'Turn radio off')
+  await expect(page.getByRole('button', { name: 'Enable sound', exact: true })).toHaveAttribute('aria-pressed', 'false')
   await expect.poll(async () => (await audio()).states).toEqual(['closed'])
   await click(page, 'Enable sound')
   await expect.poll(async () => (await audio()).states).toEqual(['closed', 'running'])
@@ -432,6 +657,24 @@ test('radio audio is opt-in, tunes static into music offline, and stops on mute 
   await click(page, 'Next concept')
   await expect.poll(async () => (await audio()).states).toEqual(['closed', 'closed', 'closed'])
   expect(errors).toEqual([])
+})
+
+test('radio reloads only after a successful connection check', async ({ page }) => {
+  await page.goto('/state-lab#offline/2/page')
+  const dial = page.getByRole('slider', { name: 'Tune the radio' })
+  await dial.press('End')
+  let available = false
+  await page.route('**/', route => route.request().method() === 'HEAD'
+    ? route.fulfill({ status: available ? 200 : 503 })
+    : route.continue())
+  await click(page, 'Check connection ↻')
+  await expect(page.getByText('The page is still unavailable. Try again shortly.', { exact: true })).toBeVisible()
+  await expect(dial).toHaveAttribute('aria-valuenow', '100')
+  available = true
+  const reload = page.waitForEvent('request', { predicate: request => request.isNavigationRequest() && request.url().includes('/state-lab') })
+  await click(page, 'Check connection ↻')
+  await reload
+  await expect(dial).toHaveAttribute('aria-valuenow', '24')
 })
 
 test('offline art supports touch, direct drag, independent sand strokes, and postcard sealing', async ({ page, isMobile, context }) => {
@@ -453,8 +696,20 @@ test('offline art supports touch, direct drag, independent sand strokes, and pos
   const radioBox = await canvas.boundingBox()
   if (!radioBox) throw new Error('Radio is missing')
   const cx = radioBox.x + radioBox.width * 384 / 520
-  const cy = radioBox.y + radioBox.height * 277 / 400
+  const cy = radioBox.y + radioBox.height * 257 / 400
   const radius = radioBox.width * 28 / 520
+  const dialBounds = await canvas.locator('[data-radio-dial]').evaluate(element => {
+    const box = (element as SVGGraphicsElement).getBBox()
+    return { left: box.x, right: box.x + box.width, top: box.y, bottom: box.y + box.height }
+  })
+  expect(dialBounds.left).toBeGreaterThan(62)
+  expect(dialBounds.right).toBeLessThan(446)
+  expect(dialBounds.top).toBeGreaterThan(186)
+  expect(dialBounds.bottom).toBeLessThan(314)
+  await dial.press('Home')
+  if (isMobile) await dial.tap(); else await dial.click()
+  await expect(dial).toHaveAttribute('aria-valuenow', '0')
+  for (let i = 0; i < 24; i++) await dial.press('ArrowRight')
   await page.mouse.move(cx, cy - radius)
   await page.mouse.down()
   await page.mouse.move(cx + radius, cy, { steps: 8 })
@@ -470,6 +725,12 @@ test('offline art supports touch, direct drag, independent sand strokes, and pos
   await page.mouse.move(cx + radius, cy, { steps: 50 })
   await page.mouse.up()
   expect(Number(await dial.getAttribute('aria-valuenow'))).toBeGreaterThan(75)
+  await dial.press('Home')
+  await page.mouse.move(cx, cy)
+  await page.mouse.down()
+  await page.mouse.move(cx, cy - radius, { steps: 8 })
+  await page.mouse.up()
+  expect(Number(await dial.getAttribute('aria-valuenow'))).toBeGreaterThan(0)
 
   await click(page, 'Next concept')
   const water = page.getByRole('button', { name: 'Water the oasis' })
@@ -520,7 +781,8 @@ test('offline compositions stay minimal and usable with reduced motion', async (
     const stage = page.locator('[data-offline]')
     await expect(stage).toHaveAttribute('data-offline', String(i))
     await expect(stage.getByRole('heading', { level: 3 })).toHaveCount(1)
-    await expect(stage.getByText('NO INTERNET', { exact: true })).toBeVisible()
+    if (i === 1) await expect(stage.getByText('NO INTERNET', { exact: true })).toHaveCount(0)
+    else await expect(stage.getByText('NO INTERNET', { exact: true })).toBeVisible()
     await expect(stage.locator('input[type=range]')).toHaveCount(0)
     await expect(stage.locator('[class*=artControls]')).toHaveCount(0)
     const logo = stage.getByRole('link', { name: 'MO portfolio home' })

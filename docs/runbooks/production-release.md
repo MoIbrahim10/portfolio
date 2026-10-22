@@ -22,6 +22,10 @@ Browser checks never write to production feedback storage. Candidate checks run 
 
 ## Monitoring and incident threshold
 
+`/error` previews the red Clockwork Sun recovery page; route failures use the same component. `/offline` previews the beige Desert Radio page. The radio uses credited, licensed recordings bundled with the application, without voice generation or live streaming.
+
+After an online visit, `/sw.js` saves the offline document, application scripts, styles and logo. Failed document navigations redirect to `/offline`; losing connectivity on an open page shows the radio directly. Connection checks always reach the network. API responses and portfolio media are never cached by this worker. New cache versions activate after existing tabs close; activation removes only previous `mo-recovery-` caches. Browser storage must survive for offline reloads to work.
+
 `Production Health` runs every 15 minutes and checks the homepage, emitted assets, security headers, generic and retired-route 404s, and MP4 availability while recording whether the edge returned `200` or `206`. Failure opens or updates one GitHub issue with the failing run and this runbook; recovery closes it. Cloudflare Workers Logs are enabled at 100% sampling for this low-traffic site. Review the rate after 30 days and lower it if volume or privacy requirements demand it.
 
 Roll back when either condition is met:
