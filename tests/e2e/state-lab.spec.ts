@@ -87,7 +87,7 @@ for (const kind of ['404', 'offline', 'error'] as const) {
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()) })
     const response = await page.goto(`/state-lab#${kind}/1`)
     expect(response?.status()).toBe(200)
-    await expect(page.locator('main')).toHaveAttribute('data-hydrated', 'true')
+    await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true')
     const preview = page.getByRole('region', { name: 'Selected concept preview' })
     await expect(preview.getByRole('heading', { name: CONCEPTS[kind][0].name, exact: true })).toBeVisible()
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow')
