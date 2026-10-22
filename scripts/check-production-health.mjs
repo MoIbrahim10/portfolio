@@ -49,7 +49,13 @@ async function runChecks() {
     'Homepage Twitter card differs',
   )
   assert(home.includes('Mo Ibrahim — '), 'Homepage identity is missing')
-  assert([...home.matchAll(/role="group"/g)].length === 4, 'Project groups differ')
+  assert(
+    home.includes('Portfolio collection') &&
+      [...home.matchAll(/<[^>]*role="group"[^>]*>/g)].some(([element]) =>
+        element.includes('aria-label="Choose a project"'),
+      ),
+    'Portfolio project controls are missing',
+  )
 
   const requiredHeaders = [
     'content-security-policy',
