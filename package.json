@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "vite dev --port 3000",
     "generate-routes": "tsr generate",
-    "build": "vite build",
+    "build": "vite build && bun scripts/build-offline-cache.mjs",
     "check": "tsc --noEmit",
     "test:e2e": "playwright test",
     "test:smoke": "bun run test:e2e --grep \"(SSR hydrates and project selection remains interactive|unknown route returns a useful 404 document|delivery waits for a saved response and offers a fresh postcard)$\"",

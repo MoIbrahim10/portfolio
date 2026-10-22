@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ErrorRouteImport } from './routes/error'
 import { Route as FeedbackRouteImport } from './routes/feedback'
+import { Route as OfflineRouteImport } from './routes/offline'
 import { Route as StateLabRouteImport } from './routes/state-lab'
 
 const IndexRoute = IndexRouteImport.update({
@@ -18,9 +20,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ErrorRoute = ErrorRouteImport.update({
+  id: '/error',
+  path: '/error',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FeedbackRoute = FeedbackRouteImport.update({
   id: '/feedback',
   path: '/feedback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfflineRoute = OfflineRouteImport.update({
+  id: '/offline',
+  path: '/offline',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StateLabRoute = StateLabRouteImport.update({
@@ -31,31 +43,39 @@ const StateLabRoute = StateLabRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/error': typeof ErrorRoute
   '/feedback': typeof FeedbackRoute
+  '/offline': typeof OfflineRoute
   '/state-lab': typeof StateLabRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/error': typeof ErrorRoute
   '/feedback': typeof FeedbackRoute
+  '/offline': typeof OfflineRoute
   '/state-lab': typeof StateLabRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/error': typeof ErrorRoute
   '/feedback': typeof FeedbackRoute
+  '/offline': typeof OfflineRoute
   '/state-lab': typeof StateLabRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/feedback' | '/state-lab'
+  fullPaths: '/' | '/error' | '/feedback' | '/offline' | '/state-lab'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/feedback' | '/state-lab'
-  id: '__root__' | '/' | '/feedback' | '/state-lab'
+  to: '/' | '/error' | '/feedback' | '/offline' | '/state-lab'
+  id: '__root__' | '/' | '/error' | '/feedback' | '/offline' | '/state-lab'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ErrorRoute: typeof ErrorRoute
   FeedbackRoute: typeof FeedbackRoute
+  OfflineRoute: typeof OfflineRoute
   StateLabRoute: typeof StateLabRoute
 }
 
@@ -68,11 +88,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/error': {
+      id: '/error'
+      path: '/error'
+      fullPath: '/error'
+      preLoaderRoute: typeof ErrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/feedback': {
       id: '/feedback'
       path: '/feedback'
       fullPath: '/feedback'
       preLoaderRoute: typeof FeedbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offline': {
+      id: '/offline'
+      path: '/offline'
+      fullPath: '/offline'
+      preLoaderRoute: typeof OfflineRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/state-lab': {
@@ -87,7 +121,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ErrorRoute: ErrorRoute,
   FeedbackRoute: FeedbackRoute,
+  OfflineRoute: OfflineRoute,
   StateLabRoute: StateLabRoute,
 }
 export const routeTree = rootRouteImport

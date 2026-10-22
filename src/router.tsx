@@ -3,6 +3,7 @@ import { createIsomorphicFn } from '@tanstack/react-start'
 import { getRequestHeader } from '@tanstack/react-start/server'
 
 import { routeTree } from './routeTree.gen'
+import { RouteErrorPage } from './components/recovery/RouteErrorPage'
 
 const getContentSecurityPolicyNonce = createIsomorphicFn()
   .client(() => undefined)
@@ -15,6 +16,7 @@ export function getRouter() {
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 0,
     notFoundMode: 'root',
+    defaultErrorComponent: RouteErrorPage,
     ssr: {
       nonce: getContentSecurityPolicyNonce(),
     },

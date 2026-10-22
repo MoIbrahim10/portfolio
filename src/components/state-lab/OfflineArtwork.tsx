@@ -1,8 +1,8 @@
-import { useId, useRef, useState } from 'react'
+import { memo, useEffect, useId, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react'
 
 import { SoundToggle, useStateSound } from './StateSound'
-import { useRadioSound } from './RadioSound'
+import { radioStation, useRadioSound } from './RadioSound'
 import styles from './StateExplorationLab.module.css'
 import art from './OfflineArtwork.module.css'
 
@@ -26,11 +26,14 @@ interface SceneProps {
   aim?: number
   sealed?: boolean
   powered?: boolean
+  liveRadio?: boolean
+  reception?: boolean
+  stationLabel?: string
 }
 
-export function OfflineScene({ index, value = index === 1 ? 24 : index === 3 ? 50 : 0, marks = [], plugs = ROWS.map(y => ({ x: 220, y })), lines = [], hot = -1, pulse = 0, aim = 0, sealed = false, powered = false }: SceneProps) {
+export const OfflineScene = memo(function OfflineScene({ index, value = index === 1 ? 24 : index === 3 ? 50 : 0, marks = [], plugs = ROWS.map(y => ({ x: 220, y })), lines = [], hot = -1, pulse = 0, aim = 0, sealed = false, powered = false, liveRadio = false, reception, stationLabel }: SceneProps) {
   const id = `offline-${useId().replaceAll(':', '')}`
-  const tuned = Math.abs(value - 56) < 5
+  const tuned = reception ?? Math.abs(value - 56) < 5
 
   switch (index) {
     case 0:
@@ -68,7 +71,7 @@ export function OfflineScene({ index, value = index === 1 ? 24 : index === 3 ? 5
           <pattern id={`${id}-grain`} width="48" height="16" patternUnits="userSpaceOnUse"><path d="M0 3q12-3 24 0t24 0M0 10q24 5 48 0M9 15q13-3 30 0" fill="none" stroke="#f2ba77" strokeOpacity="0.15" strokeWidth="0.6" /></pattern>
           <pattern id={`${id}-cloth`} width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#756249" /><path d="M0 1h5M0 4h5" stroke="#c0a278" strokeWidth="0.7" /><path d="M1 0v5M4 0v5" stroke="#372f2a" strokeWidth="0.8" /></pattern>
         </defs>
-        <ellipse cx="266" cy="360" rx="208" ry="12" fill="#071a29" opacity="0.5" />
+        <ellipse cx="266" cy="360" rx="208" ry="12" fill="#102b43" opacity="0.12" />
         <path d="M93 68v-9l267-38" fill="none" stroke="#142639" strokeWidth="7" strokeLinecap="round" />
         <path d="m93 56 266-38" fill="none" stroke={`url(#${id}-brass)`} strokeWidth="4" strokeLinecap="round" />
         <path d="m245 33 113-16" stroke="#fff1cd" strokeWidth="1.2" /><circle cx="360" cy="18" r="3" fill="#e7c18a" />
@@ -90,29 +93,38 @@ export function OfflineScene({ index, value = index === 1 ? 24 : index === 3 ? 5
           {Array.from({ length: 11 }, (_, i) => <text x={90 + i * 32.2} y="139" textAnchor="middle" fontSize="8" key={i}>{88 + i * 2}</text>)}
           {Array.from({ length: 51 }, (_, i) => <path d={`M${90 + i * 6.44} 145v${i % 5 ? 5 : 10}`} key={i} stroke="currentColor" strokeWidth={i % 5 ? 0.65 : 1} opacity={i % 5 ? 0.5 : 0.9} />)}
           <path d="M90 159h322" stroke="currentColor" opacity="0.3" />
-          <text x="90" y="174" fontSize="6" letterSpacing="0.5">MO · DESERT RADIO</text>
-          <text x="415" y="174" textAnchor="end" fontSize="6" letterSpacing="1.2">ANALOGUE</text>
         </g>
-        <g transform={`translate(${90 + value * 3.22} 0)`}><path d="M2 122v40" stroke="#060d15" strokeWidth="3" opacity="0.6" /><path d="M0 120v42" stroke="#f8ab68" strokeWidth="1.6" /><path d="M-3 118h6l-3 4z" fill="#eaba78" /></g>
+        <g className={art.tuningNeedle} style={liveRadio ? undefined : { transform: `translateX(${90 + value * 3.22}px)` }}><path d="M2 122v40" stroke="#060d15" strokeWidth="3" opacity="0.6" /><path d="M0 120v42" stroke="#f8ab68" strokeWidth="1.6" /><path d="M-3 118h6l-3 4z" fill="#eaba78" /></g>
         <path d="m83 107 343 0-27 20H83z" fill="#fffaf0" opacity="0.045" /><path d="m86 105 138 0-67 75H86z" fill="#fffaf0" opacity="0.025" />
         <rect x="76" y="207" width="236" height="103" rx="6" fill="#0b202e" stroke={`url(#${id}-brass)`} strokeWidth="2" />
-        <rect x="81" y="212" width="226" height="93" rx="3" fill={`url(#${id}-cloth)`} />
-        <ellipse cx="194" cy="258" rx="71" ry="44" fill="#181c20" opacity="0.22" />
+        <g className={art.speakerCloth}><rect x="81" y="212" width="226" height="93" rx="3" fill={`url(#${id}-cloth)`} /><ellipse cx="194" cy="258" rx="71" ry="44" fill="#181c20" opacity="0.22" /></g>
         {Array.from({ length: 7 }, (_, i) => <g key={i}><path d={`M84 ${219 + i * 13}h220`} stroke="#322d25" strokeWidth="3" /><path d={`M84 ${218 + i * 13}h220`} stroke={`url(#${id}-brass)`} strokeWidth="1.5" /></g>)}
-        <g className={art.radioKnob} data-hot={hot === 0} data-part="0">
-          <circle cx="384" cy="281" r="43" fill="#071c2b" opacity="0.8" />
-          <circle cx="384" cy="277" r="44" fill="#10232f" stroke="#537084" strokeWidth="0.8" />
-          {Array.from({ length: 36 }, (_, i) => <path d="M384 231v3" key={i} transform={`rotate(${i * 10} 384 277)`} stroke="#d4a461" strokeWidth="0.8" opacity={i % 3 ? 0.35 : 0.7} />)}
-          <circle cx="384" cy="277" r="37" fill={`url(#${id}-brass)`} stroke="#e8bc73" strokeWidth="0.8" />
-          {Array.from({ length: 48 }, (_, i) => <path d="M384 241v5" key={i} transform={`rotate(${i * 7.5} 384 277)`} stroke="#5e3e22" strokeWidth="1.1" opacity="0.6" />)}
-          <circle cx="384" cy="277" r="31" fill={`url(#${id}-knob)`} stroke="#edc880" strokeWidth="0.8" />
-          <circle cx="384" cy="277" r="27" fill="none" stroke="#aa7134" strokeWidth="0.7" opacity="0.5" />
-          <g transform={`rotate(${value * 3.6} 384 277)`}><path d="M384 250v11" stroke="#503523" strokeWidth="3" strokeLinecap="round" /><path d="M383 250v11" stroke="#fff1ce" strokeWidth="0.7" strokeLinecap="round" /></g>
-          <path className={art.knobShine} d="M364 263a25 25 0 0 1 32-7" fill="none" stroke="#fff4d6" strokeWidth="1.4" opacity="0.4" />
+        <g className={art.radioKnob} data-hot={hot === 0} data-part="0" data-radio-dial>
+          <circle cx="384" cy="263" r="41" fill="#071c2b" opacity="0.65" />
+          <circle cx="384" cy="257" r="43" fill="#132a36" stroke="#617071" strokeWidth="0.8" />
+          {Array.from({ length: 28 }, (_, i) => <path d="M384 210v3" key={i} transform={`rotate(${-135 + i * 10} 384 257)`} stroke="#d4a461" strokeWidth="0.8" opacity={i % 3 ? 0.4 : 0.85} />)}
+          <circle cx="384" cy="262" r="37" fill="#744923" stroke="#422b20" strokeWidth="1" />
+          <circle cx="384" cy="257" r="37" fill={`url(#${id}-brass)`} stroke="#e8bc73" strokeWidth="0.8" />
+          <g className={art.tuningKnob} style={liveRadio ? undefined : { transform: `rotate(${-135 + value * 2.7}deg)` }}>
+            {Array.from({ length: 48 }, (_, i) => <g key={i} transform={`rotate(${i * 7.5} 384 257)`}><path d="M384 221v5" stroke="#694823" strokeWidth="1.2" /><path d="M385 222v4" stroke="#ffe3a1" strokeWidth="0.65" /></g>)}
+          </g>
+          <circle cx="384" cy="257" r="30" fill={`url(#${id}-knob)`} stroke="#f2d493" strokeWidth="0.8" />
+          <circle cx="384" cy="257" r="27.5" fill="none" stroke="#9c692e" strokeWidth="0.6" opacity="0.5" />
+          <g className={art.tuningKnob} style={liveRadio ? undefined : { transform: `rotate(${-135 + value * 2.7}deg)` }}><path d="M384 232v10" stroke="#503523" strokeWidth="3.2" strokeLinecap="round" /><path d="M383 232v9" stroke="#fff1ce" strokeWidth="0.7" strokeLinecap="round" /></g>
+          <path className={art.knobShine} d="M365 245a24 24 0 0 1 29-9" fill="none" stroke="#fff4d6" strokeWidth="1.2" opacity="0.5" />
         </g>
-        <circle cx="346" cy="211" r="3" fill={powered && tuned ? '#f7d38e' : '#514b3d'} stroke="#0c2436" strokeWidth="2" />
-        <text className={art.radioLabel} x="359" y="214" fontSize="6" letterSpacing="1.5">{powered && tuned ? 'TUNED' : 'FM / MONO'}</text>
-        <text className={art.radioLabel} x="384" y="334" textAnchor="middle" fontSize="6" letterSpacing="2">TUNING</text>
+        <circle cx="352" cy="199" r="2.5" fill={powered && tuned ? '#f7d38e' : '#514b3d'} stroke="#0c2436" strokeWidth="1.5" />
+        <text className={art.radioLabel} x="362" y="201" fontSize="5.5" letterSpacing="0.6">{powered && tuned ? stationLabel ?? 'TUNED' : 'FM / MONO'}</text>
+        <g data-radio-power data-powered={powered}>
+          <rect x="391" y="58" width="44" height="10" rx="3" fill="#30251f" stroke="#bb874b" strokeWidth="0.7" />
+          <path d="M395 59v-9h36v9l-4 4h-28z" fill="#132a36" stroke="#a37e4d" strokeWidth="1" />
+          <g className={art.powerRocker}>
+            <path d="M398 50h30v9h-30z" fill="#34434a" stroke="#698080" strokeWidth="0.6" />
+            <path d="M413 51v7" stroke="#142b35" strokeWidth="1" />
+            <path d="M405 52v4" stroke={powered ? '#f9d593' : '#91a1a0'} strokeWidth="1" />
+            <circle cx="421" cy="54" r="1.6" fill="none" stroke={powered ? '#91a1a0' : '#f9d593'} strokeWidth="0.7" />
+          </g>
+        </g>
         {[[70, 89], [438, 89], [70, 316], [438, 316]].map(([x, y]) => <g key={`${x}-${y}`}><circle cx={x} cy={y} r="2.2" fill={`url(#${id}-brass)`} /><path d={`m${x - 1} ${y + 1} 2-2`} stroke="#624425" strokeWidth="0.7" /></g>)}
       </>
     }
@@ -249,9 +261,9 @@ export function OfflineScene({ index, value = index === 1 ? 24 : index === 3 ? 5
         <path className={art.paperLine} opacity="0.3" d="M54 341h159m135-1h104M34 136h12m-6-6v12M464 282l3 6 6 3-6 3-3 6-3-6-6-3 6-3z" />
       </>
   }
-}
+})
 
-interface Gesture { pointerId: number; control: number; x: number; y: number; previousAngle: number; moved: boolean; capture: HTMLElement }
+interface Gesture { pointerId: number; control: number; x: number; y: number; previousAngle: number; vertical: boolean; previousY: number; moved: boolean; capture: HTMLElement }
 
 export function OfflineArtwork({ index }: { index: number }) {
   const [value, setValue] = useState(index === 1 ? 24 : index === 3 ? 50 : 0)
@@ -268,9 +280,24 @@ export function OfflineArtwork({ index }: { index: number }) {
   const lastPoint = useRef<Point | null>(null)
   const lastSound = useRef(0)
   const hintId = useId()
+  const canvas = useRef<HTMLDivElement>(null)
   const sounds = useStateSound()
   const radio = useRadioSound(value)
-  const tuned = Math.abs(value - 56) < 5
+  const station = radioStation(value)
+  const tuned = Boolean(station)
+
+  useEffect(() => {
+    if (index !== 1 || !radio.enabled || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let frame = 0
+    let level = 0
+    function meter() {
+      level += (radio.readLevel() - level) * 0.24
+      canvas.current?.style.setProperty('--radio-level', String(level))
+      frame = requestAnimationFrame(meter)
+    }
+    meter()
+    return () => { cancelAnimationFrame(frame); canvas.current?.style.removeProperty('--radio-level') }
+  }, [index, radio.enabled, radio.readLevel])
 
   function change(next: number) {
     const clamped = Math.max(0, Math.min(100, next))
@@ -284,7 +311,7 @@ export function OfflineArtwork({ index }: { index: number }) {
       if (marks.includes(control)) return
       setMarks(previous => previous.includes(control) ? previous : [...previous, control])
       sounds.play([NOTES[control % 4]], 0.22)
-    } else if (index === 1) change(56)
+    } else if (index === 1) return
     else if (index === 2) { setValue(v => Math.min(4, v + 1)); sounds.play([392, 523.25], 0.18) }
     else if (index === 6) { setValue(v => v + 1); sounds.play([392, 523.25, 783.99], 0.12) }
     else if (index === 7) { setMarks(previous => [...previous.slice(-11), control]); sounds.play([NOTES[control]], 0.28, 'triangle') }
@@ -297,19 +324,19 @@ export function OfflineArtwork({ index }: { index: number }) {
     return { x: (event.clientX - rect.left) / rect.width * 520, y: (event.clientY - rect.top) / rect.height * 400 }
   }
 
-  function angleAt(p: Point) { return Math.atan2(p.x - 384, 277 - p.y) * 180 / Math.PI }
+  function angleAt(p: Point) { return Math.atan2(p.x - 384, 257 - p.y) * 180 / Math.PI }
 
   function start(event: PointerEvent<HTMLDivElement>) {
     if (!event.isPrimary || event.button !== 0 || (index !== 0 && index !== 1 && index !== 3 && index !== 4)) return
     const button = (event.target as Element).closest<HTMLButtonElement>('button[data-hit]')
-    if (index !== 4 && !button) return
+    if ((index !== 4 && !button) || (index === 1 && button?.dataset.hit === '1')) return
     if (button?.disabled) return
     event.preventDefault()
     const capture = button ?? event.currentTarget
     capture.focus({ preventScroll: true })
     capture.setPointerCapture(event.pointerId)
     const p = point(event)
-    gesture.current = { pointerId: event.pointerId, control: Number(button?.dataset.hit ?? 0), x: p.x, y: p.y, previousAngle: angleAt(p), moved: false, capture }
+    gesture.current = { pointerId: event.pointerId, control: Number(button?.dataset.hit ?? 0), x: p.x, y: p.y, previousAngle: angleAt(p), vertical: Math.hypot(p.x - 384, p.y - 257) < 14, previousY: p.y, moved: false, capture }
     event.currentTarget.dataset.dragging = 'true'
     if (index === 4) {
       lastPoint.current = p
@@ -335,11 +362,12 @@ export function OfflineArtwork({ index }: { index: number }) {
     if (Math.hypot(p.x - g.x, p.y - g.y) > 4) g.moved = true
     if (index === 0) setPlugs(previous => previous.map((plug, i) => i === g.control ? { x: Math.max(110, Math.min(345, p.x)), y: Math.max(65, Math.min(332, p.y)) } : plug))
     else if (index === 1) {
-      if (Math.hypot(p.x - 384, p.y - 277) < 12) return
+      if (g.vertical) { change(currentValue.current + (g.previousY - p.y) / 2); g.previousY = p.y; return }
+      if (Math.hypot(p.x - 384, p.y - 257) < 12) return
       const angle = angleAt(p)
       const delta = (angle - g.previousAngle + 540) % 360 - 180
       g.previousAngle = angle
-      change(currentValue.current + delta / 3.6)
+      change(currentValue.current + delta / 2.7)
     } else if (index === 3) change((p.x - 100) / 3.2)
     else if (index === 4 && lastPoint.current && Math.hypot(p.x - lastPoint.current.x, p.y - lastPoint.current.y) > 2) {
       lastPoint.current = p
@@ -355,7 +383,7 @@ export function OfflineArtwork({ index }: { index: number }) {
     if (!cancelled && index === 0) {
       if (!g.moved || Math.hypot(p.x - 320, p.y - ROWS[g.control]) < 38) activate(g.control)
       setPlugs(previous => previous.map((plug, i) => i === g.control ? { x: 220, y: ROWS[i] } : plug))
-    } else if (!cancelled && index === 1 && !g.moved) activate(0)
+    }
     else if (!cancelled && index === 3) {
       sounds.play(value > 70 ? [392, 261.63] : [261.63, 392], 0.3)
     }
@@ -365,6 +393,7 @@ export function OfflineArtwork({ index }: { index: number }) {
   }
 
   function keyboard(event: KeyboardEvent<HTMLElement>) {
+    if (index === 1 && (event.target as HTMLElement).getAttribute('role') !== 'slider') return
     if (index === 1 || index === 3) {
       const next = { Home: 0, End: 100, ArrowRight: value + 1, ArrowUp: value + 1, ArrowLeft: value - 1, ArrowDown: value - 1, PageUp: value + 10, PageDown: value - 10 }[event.key]
       if (next !== undefined) { event.preventDefault(); change(next); if (index === 3 && (event.key === 'Home' || event.key === 'End')) sounds.play([261.63, 392], 0.3) }
@@ -375,9 +404,9 @@ export function OfflineArtwork({ index }: { index: number }) {
   }
 
   function hit(control: number, label: string, x: number, y: number, width = 52, height = width, disabled = false) {
-    const slider = index === 1 || index === 3
+    const slider = index === 1 && control === 0 || index === 3
     const position: CSSProperties = { left: `${x / 520 * 100}%`, top: `${y / 400 * 100}%`, width: `${width / 520 * 100}%`, height: `${height / 400 * 100}%` }
-    return <button aria-label={label} aria-pressed={index === 0 || index === 5 ? marks.includes(control) : undefined} aria-valuemin={slider ? 0 : undefined} aria-valuemax={slider ? 100 : undefined} aria-valuenow={slider ? Math.round(value) : undefined} aria-valuetext={slider ? index === 1 ? `${(88 + value * 0.2).toFixed(1)} FM. ${tuned ? 'Music is clear.' : 'Static. Turn the dial to find music.'}` : `${Math.round(value)} percent of the day.` : undefined} className={art.hit} data-hit={control} disabled={disabled} key={control} onClick={event => { if ((index !== 0 && index !== 1 && index !== 3) || event.detail === 0) activate(control) }} onPointerEnter={() => setHot(control)} onPointerLeave={() => setHot(-1)} role={slider ? 'slider' : undefined} style={position} type="button" />
+    return <button aria-label={label} aria-pressed={index === 1 && control === 1 ? radio.enabled : index === 0 || index === 5 ? marks.includes(control) : undefined} aria-valuemin={slider ? 0 : undefined} aria-valuemax={slider ? 100 : undefined} aria-valuenow={slider ? Math.round(value) : undefined} aria-valuetext={slider ? index === 1 ? `${(88 + value * 0.2).toFixed(1)} FM. ${station ? `${station.name}. ${station.format}.` : 'Static. Turn the dial to find music.'}` : `${Math.round(value)} percent of the day.` : undefined} className={art.hit} data-hit={control} disabled={disabled} key={control} onClick={event => { if (index === 1 && control === 1) radio.toggle(); else if ((index !== 0 && index !== 1 && index !== 3) || event.detail === 0) activate(control) }} onPointerEnter={() => setHot(control)} onPointerLeave={() => setHot(-1)} role={slider ? 'slider' : undefined} style={position} type="button" />
   }
 
   const status = index === 0 ? marks.length === 3 ? 'The illustration is connected. Your network may still be offline.' : `${marks.length} of 3 little connections made.`
@@ -392,10 +421,10 @@ export function OfflineArtwork({ index }: { index: number }) {
     : sealed ? 'A thought, sealed in a little sunshine.' : 'Just a local doodle. This note isn’t sent or saved.'
 
   return <div className={`${styles.interactiveArt} ${art.artwork}`} data-spatial="offline">
-    <div aria-describedby={hintId} aria-label={index === 4 ? 'Draw in the sand' : 'Explore offline illustration'} className={art.canvas} data-scene={index} data-sealed={sealed} onDoubleClick={index === 4 ? () => setLines([]) : undefined} onKeyDown={keyboard} onPointerCancel={event => finish(event, true)} onPointerDown={start} onPointerLeave={event => { event.currentTarget.style.setProperty('--look-x', '0'); event.currentTarget.style.setProperty('--look-y', '0') }} onPointerMove={move} onPointerUp={event => finish(event)} role="group" tabIndex={index === 4 || index === 7 ? 0 : undefined}>
-      <svg aria-hidden="true" className={styles.scene} focusable="false" viewBox="0 0 520 400"><OfflineScene aim={aim} hot={hot} index={index} lines={lines} marks={marks} plugs={plugs} powered={radio.enabled} pulse={pulse} sealed={sealed} value={value} /></svg>
+    <div aria-describedby={hintId} aria-label={index === 4 ? 'Draw in the sand' : 'Explore offline illustration'} className={art.canvas} data-scene={index} data-sealed={sealed} ref={canvas} style={index === 1 ? { '--tuning-x': `${90 + value * 3.22}px`, '--tuning-angle': `${-135 + value * 2.7}deg` } as CSSProperties : undefined} onDoubleClick={index === 4 ? () => setLines([]) : undefined} onKeyDown={keyboard} onPointerCancel={event => finish(event, true)} onPointerDown={start} onPointerLeave={event => { event.currentTarget.style.setProperty('--look-x', '0'); event.currentTarget.style.setProperty('--look-y', '0') }} onPointerMove={move} onPointerUp={event => finish(event)} role="group" tabIndex={index === 4 || index === 7 ? 0 : undefined}>
+      <svg aria-hidden="true" className={styles.scene} focusable="false" viewBox="0 0 520 400"><OfflineScene aim={aim} hot={hot} index={index} lines={lines} liveRadio={index === 1} marks={marks} plugs={plugs} powered={radio.enabled} pulse={index === 1 ? 0 : pulse} reception={index === 1 ? tuned : undefined} stationLabel={index === 1 ? station?.name.toUpperCase() : undefined} sealed={sealed} value={index === 1 ? 24 : value} /></svg>
       {index === 0 ? ROWS.map((y, i) => hit(i, `Connect wire ${i + 1}`, marks.includes(i) ? 320 : plugs[i].x - 7, marks.includes(i) ? y : plugs[i].y, 50, 50, marks.includes(i)))
-        : index === 1 ? hit(0, 'Tune the radio', 384, 277, 90)
+        : index === 1 ? <>{hit(0, 'Tune the radio', 384, 257, 88)}{hit(1, radio.enabled ? 'Turn radio off' : 'Turn radio on', 413, 55, 44, 24)}</>
         : index === 2 ? hit(0, 'Water the oasis', 391, 109, 62)
         : index === 3 ? hit(0, 'Move the sun', 100 + value * 3.2, 104 + Math.abs(value - 50) * 1.8, 92)
         : index === 5 ? STARS.map(([x, y], i) => hit(i, `Light star ${i + 1}`, x, y))
@@ -405,9 +434,10 @@ export function OfflineArtwork({ index }: { index: number }) {
         : index === 9 ? <>{!sealed ? <textarea aria-label="Your passing thought" className={art.postcardInput} maxLength={100} onChange={event => setNote(event.target.value)} placeholder="What’s on your mind?" spellCheck={false} value={note} /> : null}{hit(0, sealed ? 'Open postcard' : 'Seal postcard', sealed ? 260 : 391, sealed ? 229 : 115, 65)}</> : null}
       {index === 4 ? <span aria-hidden="true" className={art.sandCursor} /> : null}
     </div>
+    {index === 1 ? <p className={art.radioHint}>{radio.error || 'Power on. Find your frequency.'}</p> : null}
     {index === 4 ? <button aria-label="Fresh sand" className={art.reset} onClick={() => setLines([])} type="button">↻</button> : null}
     <SoundToggle enabled={index === 1 ? radio.enabled : sounds.enabled} onClick={index === 1 ? radio.toggle : sounds.toggle} />
     <p className={styles.srOnly} id={hintId}>{index === 4 ? 'Draw with a pointer. Enter adds a stroke. Delete clears the sand.' : index === 1 || index === 3 ? 'Drag the artwork to adjust it. Arrow keys make small adjustments; Home and End reach either edge.' : 'Tap or use Tab and Enter to play with the illustration.'}</p>
-    <p aria-live="polite" className={styles.srOnly}>{status}</p>
+    <p aria-live="polite" className={styles.srOnly}>{index === 1 && radio.error ? radio.error : status}</p>
   </div>
 }

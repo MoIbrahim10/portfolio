@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { NotFoundPage } from '#/components/not-found/NotFoundPage'
+import { OfflineRecovery } from '#/components/recovery/OfflineRecovery'
 
 import appCss from '../styles.css?url'
 
@@ -23,6 +24,7 @@ export const Route = createRootRoute({
   head: ({ match, matches }) => {
     const isNotFound = match.globalNotFound
     const isFeedback = matches.some((route) => String(route.routeId) === '/feedback')
+    const isRecovery = matches.some((route) => ['/offline', '/error'].includes(String(route.routeId)))
 
     return {
       meta: [
@@ -78,7 +80,7 @@ export const Route = createRootRoute({
           type: 'image/svg+xml',
           sizes: 'any',
         },
-        ...(!isNotFound && !isFeedback ? [{ rel: 'canonical', href: SITE_URL }] : []),
+        ...(!isNotFound && !isFeedback && !isRecovery ? [{ rel: 'canonical', href: SITE_URL }] : []),
       ],
     }
   },
@@ -99,7 +101,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <OfflineRecovery>{children}</OfflineRecovery>
         <Scripts />
       </body>
     </html>

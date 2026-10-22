@@ -42,7 +42,33 @@ export function useStateSound() {
     void context.resume().then(() => { if (audio.current === context) play([880], 0.045) })
   }
 
-  return { enabled, play, toggle }
+  function playMiss() {
+    const context = audio.current
+    if (!sound.current || !context || context.state !== 'running') return
+    const voices: Array<{ type: OscillatorType; from: number; to: number; delay: number; duration: number; volume: number }> = [
+      { type: 'triangle', from: 310, to: 76, delay: 0, duration: 0.18, volume: 0.025 },
+      { type: 'sine', from: 95, to: 38, delay: 0, duration: 0.16, volume: 0.055 },
+      { type: 'triangle', from: 240, to: 130, delay: 0.36, duration: 0.11, volume: 0.012 },
+    ]
+    for (const voice of voices) {
+      const startAt = context.currentTime + voice.delay
+      const oscillator = context.createOscillator()
+      const gain = context.createGain()
+      oscillator.type = voice.type
+      oscillator.frequency.setValueAtTime(voice.from, startAt)
+      oscillator.frequency.exponentialRampToValueAtTime(voice.to, startAt + voice.duration)
+      gain.gain.setValueAtTime(0.0001, startAt)
+      gain.gain.exponentialRampToValueAtTime(voice.volume, startAt + 0.006)
+      gain.gain.exponentialRampToValueAtTime(0.0001, startAt + voice.duration)
+      oscillator.connect(gain)
+      gain.connect(context.destination)
+      oscillator.start(startAt)
+      oscillator.stop(startAt + voice.duration + 0.02)
+      oscillator.onended = () => { oscillator.disconnect(); gain.disconnect() }
+    }
+  }
+
+  return { enabled, play, playMiss, toggle }
 }
 
 export function SoundToggle({ enabled, onClick }: { enabled: boolean; onClick: () => void }) {
