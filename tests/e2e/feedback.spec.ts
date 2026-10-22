@@ -71,6 +71,7 @@ test('the homepage note button opens the postcard and the flip control keeps a d
   await expect(page.getByText('Picture side', { exact: true })).toHaveCount(0)
   await expect(page.getByText('Writing side', { exact: true })).toHaveCount(0)
   const write = page.getByRole('button', { name: 'Write a note', exact: true })
+  await expect(write).toBeEnabled()
   await expect(page.locator('[data-postcard-front]').locator('..').locator('..').locator('..').locator('..')).toHaveCSS('opacity', '1')
   if (testInfo.project.name === 'desktop-chromium') {
     await page.emulateMedia({ reducedMotion: 'no-preference' })

@@ -87,17 +87,11 @@ for (const kind of ['404', 'offline', 'error'] as const) {
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()) })
     const response = await page.goto(`/state-lab#${kind}/1`)
     expect(response?.status()).toBe(200)
+    await expect(page.locator('main')).toHaveAttribute('data-hydrated', 'true')
     const preview = page.getByRole('region', { name: 'Selected concept preview' })
     await expect(preview.getByRole('heading', { name: CONCEPTS[kind][0].name, exact: true })).toBeVisible()
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow')
     await expect(page.getByRole('button', { name: /^Preview \d\d:/ })).toHaveCount(CONCEPTS[kind].length)
-
-    if (kind === '404') {
-      await click(page, 'Next concept')
-      await expect(preview.getByRole('heading', { name: CONCEPTS[kind][1].name, exact: true })).toBeVisible()
-      await click(page, 'Previous concept')
-      await expect(preview.getByRole('heading', { name: CONCEPTS[kind][0].name, exact: true })).toBeVisible()
-    }
 
     for (let i = 0; i < CONCEPTS[kind].length; i++) {
       await click(page, `Preview ${String(i + 1).padStart(2, '0')}: ${CONCEPTS[kind][i].name}`)

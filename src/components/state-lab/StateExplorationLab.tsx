@@ -22,6 +22,7 @@ export function StateExplorationLab() {
   const [index, setIndex] = useState(0)
   const [fullPage, setFullPage] = useState(false)
   const [replay, setReplay] = useState(0)
+  const [hydrated, setHydrated] = useState(false)
   const [picks, setPicks] = useState<Partial<Record<StateKind, number>>>({})
   const [recoveryMessage, setRecoveryMessage] = useState('')
   const concept = CONCEPTS[kind][index]
@@ -44,6 +45,7 @@ export function StateExplorationLab() {
       if (window.location.hash !== hash) window.history.replaceState(null, '', hash)
     }
     readHash()
+    setHydrated(true)
     window.addEventListener('hashchange', readHash)
     return () => window.removeEventListener('hashchange', readHash)
   }, [])
@@ -78,7 +80,7 @@ export function StateExplorationLab() {
   }
 
   return (
-    <main className={`${styles.lab} ${fullPage ? styles.fullView : ''}`} data-kind={kind}>
+    <main className={`${styles.lab} ${fullPage ? styles.fullView : ''}`} data-kind={kind} data-hydrated={hydrated || undefined}>
       <header className={styles.labHeader}>
         <a aria-label="MO portfolio home" className={styles.labLogo} href="/"><img alt="" height="480" src="/brand/mo-mark-v3.svg" width="790" /></a>
         <span className={styles.labWordmark}>The art of the detour<span>State explorations / {DIRECTION_COUNT} directions</span></span>
