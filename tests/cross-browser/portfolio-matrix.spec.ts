@@ -23,15 +23,7 @@ const mediaBatches = [
 ] as const
 
 async function waitForHydration(page: Page) {
-  const trigger = page.getByRole('button', { name: 'Mo — reveal portrait' })
-  await expect
-    .poll(async () => {
-      await trigger.press('Enter')
-      return trigger.getAttribute('aria-expanded')
-    })
-    .toBe('true')
-  await trigger.evaluate((button: HTMLButtonElement) => button.blur())
-  await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true')
 }
 
 function monitorRuntime(
@@ -83,7 +75,7 @@ function isMobileProject(testInfo: TestInfo) {
 }
 
 async function loadHome(page: Page) {
-  const response = await page.goto('/')
+  const response = await page.goto('/', { waitUntil: 'domcontentloaded' })
   await waitForHydration(page)
   expect(response?.status()).toBe(200)
 }
@@ -348,9 +340,10 @@ test('responsive, landscape, and text-spacing matrix does not overflow', async (
     { width: 1440, height: 1000 },
   ]
 
+  await page.setViewportSize(viewports[0])
+  await loadHome(page)
   for (const viewport of viewports) {
     await page.setViewportSize(viewport)
-    await loadHome(page)
     await expect(
       page.getByRole('heading', {
         level: 1,

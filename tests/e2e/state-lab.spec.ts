@@ -25,7 +25,11 @@ const exercises: Record<StateKind, Array<{ run: (page: Page) => Promise<void>; r
   '404': [
     { run: async p => {
       await expect(p.getByRole('button', { name: /Open the doorway/ })).toHaveCount(0)
-      await p.getByRole('group', { name: 'Explore the hidden doorway' }).press('ArrowRight')
+      const doorway = p.getByRole('group', { name: 'Explore the hidden doorway' })
+      await doorway.focus()
+      await expect(doorway).toBeFocused()
+      await p.keyboard.press('ArrowRight')
+      await expect(doorway).toHaveAttribute('data-open', 'true')
     }, result: 'A quiet courtyard. A little light on the other side.' },
     { run: async p => {
       await expect(p.locator('input[type="range"]')).toHaveCount(0)
@@ -83,6 +87,7 @@ for (const kind of ['404', 'offline', 'error'] as const) {
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()) })
     const response = await page.goto(`/state-lab#${kind}/1`)
     expect(response?.status()).toBe(200)
+    await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true')
     const preview = page.getByRole('region', { name: 'Selected concept preview' })
     await expect(preview.getByRole('heading', { name: CONCEPTS[kind][0].name, exact: true })).toBeVisible()
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow')

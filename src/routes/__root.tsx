@@ -3,6 +3,7 @@ import {
   Scripts,
   createRootRoute,
 } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { NotFoundPage } from '#/components/not-found/NotFoundPage'
@@ -86,8 +87,14 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+  const [hydrated, setHydrated] = useState(false)
+
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
+
   return (
-    <html lang="en">
+    <html data-hydrated={hydrated || undefined} lang="en">
       <head>
         <HeadContent />
       </head>
