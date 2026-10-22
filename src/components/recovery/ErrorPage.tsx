@@ -33,4 +33,3 @@ export function ErrorPage({ onRetry }: { onRetry?: () => void | Promise<void> })
     </section>
   </main>
 }
-

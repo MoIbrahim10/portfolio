@@ -48,4 +48,3 @@ export function OfflinePage() {
     </section>
   </main>
 }
-
