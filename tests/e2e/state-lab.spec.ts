@@ -25,7 +25,11 @@ const exercises: Record<StateKind, Array<{ run: (page: Page) => Promise<void>; r
   '404': [
     { run: async p => {
       await expect(p.getByRole('button', { name: /Open the doorway/ })).toHaveCount(0)
-      await p.getByRole('group', { name: 'Explore the hidden doorway' }).press('ArrowRight')
+      const doorway = p.getByRole('group', { name: 'Explore the hidden doorway' })
+      await doorway.focus()
+      await expect(doorway).toBeFocused()
+      await p.keyboard.press('ArrowRight')
+      await expect(doorway).toHaveAttribute('data-open', 'true')
     }, result: 'A quiet courtyard. A little light on the other side.' },
     { run: async p => {
       await expect(p.locator('input[type="range"]')).toHaveCount(0)
@@ -87,6 +91,13 @@ for (const kind of ['404', 'offline', 'error'] as const) {
     await expect(preview.getByRole('heading', { name: CONCEPTS[kind][0].name, exact: true })).toBeVisible()
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow')
     await expect(page.getByRole('button', { name: /^Preview \d\d:/ })).toHaveCount(CONCEPTS[kind].length)
+
+    if (kind === '404') {
+      await click(page, 'Next concept')
+      await expect(preview.getByRole('heading', { name: CONCEPTS[kind][1].name, exact: true })).toBeVisible()
+      await click(page, 'Previous concept')
+      await expect(preview.getByRole('heading', { name: CONCEPTS[kind][0].name, exact: true })).toBeVisible()
+    }
 
     for (let i = 0; i < CONCEPTS[kind].length; i++) {
       await click(page, `Preview ${String(i + 1).padStart(2, '0')}: ${CONCEPTS[kind][i].name}`)
