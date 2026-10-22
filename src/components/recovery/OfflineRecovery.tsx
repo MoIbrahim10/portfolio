@@ -6,6 +6,7 @@ const OfflinePage = lazy(() => import('./OfflinePage').then(module => ({ default
 export function OfflineRecovery({ children }: { children: ReactNode }) {
   const [offline, setOffline] = useState(false)
   useEffect(() => {
+    if (import.meta.env.DEV && window.location.pathname === '/state-lab') return
     const disconnected = () => setOffline(true)
     if (!navigator.onLine) disconnected()
     window.addEventListener('offline', disconnected)
