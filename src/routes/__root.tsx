@@ -20,7 +20,7 @@ const SOCIAL_IMAGE_ALT =
 
 export const Route = createRootRoute({
   head: ({ match, matches }) => {
-    const isNotFound = match.globalNotFound
+    const isNotFound = match.status === 'notFound'
     const isFeedback = matches.some((route) => String(route.routeId) === '/feedback')
 
     return {
