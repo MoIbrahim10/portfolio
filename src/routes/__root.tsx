@@ -21,8 +21,8 @@ const SOCIAL_IMAGE_ALT =
   'Mo Ibrahim product engineering portfolio featuring The Good Invoice project.'
 
 export const Route = createRootRoute({
-  head: ({ match, matches }) => {
-    const isNotFound = match.globalNotFound
+  head: ({ matches }) => {
+    const isNotFound = matches.some((route) => route._notFound)
     const isFeedback = matches.some((route) => String(route.routeId) === '/feedback')
     const isRecovery = matches.some((route) => ['/offline', '/error'].includes(String(route.routeId)))
 
